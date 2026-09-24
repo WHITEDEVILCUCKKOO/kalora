@@ -21,7 +21,7 @@
     <!-- section 3 -->
     <?php require_once __DIR__ . '/includes/home-section/section_3.php' ?>
     <!-- section 6 -->
-    <?php require_once __DIR__ . '/includes/home-section/section_6.php' ?>
+    <?php require_once __DIR__ . '/includes/home-section/section_3_2,php' ?>
     <!-- section 4 -->
     <?php require_once __DIR__ . '/includes/home-section/section_4.php' ?>
     <!-- section 5 -->
