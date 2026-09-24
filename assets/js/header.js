@@ -2,6 +2,18 @@
   "use strict";
 
   var root = document.querySelector('.pm-nav');
+  /* 0) STICKY HEADER + HIDE TOPBAR ON SCROLL */
+  function handleScroll() {
+    if (window.scrollY > 10) {
+      root.classList.add('pm-scrolled');
+    } else {
+      root.classList.remove('pm-scrolled');
+    }
+  }
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll(); // initial check (page reload ke case me)
+
+
   if (!root) return;
 
   function $(sel, ctx) { return (ctx || root).querySelector(sel); }

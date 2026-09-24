@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Kalora</title>
 
     <link rel="stylesheet" href="assets/css/globle.css">
     <link rel="stylesheet" href="assets/css/header.css">
@@ -27,7 +27,7 @@
             <!-- ======================= DESKTOP HEADER ======================= -->
             <div class="pm-desktop">
                 <div class="pm-desktop-top">
-                    <button class="pm-logo" type="button" data-pm-action="go-home">PALMONAS</button>
+                    <button class="pm-logo" type="button" data-pm-action="go-home">KALORA</button>
                     <div class="pm-search">
                         <input type="text" placeholder="Search products..." id="pmSearchDesktop" />
                         <button class="pm-icon-btn" style="width:auto;height:auto" type="button" data-pm-action="search" aria-label="Search">
@@ -131,7 +131,7 @@
                     <button class="pm-hamburger" type="button" id="pmHamburger" aria-label="Open menu" aria-expanded="false">
                         <span></span><span></span><span></span>
                     </button>
-                    <button class="pm-logo" type="button" style="font-size:19px;letter-spacing:4px" data-pm-action="go-home">PALMONAS</button>
+                    <button class="pm-logo" type="button" style="font-size:19px;letter-spacing:4px" data-pm-action="go-home">KALORA</button>
                     <div class="pm-right">
                         <button class="pm-icon-btn" type="button" data-pm-action="store-locator" aria-label="Store locator">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -184,7 +184,7 @@
             <!-- ======================= FULLSCREEN MOBILE MENU ======================= -->
             <div class="pm-menu-overlay" id="pmMenuOverlay" role="dialog" aria-modal="true" aria-label="Menu">
                 <div class="pm-menu-head">
-                    <span class="pm-logo" style="font-size:19px;letter-spacing:4px">PALMONAS</span>
+                    <span class="pm-logo" style="font-size:19px;letter-spacing:4px">KALORA</span>
                     <button class="pm-menu-close" type="button" id="pmMenuClose" aria-label="Close menu">&times;</button>
                 </div>
                 <div class="pm-menu-toggle-wrap">
