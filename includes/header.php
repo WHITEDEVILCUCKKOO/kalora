@@ -277,7 +277,7 @@ $brandLogoPath = "admin_access/uploads/brands/";
                         <button type="button" data-pm-cat="brands">Brands</button>
                         <div class="pm-sb-brands" id="pmSbBrands">
                             <?php foreach ($brands as $b) { ?>
-                                <a href="brand.php?slug=<?= urlencode($b['brand_slug']) ?>"><?= htmlspecialchars($b['brand_name']) ?></a>
+                                <a href="categorys_products.php?slug=<?= urlencode($b['brand_slug']) ?>"><?= htmlspecialchars($b['brand_name']) ?></a>
                             <?php } ?>
                             <?php if (empty($brands)) { ?><a href="#">No brands found</a><?php } ?>
                         </div>
