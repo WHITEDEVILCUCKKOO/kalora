@@ -19,7 +19,7 @@ if ($isLocal) {
     // Live / Hosting
     $host = "localhost";
     $user = "daurp0duction_kalora_user";
-    $password = "YOUR_DATABASE_PASSWORD";
+    $password = "kalora@@1327";
     $database = "daurp0duction_kalora_db";
 }
 
