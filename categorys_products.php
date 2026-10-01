@@ -1,3 +1,19 @@
+<?php include_once 'includes/header.php' ?>
+
+<style>
+    main {
+        overflow: hidden;
+    }
+</style>
+
+
+<!--
+=======================================================================================================================
+                                                        Main
+=======================================================================================================================
+ -->
+<main>
+
 <div class="klr-wrapper">
     <div class="klr-container">
         
@@ -239,7 +255,8 @@
     .klr-wrapper {
         font-family: Arial, sans-serif;
         /* background-color: #ffffff; */
-        background: #fdf6ea !important;
+
+                background-color: #FDF6EA;
         color: #111111;
         padding: 50px 20px;
         box-sizing: border-box;
@@ -271,9 +288,9 @@
 
     .klr-card {
         /* background-color: #ffffff; */
-         background: linear-gradient(145deg, #0f2c1f 0%, #071911 100%);
-         padding: 10px 10px;
-         border-radius: 15px;
+ background: linear-gradient(145deg, #0f2c1f 0%, #071911 100%);     
+ padding: 10px; 
+ border-radius: 10px;  
         position: relative;
         display: flex;
         flex-direction: column;
@@ -380,12 +397,12 @@
 
     .klr-current-price {
         font-weight: 600;
-        color: #fcfcfc;
+        color: #fffefe;
     }
 
     .klr-original-price {
         text-decoration: line-through;
-        color: #f7c7c7;
+        color: #fad1d1;
         font-size: 12px;
     }
 
@@ -467,7 +484,7 @@
         /* background-color: #111111; */
          background: linear-gradient(145deg, #0f2c1f 0%, #071911 100%);
         color: #ffffff;
-        border-color: #111111;
+        border-color: #111111;  
         transform: translateY(-2px);
     }
 
@@ -498,3 +515,10 @@
         }
     }
 </style>
+
+
+
+</main>
+
+
+<?php include_once 'includes/footter.php' ?>

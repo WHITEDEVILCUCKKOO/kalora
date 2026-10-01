@@ -1,0 +1,378 @@
+.custom-table-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.custom-table-wrapper {
+    overflow-x: auto;
+    background: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+    color: #374151;
+    min-width: 600px;
+}
+
+.custom-table th {
+    background-color: #0e7490;
+    /* Sidebar matching teal theme */
+    color: #ffffff;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 12px 16px;
+}
+
+.custom-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.custom-table tr:hover {
+    background-color: #f0fdf4;
+}
+
+.table-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 16px;
+}
+
+.btn-update {
+    background-color: #0e7490;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-update:hover {
+    background-color: #155e75;
+}
+
+.btn-delete {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.2s;
+    margin-left: 6px;
+}
+
+.btn-delete:hover {
+    background-color: #b91c1c;
+}
+
+.sdao97452 {
+    display: flex;
+    justify-content: space-between;
+        padding-bottom: 15px;
+
+
+
+    .ihdw9641 {
+        background: linear-gradient(135deg, #055096 0%, #0d8494 100%);
+        color: #fff;
+        padding: auto;
+        padding: 6px 20px;
+        height: max-content;
+        border-radius: 8px;
+        outline: none;
+        border: none;
+        transition: .25s ease;
+        font-size: 14px;
+        font-weight: 400;
+        text-transform: uppercase;
+        margin-right: 10px;
+    }
+
+    .ihdw9641:focus {
+        border: none;
+        outline: none;
+    }
+
+    .ihdw9641:hover {
+        transition: .25s ease;
+        transform: translateY(-3px) scale(1.1);
+    }
+
+    .ihdw9641:hover:active {
+        transition: .25s ease;
+        transform: translateY(-3px);
+
+    }
+}
+
+.kd-root-add-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    margin: 30px auto;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.07);
+    overflow: hidden;
+}
+
+/* Header */
+
+.kd-root-add-header {
+    padding: 25px 30px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #ffffff;
+}
+
+.kd-root-add-title {
+    margin: 0;
+    color: #111827;
+    font-size: 23px;
+    font-weight: 700;
+}
+
+.kd-root-add-subtitle {
+    margin: 7px 0 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* Form */
+
+.kd-root-add-form {
+    padding: 30px;
+}
+
+/* Grid */
+
+.kd-root-add-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 24px;
+}
+
+/* Field */
+
+.kd-root-field {
+    width: 100%;
+}
+
+.kd-root-full {
+    grid-column: 1 / -1;
+}
+
+/* Labels */
+
+.kd-root-field label {
+    display: block;
+    margin-bottom: 8px;
+    color: #1f2937;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.kd-root-field label span {
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+/* Inputs */
+
+.kd-root-field input,
+.kd-root-field textarea,
+.kd-root-field select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #111827;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+/* Input */
+
+.kd-root-field input,
+.kd-root-field select {
+    height: 46px;
+    padding: 0 14px;
+}
+
+/* Textarea */
+
+.kd-root-field textarea {
+    padding: 13px 14px;
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+/* Placeholder */
+
+.kd-root-field input::placeholder,
+.kd-root-field textarea::placeholder {
+    color: #9ca3af;
+}
+
+/* Focus */
+
+.kd-root-field input:focus,
+.kd-root-field textarea:focus,
+.kd-root-field select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+/* Select */
+
+.kd-root-field select {
+    cursor: pointer;
+}
+
+/* Actions */
+
+.kd-root-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Common Button */
+
+.kd-root-reset-btn,
+.kd-root-submit-btn {
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Reset */
+
+.kd-root-reset-btn {
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #374151;
+}
+
+.kd-root-reset-btn:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+/* Submit */
+
+.kd-root-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid #2563eb;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.kd-root-submit-btn:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.20);
+}
+
+.kd-root-submit-btn i {
+    font-size: 13px;
+}
+
+
+
+@media (max-width: 768px) {
+
+    .kd-root-add-wrapper {
+        margin: 20px 12px;
+        border-radius: 12px;
+    }
+
+    .kd-root-add-header {
+        padding: 20px;
+    }
+
+    .kd-root-add-title {
+        font-size: 20px;
+    }
+
+    .kd-root-add-form {
+        padding: 20px;
+    }
+
+    .kd-root-add-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .kd-root-full {
+        grid-column: auto;
+    }
+
+    .kd-root-form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .kd-root-reset-btn,
+    .kd-root-submit-btn {
+        width: 100%;
+    }
+}
+
+/* Root Name Error State */
+
+.kd-root-field.kd-root-has-error input {
+    border: 2px solid #dc2626 !important;
+    background: #fff5f5 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.10) !important;
+}
+
+.kd-root-field.kd-root-has-error label {
+    color: #dc2626;
+}
+
+.kd-root-error {
+    display: none;
+    margin-top: 7px;
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.kd-root-field.kd-root-has-error .kd-root-error {
+    display: block;
+}

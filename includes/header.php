@@ -22,12 +22,12 @@
 
     <header>
         <div class="pm-nav">
-            <div class="pm-topbar">Buy 1 Get 1 Free | Use Code - B1G1</div>
+            <div class="pm-topbar not_display">Buy Rs.99</div>
 
             <!-- ======================= DESKTOP HEADER ======================= -->
             <div class="pm-desktop">
                 <div class="pm-desktop-top">
-                    <button class="pm-logo" type="button" data-pm-action="go-home">KALORA</button>
+                    <button onclick="window.location.href='index.php'" class="pm-logo" type="button" data-pm-action="go-home">KALORA</button>
                     <div class="pm-search">
                         <input type="text" placeholder="Search products..." id="pmSearchDesktop" />
                         <button class="pm-icon-btn" style="width:auto;height:auto" type="button" data-pm-action="search" aria-label="Search">
@@ -38,32 +38,32 @@
                         </button>
                     </div>
                     <div class="pm-right">
-                        <button class="pm-pincode" type="button" data-pm-action="pincode">
+                        <button class="pm-pincode not_display   " type="button" data-pm-action="pincode">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z" />
                                 <circle cx="12" cy="10" r="3" />
                             </svg>
                             Enter Pincode
                         </button>
-                        <button class="pm-icon-btn" type="button" data-pm-action="store-locator" aria-label="Store locator">
+                        <button class="pm-icon-btn not_display" type="button" data-pm-action="store-locator" aria-label="Store locator">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 9l1-5h16l1 5" />
                                 <path d="M4 9v10h16V9" />
                                 <path d="M9 21v-6h6v6" />
                             </svg>
                         </button>
-                        <button class="pm-icon-btn" type="button" data-pm-action="wishlist" aria-label="Wishlist">
+                        <button class="pm-icon-btn not_display" type="button" data-pm-action="wishlist" aria-label="Wishlist">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
                             </svg>
                         </button>
-                        <button class="pm-icon-btn" type="button" data-pm-action="account" aria-label="Account">
+                        <button onclick="window.location.href='login.php'" class="pm-icon-btn" type="button" data-pm-action="account" aria-label="Account">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="8" r="4" />
                                 <path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6" />
                             </svg>
                         </button>
-                        <button class="pm-icon-btn" type="button" data-pm-action="cart" aria-label="Cart">
+                        <button class="pm-icon-btn not_display" type="button" data-pm-action="cart" aria-label="Cart">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="9" cy="21" r="1" />
                                 <circle cx="19" cy="21" r="1" />
@@ -72,51 +72,42 @@
                         </button>
                     </div>
                 </div>
-
+                
                 <div class="pm-links-row">
                     <nav class="pm-links" id="pmLinksDesktop">
+                        <button onclick="window.location.href='index.php'" type="button" data-pm-action="nav-link" >Home</button>
                         <button type="button" data-pm-action="nav-link">New Arrivals</button>
+                        <button type="button" data-pm-action="nav-link">HomeSellers</button>
                         <button type="button" data-pm-action="nav-link">Best Sellers</button>
-                        <button type="button" data-pm-action="nav-dropdown" data-pm-dropdown="fine-silver">Fine Silver
+                        <button class="not_display" type="button" data-pm-action="nav-dropdown" data-pm-dropdown="fine-silver">Fine Silver
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </button>
-                        <button type="button" data-pm-action="nav-dropdown" data-pm-dropdown="demifine">Demifine ® Collection
+                        <button class="not_display" type="button" data-pm-action="nav-dropdown" data-pm-dropdown="demifine">Demifine ® Collection
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </button>
-                        <button type="button" data-pm-action="nav-link">Offers</button>
-                        <button type="button" data-pm-action="nav-link">Shraddha's Favourite</button>
-                        <button type="button" data-pm-action="nav-link">Emily In Paris</button>
-                        <button type="button" data-pm-action="nav-dropdown" data-pm-dropdown="gifting">Gifting
+                        <button class="not_display" type="button" data-pm-action="nav-link">Offers</button>
+                        <button class="not_display" type="button" data-pm-action="nav-link">Shraddha's Favourite</button>
+                        <button class="not_display" type="button" data-pm-action="nav-link">Emily In Paris</button>
+                        <button type="button" data-pm-action="nav-dropdown" data-pm-dropdown="gifting">Brands
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </button>
                         <button type="button" data-pm-action="nav-link">POP</button>
-                        <button type="button" data-pm-action="nav-dropdown" data-pm-dropdown="about">About Us
+                        <button class="not_display" type="button" data-pm-action="nav-dropdown" data-pm-dropdown="about">About Us
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </button>
                     </nav>
-                    <div class="pm-dropdown-panel" data-pm-panel="fine-silver">
-                        <p style="font-size:13px;color:#888">Fine Silver submenu — apna content yaha add karo.</p>
-                    </div>
-                    <div class="pm-dropdown-panel" data-pm-panel="demifine">
-                        <p style="font-size:13px;color:#888">Demifine® Collection submenu — apna content yaha add karo.</p>
-                    </div>
-                    <div class="pm-dropdown-panel" data-pm-panel="gifting">
-                        <p style="font-size:13px;color:#888">Gifting submenu — apna content yaha add karo.</p>
-                    </div>
-                    <div class="pm-dropdown-panel" data-pm-panel="about">
-                        <p style="font-size:13px;color:#888">About Us submenu — apna content yaha add karo.</p>
-                    </div>
+                    
                 </div>
 
-                <div class="pm-pill-wrap">
+                <div class="pm-pill-wrap" style="display: none;">
                     <div class="pm-pill" id="pmPillDesktop">
                         <button type="button" class="is-active" data-pm-tab="home">Home</button>
                         <button type="button" data-pm-tab="demifine">Demifine® Jewellery</button>
@@ -133,19 +124,19 @@
                     </button>
                     <button class="pm-logo" type="button" style="font-size:19px;letter-spacing:4px" data-pm-action="go-home">KALORA</button>
                     <div class="pm-right">
-                        <button class="pm-icon-btn" type="button" data-pm-action="store-locator" aria-label="Store locator">
+                        <button class="pm-icon-btn not_display  " type="button" data-pm-action="store-locator" aria-label="Store locator">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 9l1-5h16l1 5" />
                                 <path d="M4 9v10h16V9" />
                                 <path d="M9 21v-6h6v6" />
                             </svg>
                         </button>
-                        <button class="pm-icon-btn" type="button" data-pm-action="wishlist" aria-label="Wishlist">
+                        <button class="pm-icon-btn not_display" type="button" data-pm-action="wishlist" aria-label="Wishlist">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
                             </svg>
                         </button>
-                        <button class="pm-icon-btn" type="button" data-pm-action="account" aria-label="Account">
+                        <button onclick="window.location.href='login.php'"  class="pm-icon-btn" type="button" data-pm-action="account" aria-label="Account">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="8" r="4" />
                                 <path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6" />
@@ -164,7 +155,7 @@
                         </button>
                     </div>
                 </div>
-                <button class="pm-mobile-pincode" type="button" data-pm-action="pincode">
+                <button class="pm-mobile-pincode not_display" type="button" data-pm-action="pincode">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z" />
                         <circle cx="12" cy="10" r="3" />
@@ -172,7 +163,7 @@
                     Enter Pincode
                 </button>
                 <div class="pm-mobile-divider"></div>
-                <div class="pm-pill-wrap">
+                <div class="pm-pill-wrap" style="display: none;">
                     <div class="pm-pill" id="pmPillMobile">
                         <button type="button" class="is-active" data-pm-tab="home">Home</button>
                         <button type="button" data-pm-tab="demifine">Demifine® Jewellery</button>
@@ -187,7 +178,7 @@
                     <span class="pm-logo" style="font-size:19px;letter-spacing:4px">KALORA</span>
                     <button class="pm-menu-close" type="button" id="pmMenuClose" aria-label="Close menu">&times;</button>
                 </div>
-                <div class="pm-menu-toggle-wrap">
+                <div class="pm-menu-toggle-wrap not_display">
                     <div class="pm-menu-toggle" id="pmMenuToggle">
                         <button type="button" class="is-active" data-pm-menu-tab="demifine">Demifine®</button>
                         <button type="button" data-pm-menu-tab="gold">Gold</button>

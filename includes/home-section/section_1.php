@@ -12,6 +12,7 @@
   display: block;
   width: 100%;
   overflow: hidden;
+  
 }
 
 /* viewport: saari slides ek hi jagah par, height = image ki height */
@@ -20,7 +21,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   width: 100%;
-  background: #7d6a55;
+  /* background: #7d6a55; */
   touch-action: pan-y pinch-zoom;
 }
 

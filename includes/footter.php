@@ -100,7 +100,8 @@
 <style>
     .klr-ft-wrapper {
         font-family: Arial, sans-serif;
-        background-color: #ffffff;
+        /* background-color: #ffffff; */
+        background: #fdf6ea !important;
         color: #222222;
         padding: 60px 20px 30px 20px;
         box-sizing: border-box;

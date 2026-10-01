@@ -1,6 +1,6 @@
 <div class="klr-rec-wrapper">
     <div class="klr-rec-container">
-        
+
         <h2 class="klr-rec-title">SHOP BY RECIPIENT</h2>
 
         <div class="klr-rec-grid">
@@ -12,7 +12,9 @@
                 <div class="klr-rec-footer">
                     <span class="klr-rec-label">Gifts For Her</span>
                     <span class="klr-rec-arrow">
-                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                        <svg viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
                     </span>
                 </div>
             </div>
@@ -25,7 +27,9 @@
                 <div class="klr-rec-footer">
                     <span class="klr-rec-label">Gifts For Him</span>
                     <span class="klr-rec-arrow">
-                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                        <svg viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
                     </span>
                 </div>
             </div>
@@ -37,7 +41,8 @@
 <style>
     .klr-rec-wrapper {
         font-family: Arial, sans-serif;
-        background-color: #ffffff;
+        /* background-color: #ffffff; */
+        background: #fdf6ea !important;
         color: #111111;
         padding: 60px 20px;
         box-sizing: border-box;
@@ -67,33 +72,41 @@
     }
 
     .klr-rec-card {
-        background-color: #f6f5f0;
+        /* background-color: #f6f5f0;*/
+        background: linear-gradient(145deg, #0f2c1f 0%, #071911 100%);
         border-radius: 4px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
         cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
         transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
         animation: klrRecScaleUp 0.6s ease-out backwards;
         padding: 18px;
         border-radius: 15px;
     }
-    
-    .klr-rec-card:nth-child(1) { animation-delay: 0.1s; }
-    .klr-rec-card:nth-child(2) { animation-delay: 0.2s; }
-    
+
+    .klr-rec-card:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .klr-rec-card:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
     .klr-rec-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     }
-    
+
     .klr-rec-img-box {
         position: relative;
         width: 100%;
-        padding-top: 75%; /* 4:3 Aspect Ratio */
+        padding-top: 75%;
+        /* 4:3 Aspect Ratio */
         overflow: hidden;
-        background-color: #eae6df;
+        /* background-color: #eae6df; */
+        background-color: #FDF6EA;
         border-radius: 15px;
     }
 
@@ -117,14 +130,15 @@
         justify-content: center;
         align-items: center;
         gap: 8px;
-        background-color: #f7f5f0;
+        /* background-color: #f7f5f0; */
+        background: linear-gradient(145deg, #0f2c1f 0%, #071911 100%);
     }
 
     .klr-rec-label {
-        font-size: 14px;
+        font-size: 18px;
         font-weight: 500;
         letter-spacing: 0.5px;
-        color: #1a1a1a;
+        color: #fffefe;
     }
 
     .klr-rec-arrow {
@@ -149,13 +163,27 @@
     }
 
     @keyframes klrRecFadeDown {
-        from { opacity: 0; transform: translateY(-15px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(-15px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @keyframes klrRecScaleUp {
-        from { opacity: 0; transform: scale(0.97); }
-        to { opacity: 1; transform: scale(1); }
+        from {
+            opacity: 0;
+            transform: scale(0.97);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
     }
 
     @media (max-width: 768px) {
@@ -163,6 +191,7 @@
             grid-template-columns: 1fr;
             gap: 24px;
         }
+
         .klr-rec-title {
             font-size: 12px;
         }

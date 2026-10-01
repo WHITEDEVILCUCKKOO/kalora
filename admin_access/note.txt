@@ -1,0 +1,4 @@
+ data-sql-check 
+
+
+ ya laga jaruri hai har input pe 

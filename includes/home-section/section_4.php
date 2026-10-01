@@ -55,7 +55,8 @@
 <style>
     .fey-wrapper {
         font-family: Arial, sans-serif;
-        background-color: #ffffff;
+        /* background-color: #ffffff; */
+        background: #fdf6ea !important;
         color: #111111;
         padding: 60px 0;
         box-sizing: border-box;
