@@ -14,7 +14,7 @@
         <div class="kalora-cards-grid">
             
             <!-- Card 1: Under ₹99 -->
-            <div class="kalora-price-card" onclick="window.location.href='categorys_products.php'">
+            <div class="kalora-price-card" onclick="window.location.href='offer_products.php?price=99'">
                 <div class="kalora-card-glow"></div>
                 <div class="kalora-tag-shape">
                     <div class="kalora-tag-ribbon"></div>
@@ -31,7 +31,7 @@
             </div>
 
             <!-- Card 2: Under ₹199 -->
-            <div class="kalora-price-card" onclick="openKaloraModal('Under ₹199 Collection', '199')">
+            <div class="kalora-price-card" onclick="window.location.href='offer_products.php?price=199'">
                 <div class="kalora-card-glow"></div>
                 <div class="kalora-tag-shape">
                     <div class="kalora-tag-ribbon"></div>
@@ -48,7 +48,7 @@
             </div>
 
             <!-- Card 3: Under ₹299 -->
-            <div class="kalora-price-card" onclick="openKaloraModal('Under ₹299 Collection', '299')">
+            <div class="kalora-price-card" onclick="window.location.href='offer_products.php?price=299'">
                 <div class="kalora-card-glow"></div>
                 <div class="kalora-tag-shape">
                     <div class="kalora-tag-ribbon"></div>
@@ -65,7 +65,7 @@
             </div>
 
             <!-- Card 4: Under ₹299 -->
-            <div class="kalora-price-card" onclick="openKaloraModal('Under ₹399 Collection', '399')">
+            <div class="kalora-price-card" onclick="window.location.href='offer_products.php?price=399'">
                 <div class="kalora-card-glow"></div>
                 <div class="kalora-tag-shape">
                     <div class="kalora-tag-ribbon"></div>
@@ -82,7 +82,7 @@
             </div>
 
             <!-- Card 5: Under ₹499 -->
-            <div class="kalora-price-card" onclick="openKaloraModal('Under ₹499 Collection', '499')">
+            <div class="kalora-price-card" onclick="window.location.href='offer_products.php?price=499'">
                 <div class="kalora-card-glow"></div>
                 <div class="kalora-tag-shape">
                     <div class="kalora-tag-ribbon"></div>
@@ -234,7 +234,7 @@
 
     @media (max-width: 640px) {
         .kalora-cards-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
         }
     }
 

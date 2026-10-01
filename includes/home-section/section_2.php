@@ -404,7 +404,7 @@
       ?>
 
           <!-- ===== CATEGORY 1 ===== -->
-          <a class="pmcat__item" href="categorys_products.php?cate=<?php echo htmlspecialchars($brand_slug); ?>">
+          <a class="pmcat__item" href="categorys_products.php?slug=<?php echo htmlspecialchars($brand_slug); ?>">
             <span class="pmcat__media"><img class="pmcat__img" src="<?php echo htmlspecialchars($brand_image); ?>" alt="Rings" loading="lazy" draggable="false"></span>
             <span class="pmcat__label"><?php echo htmlspecialchars($barnd_name); ?></span>
           </a>

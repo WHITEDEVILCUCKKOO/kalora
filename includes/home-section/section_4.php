@@ -1,51 +1,59 @@
+<?php
+include "admin_access/db_config.php";
+
+?>
+
 <div class="fey-wrapper">
     <div class="fey-container">
-        
+
         <div class="fey-carousel-stage" id="feyStage">
             <button class="fey-arrow fey-arrow-left" id="feyPrevBtn" aria-label="Previous">
-                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                <svg viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
             </button>
 
             <div class="fey-cards-container" id="feyCardsContainer">
-                <!-- Card 1 -->
-                <div class="fey-card" data-index="0">
-                    <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=600&auto=format&fit=crop" alt="Office Wear" draggable="false">
-                    <div class="fey-overlay">
-                        <span class="fey-card-title">OFFICE WEAR</span>
-                    </div>
-                </div>
-                <!-- Card 2 -->
-                <div class="fey-card" data-index="1">
-                    <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=600&auto=format&fit=crop" alt="Daily Wear" draggable="false">
-                    <div class="fey-overlay">
-                        <span class="fey-card-title">DAILY WEAR</span>
-                    </div>
-                </div>
-                <!-- Card 3 -->
-                <div class="fey-card" data-index="2">
-                    <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=600&auto=format&fit=crop" alt="Party Wear" draggable="false">
-                    <div class="fey-overlay">
-                        <span class="fey-card-title">PARTY WEAR</span>
-                    </div>
-                </div>
-                <!-- Card 4 -->
-                <div class="fey-card" data-index="3">
-                    <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=600&auto=format&fit=crop" alt="Day Out" draggable="false">
-                    <div class="fey-overlay">
-                        <span class="fey-card-title">DAY OUT</span>
-                    </div>
-                </div>
-                <!-- Card 5 -->
-                <div class="fey-card" data-index="4">
-                    <img src="https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=600&auto=format&fit=crop" alt="Date Night" draggable="false">
-                    <div class="fey-overlay">
-                        <span class="fey-card-title">DATE NIGHT</span>
-                    </div>
-                </div>
+
+                <?php
+                $qasdas = "SELECT * FROM `products` ORDER BY RAND() LIMIT 6";
+                $result = mysqli_query($mydb, $qasdas);
+                ?>
+
+                <?php if ($result && mysqli_num_rows($result) > 0): ?>
+
+                    <?php $index = 0; ?>
+
+                    <?php while ($product = mysqli_fetch_assoc($result)): ?>
+
+                        <div class="fey-card" data-index="<?php echo $index; ?>">
+
+                            <img
+                                src="<?php echo htmlspecialchars($product['product_image'] ?? ''); ?>"
+                                alt="<?php echo htmlspecialchars($product['product_name'] ?? 'Product'); ?>"
+                                draggable="false">
+
+                            <div class="fey-overlay">
+                                <span class="fey-card-title">
+                                    <?php echo htmlspecialchars($product['product_name'] ?? 'Product'); ?>
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <?php $index++; ?>
+
+                    <?php endwhile; ?>
+
+                <?php endif; ?>
+
+              
             </div>
 
             <button class="fey-arrow fey-arrow-right" id="feyNextBtn" aria-label="Next">
-                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                <svg viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
             </button>
         </div>
 
@@ -105,7 +113,7 @@
         overflow: hidden;
         background-color: #eaeaea;
         transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease, filter 0.6s ease, width 0.6s ease, height 0.6s ease;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
         opacity: 0.4;
         filter: brightness(0.7);
         pointer-events: none;
@@ -127,7 +135,7 @@
         opacity: 1;
         filter: brightness(1);
         transform: translateX(0) scale(1) rotate(0);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
         pointer-events: auto;
     }
 
@@ -136,7 +144,7 @@
         z-index: 3;
         opacity: 0.85;
         filter: brightness(0.9);
-        transform: translateX(-340px) scale(0.88)  rotate3d(0, 1, 0, 30deg);
+        transform: translateX(-340px) scale(0.88) rotate3d(0, 1, 0, 30deg);
         pointer-events: auto;
     }
 
@@ -168,7 +176,7 @@
         left: 0;
         width: 100%;
         height: 35%;
-        background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%);
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
         display: flex;
         align-items: flex-end;
         justify-content: center;
@@ -181,7 +189,7 @@
         letter-spacing: 3px;
         font-weight: 500;
         text-align: center;
-        border-bottom: 1.5px solid #ffffff;
+        /* border-bottom: 1.5px solid #ffffff; */
         padding-bottom: 4px;
         text-transform: uppercase;
     }
@@ -200,7 +208,7 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         z-index: 20;
         transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
     }
@@ -232,9 +240,11 @@
         .fey-card.fey-prev {
             transform: translateX(-260px) scale(0.85);
         }
+
         .fey-card.fey-next {
             transform: translateX(260px) scale(0.85);
         }
+
         .fey-card.fey-active {
             width: 320px;
             height: 440px;
@@ -242,14 +252,19 @@
     }
 
     @media (max-width: 768px) {
-        .fey-card.fey-prev, .fey-card.fey-far-prev {
+
+        .fey-card.fey-prev,
+        .fey-card.fey-far-prev {
             transform: translateX(-180px) scale(0.75);
             opacity: 0;
         }
-        .fey-card.fey-next, .fey-card.fey-far-next {
+
+        .fey-card.fey-next,
+        .fey-card.fey-far-next {
             transform: translateX(180px) scale(0.75);
             opacity: 0;
         }
+
         .fey-card.fey-active {
             width: 280px;
             height: 400px;
@@ -266,7 +281,7 @@
 
     let feyCurrentIndex = 2;
     let feyAutoPlayTimer;
-    
+
     let feyStartX = 0;
     let feyIsDragging = false;
     let feyThreshold = 40; // Balanced threshold for precise control
@@ -274,7 +289,7 @@
     function feyUpdateCarousel() {
         feyCards.forEach((card, index) => {
             card.className = 'fey-card';
-            
+
             let total = feyCards.length;
             let diff = (index - feyCurrentIndex + total) % total;
 
@@ -338,7 +353,9 @@
     feyCardsContainer.addEventListener('touchstart', (e) => {
         feyStartX = e.touches[0].clientX;
         clearInterval(feyAutoPlayTimer);
-    }, {passive: true});
+    }, {
+        passive: true
+    });
 
     feyCardsContainer.addEventListener('touchend', (e) => {
         let feyDiffX = e.changedTouches[0].clientX - feyStartX;
