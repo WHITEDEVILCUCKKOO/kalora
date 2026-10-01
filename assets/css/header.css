@@ -8,8 +8,16 @@ header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: #fff;
+  /* background: #fff; */
+  background: #fdf6ea !important;
 }
+
+
+.not_display
+{
+  display: none !important;
+}
+
 
 /* Topbar + Pill tabs ko smoothly collapse karne ke liye */
 .pm-nav .pm-topbar,
@@ -182,6 +190,7 @@ header {
   align-items: center;
   border: 1px solid var(--pm-grey-border);
   border-radius: 999px;
+  width: 100%;
   padding: 0 16px;
   transition: border-color 0.2s ease;
 }
@@ -236,7 +245,7 @@ header {
 
   .pm-nav .pm-desktop-top .pm-search {
     width: 100%;
-    max-width: 620px;
+    /* max-width: 620px; */
   }
 
   .pm-nav .pm-desktop-top .pm-right {

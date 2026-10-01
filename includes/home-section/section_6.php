@@ -37,7 +37,8 @@
 <style>
     .klr-rec-wrapper {
         font-family: Arial, sans-serif;
-        background-color: #ffffff;
+        /* background-color: #ffffff; */
+        background: #fdf6ea !important;
         color: #111111;
         padding: 60px 20px;
         box-sizing: border-box;

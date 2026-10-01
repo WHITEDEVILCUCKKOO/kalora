@@ -26,7 +26,8 @@
 <style>
     .klr-vid-wrapper {
         font-family: Arial, sans-serif;
-        background-color: #ffffff;
+        /* background-color: #ffffff; */
+        background: #fdf6ea !important; 
         color: #111111;
         padding: 40px 0px;
         box-sizing: border-box;

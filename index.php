@@ -18,6 +18,7 @@
     <?php require_once __DIR__ . '/includes/home-section/section_1.php' ?>
     <!-- section 2 -->
     <?php require_once __DIR__ . '/includes/home-section/section_2.php' ?>
+    <?php require_once __DIR__ . '/includes/home-section/section_2_0.php' ?>
     <!-- section 3 -->
     <?php require_once __DIR__ . '/includes/home-section/section_3.php' ?>
     <!-- section 6 -->
@@ -28,20 +29,7 @@
     <?php require_once __DIR__ . '/includes/home-section/section_5.php' ?>
     <!-- section video -->
     <?php require_once __DIR__ . '/includes/home-section/section_video.php' ?>
-    <!-- section 6 -->
-    <?php require_once __DIR__ . '/includes/home-section/section_6.php' ?>
-    <!-- section 7 -->
-    <?php require_once __DIR__ . '/includes/home-section/section_7.php' ?>
-    <!-- section video 2 -->
-    <?php require_once __DIR__ . '/includes/home-section/section_video_2.php' ?>
-    <!-- section 8 -->
-    <?php require_once __DIR__ . '/includes/home-section/section_8.php' ?>
-    <!-- section 9 -->
-    <?php require_once __DIR__ . '/includes/home-section/section_9.php' ?>
-
-
-
-
+  
 
 
 </main>
