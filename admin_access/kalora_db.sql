@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 01, 2026 at 05:34 AM
+-- Generation Time: Oct 01, 2026 at 09:09 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -108,7 +108,7 @@ CREATE TABLE `global_info` (
 --
 
 INSERT INTO `global_info` (`globle_info_id`, `facion_icon`, `logo`, `globle_call_phone`, `globle_whatsapp`, `footer_address`, `footer_email_1`, `footer_email_2`, `footer_phone_1`, `footer_phone_2`, `globle_instagram`, `globle_yt`, `globle_linkedin`, `map_link`) VALUES
-(1, 'favicon.jpeg', 'shivam_uniform_logo-removebg-preview.png', '', '', '', '', '', '', '', 'https://www.instagram.com/', 'https://www.youtube.com/', 'https://in.linkedin.com/', '');
+(1, 'facion_icon_20261001203125_2584a0.png', 'logo_20261001203125_ec2535.png', '', '', '', '', '', '', '', 'https://www.instagram.com/', 'https://www.youtube.com/', 'https://in.linkedin.com/', '');
 
 -- --------------------------------------------------------
 
@@ -163,6 +163,23 @@ CREATE TABLE `products` (
   `updated_at` varchar(113) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`product_id`, `root_id`, `brand_id`, `product_name`, `product_slug`, `product_sku`, `product_color`, `product_size`, `product_image`, `product_description`, `meta_title`, `meta_description`, `meta_keywords`, `canonical_url`, `og_title`, `og_description`, `product_other_info_desc`, `original_price`, `sale_price`, `discount_visibility`, `product_status`, `product_views`, `created_at`, `updated_at`) VALUES
+(1, 36, 46, 'Classic Textured Sparkle Silver Bracelet', 'classic-textured-sparkle-silver-bracelet', '', 'Silver', 'Standard / Free Size', 'assets/products/product_1/main.jpeg', 'Elegant silver bracelet featuring a unique textured glitter finish on top and a smooth glossy band underneath, perfect for everyday wear and special occasions.', 'Classic Textured Sparkle Silver Bracelet', 'Elegant silver bracelet featuring a unique textured glitter finish on top and a smooth glossy band underneath, perfect for everyday wear and special occasions.', 'silver bracelet, sparkle bracelet, kalora bracelet, party wear silver bangle, stylish hand jewellery', '', 'Classic Textured Sparkle Silver Bracelet', 'Elegant silver bracelet featuring a unique textured glitter finish on top and a smooth glossy band underneath, perfect for everyday wear and special occasions.', 'Premium quality silver-plated finish with a sparkling glitter texture. Skin-friendly, lightweight, and designed to complement both ethnic and western outfits.', 399.00, 99.00, 'Hide', 'Active', 0, '1790880635', ''),
+(2, 36, 46, 'Golden Multi-Color Heart Charm Bracelet', 'golden-multi-color-heart-charm-bracelet', '', 'Gold / Multi-Color', 'Standard / Free Size', 'assets/products/product_2/main.jpeg', 'Elegant golden finish bracelet featuring hanging multi-colored heart charms, adding a playful yet sophisticated touch to your everyday look.', 'Golden Multi-Color Heart Charm Bracelet', 'Elegant golden finish bracelet featuring hanging multi-colored heart charms, adding a playful yet sophisticated touch to your everyday look.', '', '', 'Golden Multi-Color Heart Charm Bracelet', 'Elegant golden finish bracelet featuring hanging multi-colored heart charms, adding a playful yet sophisticated touch to your everyday look.', 'Premium gold-plated finish with colorful dangling heart-shaped stone charms. Lightweight, skin-friendly, and perfect for gifting or casual wear.', 500.00, 199.00, 'Hide', 'Active', 0, '1790880731', ''),
+(3, 36, 46, 'Golden White Stone Heart Charm Bracelet', 'golden-white-stone-heart-charm-bracelet', '', 'Gold / White', 'Standard / Free Size', 'assets/products/product_3/main.jpeg', 'Elegant golden finish bracelet featuring hanging sparkling white stone heart charms, adding a graceful and charming touch to your wrist.', 'Golden White Stone Heart Charm Bracelet', 'Elegant golden finish bracelet featuring hanging sparkling white stone heart charms, adding a graceful and charming touch to your wrist.', '', '', 'Golden White Stone Heart Charm Bracelet', 'Elegant golden finish bracelet featuring hanging sparkling white stone heart charms, adding a graceful and charming touch to your wrist.', 'Premium gold-plated finish with dangling heart-shaped white crystal charms. Lightweight, skin-friendly, and ideal for daily wear or gifting.', 900.00, 298.95, 'Hide', 'Active', 0, '1790880800', ''),
+(4, 36, 46, 'Golden Green Oval Stone Charm Bracelet', 'golden-green-oval-stone-charm-bracelet', '', 'Gold / Green', 'Standard / Free Size', 'assets/products/product_4/main.jpeg', 'Elegant golden finish bracelet featuring hanging vibrant green oval stone charms, adding a chic and sophisticated touch to your wrist.', 'Golden Green Oval Stone Charm Bracelet', 'Elegant golden finish bracelet featuring hanging vibrant green oval stone charms, adding a chic and sophisticated touch to your wrist.', '', '', 'Golden Green Oval Stone Charm Bracelet', 'Elegant golden finish bracelet featuring hanging vibrant green oval stone charms, adding a chic and sophisticated touch to your wrist.', 'Premium gold-plated finish with dangling oval-shaped green gemstone charms. Lightweight, skin-friendly, and perfect for party wear or daily styling.', 299.00, 299.00, 'Hide', 'Active', 0, '1790880882', ''),
+(5, 36, 46, 'Modern Golden Nail Design Bangle Bracelet', 'modern-golden-nail-design-bangle-bracelet', '', 'Gold', 'Standard / Free Size', 'assets/products/product_5/main.jpeg', 'Chic and contemporary golden finish bangle designed in a trendy nail motif, offering a bold and stylish statement for modern fashion wear.', 'Modern Golden Nail Design Bangle Bracelet', 'Chic and contemporary golden finish bangle designed in a trendy nail motif, offering a bold and stylish statement for modern fashion wear.', '', '', 'Modern Golden Nail Design Bangle Bracelet', 'Chic and contemporary golden finish bangle designed in a trendy nail motif, offering a bold and stylish statement for modern fashion wear.', 'Premium gold-plated finish with a unique structural nail design. Lightweight, durable, skin-friendly, and perfect for party or casual wear.', 350.00, 299.00, 'Hide', 'Active', 0, '1790880983', ''),
+(6, 36, 46, 'Golden Evil Eye Charm Wire Bracelet', 'golden-evil-eye-charm-wire-bracelet', '', 'Gold / Blue & White', 'Standard / Free Size', 'assets/products/product_6/main.jpeg', 'Stylish golden wire-style cable bracelet adorned with protective blue and white evil eye charms and sparkling crystal spacers, combining elegance and symbolic protection.', 'Golden Evil Eye Charm Wire Bracelet', 'Stylish golden wire-style cable bracelet adorned with protective blue and white evil eye charms and sparkling crystal spacers, combining elegance and symbolic p', '', '', 'Golden Evil Eye Charm Wire Bracelet', 'Stylish golden wire-style cable bracelet adorned with protective blue and white evil eye charms and sparkling crystal spacers, combining elegance and symbolic p', 'Premium gold-plated finish with durable flexible wire design, featuring evil eye beads and crystal accents. Skin-friendly, lightweight, and perfect for daily wear.', 450.00, 399.00, 'Hide', 'Active', 0, '1790881052', ''),
+(7, 36, 46, 'Golden Crystal Evil Eye & Drop Charm Wire Bracelet', 'golden-crystal-evil-eye-drop-charm-wire-bracelet', '', 'Gold / Blue & White', 'Standard / Free Size', 'assets/products/product_7/main.jpeg', 'Elegant golden wire-style cable bracelet featuring a centerpiece sparkling crystal evil eye charm, accompanied by matching evil eye and blue drop charms.', 'Golden Crystal Evil Eye & Drop Charm Wire Bracelet', 'Elegant golden wire-style cable bracelet featuring a centerpiece sparkling crystal evil eye charm, accompanied by matching evil eye and blue drop charms.', '', '', 'Golden Crystal Evil Eye & Drop Charm Wire Bracelet', 'Elegant golden wire-style cable bracelet featuring a centerpiece sparkling crystal evil eye charm, accompanied by matching evil eye and blue drop charms.', 'Premium gold-plated flexible cable design embellished with encrusted crystal stoppers, evil eye motifs, and a teardrop charm. Lightweight, skin-friendly, and stylish.', 450.00, 399.00, 'Hide', 'Active', 0, '1790881122', ''),
+(8, 36, 46, 'Golden Screw & Stone Engraved Bangle Bracelet', 'golden-screw-stone-engraved-bangle-bracelet', '', 'Gold', 'Standard / Free Size', 'assets/products/product_8/main.jpeg', 'Elegant golden finish bangle featuring classic engraved screw motifs, sparkling embedded stones, and inner brand markings for a luxurious look.', 'Golden Screw & Stone Engraved Bangle Bracelet', 'Elegant golden finish bangle featuring classic engraved screw motifs, sparkling embedded stones, and inner brand markings for a luxurious look.', '', '', 'Golden Screw & Stone Engraved Bangle Bracelet', 'Elegant golden finish bangle featuring classic engraved screw motifs, sparkling embedded stones, and inner brand markings for a luxurious look.', 'Premium gold-plated finish with detailed screw engravings and crystal stone accents. Lightweight, skin-friendly, and perfect for party or daily wear.', 500.00, 298.99, 'Hide', 'Active', 0, '1790881184', ''),
+(10, 36, 46, 'Golden Diagonal Crystal Accented Bangle Bracelet', 'golden-diagonal-crystal-accented-bangle-bracelet', '', 'Gold', 'Standard / Free Size', 'assets/products/product_10/main.jpeg', 'Elegant golden finish bangle featuring a stylish diagonal groove embedded with sparkling tiny crystals, adding a touch of sophisticated glamour to your outfit.', 'Golden Diagonal Crystal Accented Bangle Bracelet', 'Elegant golden finish bangle featuring a stylish diagonal groove embedded with sparkling tiny crystals, adding a touch of sophisticated glamour to your outfit.', '', '', 'Golden Diagonal Crystal Accented Bangle Bracelet', 'Elegant golden finish bangle featuring a stylish diagonal groove embedded with sparkling tiny crystals, adding a touch of sophisticated glamour to your outfit.', 'Premium gold-plated finish with polished smooth surfaces and a sparkling diagonal crystal line. Lightweight, skin-friendly, and perfect for parties and daily wear.', 1200.00, 199.00, 'Hide', 'Active', 0, '1790881278', ''),
+(11, 36, 46, 'Golden Floral Link Chain Bracelet', 'golden-floral-link-chain-bracelet', '', 'Gold', 'Standard / Free Size', 'assets/products/product_11/main.jpeg', 'Delicate and charming golden bracelet crafted with interconnected floral motifs, adding a sweet and graceful touch to your everyday outfits.', 'Golden Floral Link Chain Bracelet', 'Delicate and charming golden bracelet crafted with interconnected floral motifs, adding a sweet and graceful touch to your everyday outfits.', '', '', 'Golden Floral Link Chain Bracelet', 'Delicate and charming golden bracelet crafted with interconnected floral motifs, adding a sweet and graceful touch to your everyday outfits.', 'Premium gold-plated finish featuring a continuous linked flower design. Lightweight, skin-friendly, and perfect for casual or party wear.', 520.00, 399.00, 'Hide', 'Active', 0, '1790881345', ''),
+(15, 36, 46, 'Golden Green Oval Stone Charm Bracelet 499', 'golden-green-oval-stone-charm-bracelet-499', '', 'Gold / Green', 'Standard / Free Size', 'assets/products/product_15/main.jpeg', 'Elegant golden finish bracelet featuring hanging vibrant green oval stone charms, adding a chic and sophisticated touch to your wrist.', 'Golden Green Oval Stone Charm Bracelet 499', 'Elegant golden finish bracelet featuring hanging vibrant green oval stone charms, adding a chic and sophisticated touch to your wrist.', '', '', 'Golden Green Oval Stone Charm Bracelet 499', 'Elegant golden finish bracelet featuring hanging vibrant green oval stone charms, adding a chic and sophisticated touch to your wrist.', 'Premium gold-plated finish with dangling oval-shaped green gemstone charms. Lightweight, skin-friendly, and perfect for party wear or daily styling.', 1989.00, 898.99, 'Hide', 'Active', 0, '1790881593', '');
+
 -- --------------------------------------------------------
 
 --
@@ -194,6 +211,23 @@ CREATE TABLE `products_images` (
   `product_brochure` varchar(255) NOT NULL,
   `product_video_1` varchar(233) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `products_images`
+--
+
+INSERT INTO `products_images` (`product_id`, `product_img_1`, `product_img_1_alt`, `product_img_2`, `product_img_2_alt`, `product_img_3`, `product_img_3_alt`, `product_img_4`, `product_img_4_alt`, `product_img_5`, `product_img_5_alt`, `product_img_6`, `product_img_6_alt`, `product_img_7`, `product_img_7_alt`, `product_img_8`, `product_img_8_alt`, `product_img_9`, `product_img_9_alt`, `product_img_10`, `product_img_10_alt`, `product_brochure`, `product_video_1`) VALUES
+(1, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
+(2, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
+(3, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
+(4, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
+(5, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
+(6, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
+(7, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
+(8, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
+(10, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
+(11, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
+(15, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -299,7 +333,7 @@ ALTER TABLE `login_users`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `root_categories`

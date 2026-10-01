@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 28, 2026 at 05:09 AM
+-- Generation Time: Oct 01, 2026 at 05:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `shivamuniform_db`
+-- Database: `kalora_db`
 --
 
 -- --------------------------------------------------------
@@ -73,7 +73,12 @@ CREATE TABLE `brands` (
 --
 
 INSERT INTO `brands` (`brand_id`, `root_id`, `brand_name`, `brand_slug`, `brand_logo`, `brand_description`, `meta_title`, `meta_description`, `meta_keywords`, `brand_status`, `created_at`, `updated_at`) VALUES
-(25, 27, 'asdasd', 'asdasd', 'assets/brands/asdasd-1790512031.png', 'ghuyg', 'asdasd', 'ghuyg', '54465', 'Active', '1790512031', '');
+(42, 36, 'Rings', 'rings', 'assets/brands/rings-1790753869.png', 'Discover the epitome of elegance with KALORA’s exquisite collection of rings. From timeless minimalist bands to statement gemstone masterpieces, each piece is meticulously crafted to celebrate your unique moments, add a touch of luxury, and complement your everyday grace.', 'Rings', 'Discover the epitome of elegance with KALORA’s exquisite collection of rings. From timeless minimalist bands to statement gemstone masterpieces, each piece is m', 'rings, buy rings online, luxury jewellery rings, designer rings for women, diamond rings, gold bands, silver rings, fashion rings KALORA', 'Active', '1790753869', ''),
+(43, 36, 'Earrings', 'earrings', 'assets/brands/earrings-1790753924.png', 'Frame your face with brilliance using KALORA’s stunning collection of earrings. From delicate everyday studs and classic jhumkas to glamorous chandelier drops, our designs blend traditional craftsmanship with contemporary flair to make every look unforgettable.', 'Earrings', 'Frame your face with brilliance using KALORA’s stunning collection of earrings. From delicate everyday studs and classic jhumkas to glamorous chandelier drops,', 'earrings, buy earrings online, designer earrings, luxury jhumkas, diamond studs, gold earrings, silver hoops, fashion earrings KALORA', 'Active', '1790753924', ''),
+(44, 36, 'Pendants', 'pendants', '', 'Adorn your neckline with grace and meaning through KALORA’s exquisite pendant collection. From minimalist everyday charms to breathtaking statement gemstones, each piece is designed to capture attention and tell your unique personal story.', 'Pendants', 'Adorn your neckline with grace and meaning through KALORA’s exquisite pendant collection. From minimalist everyday charms to breathtaking statement gemstones, e', 'pendants, buy pendants online, luxury jewellery pendants, designer necklaces, gold pendants, diamond charms, silver pendants, fashion jewellery KALORA', 'Active', '1790753966', ''),
+(45, 36, 'Pendant Set', 'pendant-set', '', 'Experience seamless elegance with KALORA’s coordinated pendant sets. Featuring harmoniously matched pendants and earrings, each set is meticulously crafted to bring effortless sophistication and timeless luxury to your special occasions and everyday wear.', 'Pendant Set', 'Experience seamless elegance with KALORA’s coordinated pendant sets. Featuring harmoniously matched pendants and earrings, each set is meticulously crafted to b', 'pendant set, buy pendant sets online, matching jewellery sets, designer necklaces, luxury pendant sets, gold jewellery sets, diamond pendant sets KALORA', 'Active', '1790753996', ''),
+(46, 36, 'Bracelets', 'bracelets', 'assets/brands/bracelets-1790754050.png', 'Elevate your wrist with KALORA’s captivating collection of bracelets. From sleek minimalist cuffs and delicate charm chains to sparkling statement pieces, our bracelets are designed to add a touch of effortless luxury and grace to every gesture.', 'Bracelets', 'Elevate your wrist with KALORA’s captivating collection of bracelets. From sleek minimalist cuffs and delicate charm chains to sparkling statement pieces, our b', 'bracelets, buy bracelets online, luxury wrist jewellery, designer cuffs, gold bracelets, silver charm bracelets, diamond tennis bracelets KALORA', 'Active', '1790754050', ''),
+(47, 36, 'Watches', 'watches', '', 'Blend precision timing with timeless sophistication through KALORA’s exquisite watch collection. Featuring luxury timepieces crafted with meticulous attention to detail, sleek metallic finishes, and sophisticated designs, these watches are the ultimate statement of style and elegance.', 'Watches', 'Blend precision timing with timeless sophistication through KALORA’s exquisite watch collection. Featuring luxury timepieces crafted with meticulous attention t', 'watches, buy luxury watches online, designer timepieces, elegant wristwatches, fashion watches, premium watches for women and men KALORA', 'Active', '1790754079', '');
 
 -- --------------------------------------------------------
 
@@ -103,7 +108,7 @@ CREATE TABLE `global_info` (
 --
 
 INSERT INTO `global_info` (`globle_info_id`, `facion_icon`, `logo`, `globle_call_phone`, `globle_whatsapp`, `footer_address`, `footer_email_1`, `footer_email_2`, `footer_phone_1`, `footer_phone_2`, `globle_instagram`, `globle_yt`, `globle_linkedin`, `map_link`) VALUES
-(1, 'favicon.jpeg', 'shivam_uniform_logo-removebg-preview.png', '+919582929878', '919582929878', 'Plot No. 3948, Balaji Mandir Road, Near Rao Rattan Singh Farm, Ballabgarh, Faridabad', 'shivamuniform605@gmail.com', '', '+919582929878', '', 'https://www.instagram.com/', 'https://www.youtube.com/', 'https://in.linkedin.com/', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3512.1286650361676!2d77.3205404!3d28.3247077!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cdbdec0a32f57%3A0xb0baac9c88890f7d!2sSHIVAM%20UNIFORM!5e0!3m2!1sen!2sin!4v1790403971744!5m2!1sen!2sin');
+(1, 'favicon.jpeg', 'shivam_uniform_logo-removebg-preview.png', '', '', '', '', '', '', '', 'https://www.instagram.com/', 'https://www.youtube.com/', 'https://in.linkedin.com/', '');
 
 -- --------------------------------------------------------
 
@@ -158,14 +163,6 @@ CREATE TABLE `products` (
   `updated_at` varchar(113) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `products`
---
-
-INSERT INTO `products` (`product_id`, `root_id`, `brand_id`, `product_name`, `product_slug`, `product_sku`, `product_color`, `product_size`, `product_image`, `product_description`, `meta_title`, `meta_description`, `meta_keywords`, `canonical_url`, `og_title`, `og_description`, `product_other_info_desc`, `original_price`, `sale_price`, `discount_visibility`, `product_status`, `product_views`, `created_at`, `updated_at`) VALUES
-(31, 27, 25, 'fs fsf wfwfsd', 'fs-fsf-wfwfsd', '', '', '', 'assets/products/product_31/main.png', 'jujb', 'fs fsf wfwfsd', 'jujb', 'ihiuh', '', 'fs fsf wfwfsd', 'jujb', 'ghuuh', 5614.00, 54.00, 'Show', 'Active', 0, '1790512064', ''),
-(37, 28, 25, 'swe', 'swewewe', '', '', '', 'assets/products/product_37/main.jpeg', 'dffs', 'swe', 'dffs', '', '', 'swe', 'dffs', 'hii ihid\r\n\r\naojsduoasjdopuapodjopajsd\r\n\r\njasdijhdias\r\n>\r\ndja\r\n;kaspdkas', 132123.00, 123.00, 'Show', 'Active', 0, '1790512268', '1790564820');
-
 -- --------------------------------------------------------
 
 --
@@ -198,14 +195,6 @@ CREATE TABLE `products_images` (
   `product_video_1` varchar(233) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `products_images`
---
-
-INSERT INTO `products_images` (`product_id`, `product_img_1`, `product_img_1_alt`, `product_img_2`, `product_img_2_alt`, `product_img_3`, `product_img_3_alt`, `product_img_4`, `product_img_4_alt`, `product_img_5`, `product_img_5_alt`, `product_img_6`, `product_img_6_alt`, `product_img_7`, `product_img_7_alt`, `product_img_8`, `product_img_8_alt`, `product_img_9`, `product_img_9_alt`, `product_img_10`, `product_img_10_alt`, `product_brochure`, `product_video_1`) VALUES
-(31, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
-(37, 'assets/products/product_37/gallery_1.png', '', 'assets/products/product_37/gallery_2.png', '', 'assets/products/product_37/gallery_3.png', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'assets/products/product_37/video_1.mp4');
-
 -- --------------------------------------------------------
 
 --
@@ -230,11 +219,7 @@ CREATE TABLE `root_categories` (
 --
 
 INSERT INTO `root_categories` (`root_id`, `root_name`, `root_slug`, `root_description`, `meta_title`, `meta_description`, `meta_keywords`, `root_status`, `created_at`, `updated_at`) VALUES
-(24, 'School Uniforms', 'school-uniforms', 'School uniforms are standard outfits mandated by educational institutions for students. They are deeply rooted in the history of formal education, widely adopted across Asia, Africa, the UK, and parts of the Americas, and remain a subject of ongoing debate.', 'School Uniforms', 'School uniforms are standard outfits mandated by educational institutions for students. They are deeply rooted in the history of formal education, widely adopte', 'School uniforms are standard outfits mandated by educational institutions for students. They are deeply rooted in the history of formal education, widely adopted across Asia, Africa, the UK, and parts of the Americas, and remain a subject of ongoing debat', 'Active', '1790422000', ''),
-(25, 'Corporate Uniforms', 'corporate-uniforms', 'Shop professional corporate uniforms and office wear designed for comfort and style. Premium quality business attire and staff uniforms customized with your company logo.', 'Corporate Uniforms', 'Shop professional corporate uniforms and office wear designed for comfort and style. Premium quality business attire and staff uniforms customized with your com', 'corporate uniforms, office wear uniforms, formal business attire, professional staff uniforms, corporate clothing manufacturer, company uniform supplier, business formal wear, custom corporate wear', 'Active', '1790422107', ''),
-(26, 'Industrial Uniforms', 'industrial-uniforms', 'Explore durable industrial uniforms and heavy-duty workwear designed for factory staff and manufacturing units. High-performance, safety-compliant work clothes built for tough environments.', 'Industrial Uniforms', 'Explore durable industrial uniforms and heavy-duty workwear designed for factory staff and manufacturing units. High-performance, safety-compliant work clothes ', 'industrial uniforms, industrial workwear, factory staff uniforms, heavy-duty work clothes, protective workwear supplier, manufacturing unit uniforms', 'Active', '1790422220', ''),
-(27, 'Hospitality Uniforms', 'hospitality-uniforms', 'Discover premium hospitality uniforms designed for hotels, resorts, and restaurants. Stylish, comfortable, and professional attire tailored for front desk and guest-facing staff.', 'Hospitality Uniforms', 'Discover premium hospitality uniforms designed for hotels, resorts, and restaurants. Stylish, comfortable, and professional attire tailored for front desk and g', 'hospitality uniforms, hotel staff uniforms, restaurant wear, resort staff attire, hotel front desk uniforms, catering staff clothing', 'Active', '1790422254', ''),
-(28, 'Security Uniforms', 'security-uniforms', 'Explore professional security uniforms and duty apparel designed for security guards and personnel. Durable, authoritative, and comfortable clothing builsor long shifts.', 'Security Uniforms', 'Explore professional security uniforms and duty apparel designed for security guards and personnel. Durable, authoritative, and comfortable clothing built for l', 'security uniforms, security guard dress, private security clothing, guard duty apparel, professional security uniforms supplier', 'Active', '1790422301', '1790452573');
+(36, 'Kalora', 'kalora', 'Step into the world of ultimate luxury with the signature KALORA collection. Featuring handpicked masterpieces and exclusive statement pieces, this flagship range embodies our finest craftsmanship, sophisticated aesthetics, and timeless elegance designed exclusively for trendsetters.', 'Kalora', 'Step into the world of ultimate luxury with the signature KALORA collection. Featuring handpicked masterpieces and exclusive statement pieces, this flagship ran', 'kalora collection, signature jewellery, exclusive designer pieces, luxury jewellery brand, bespoke jewellery online, KALORA official', 'Active', '1790753775', '');
 
 --
 -- Indexes for dumped tables
@@ -296,7 +281,7 @@ ALTER TABLE `blog`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `brand_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `brand_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `global_info`
@@ -314,13 +299,13 @@ ALTER TABLE `login_users`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `root_categories`
 --
 ALTER TABLE `root_categories`
-  MODIFY `root_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `root_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- Constraints for dumped tables
