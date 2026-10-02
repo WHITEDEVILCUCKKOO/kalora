@@ -236,6 +236,10 @@
         .kalora-cards-grid {
             grid-template-columns: 1fr 1fr;
         }
+        .kalora-price-card:last-child {
+        grid-column: 1 / -1;
+        justify-self: center;
+    }
     }
 
     .kalora-price-card {

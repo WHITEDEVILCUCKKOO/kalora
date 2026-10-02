@@ -582,6 +582,98 @@ $brand_options          = get_brand_info($mydb);
 
 ?>
 
+
+
+<!-- events -->
+<?php
+
+require_once __DIR__ . '/admin_access/functions/event.php';
+
+$kalora_event_message = "";
+$kalora_event_message_type = "";
+
+
+/* Automatic Active / Scheduled / Expired */
+update_kalora_event_status($mydb);
+
+
+/* Add */
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['kalora_event_action'])
+) {
+
+    if (
+        $_POST['kalora_event_action'] === 'add_event'
+    ) {
+
+        $kalora_event_result =
+            add_kalora_event(
+                $mydb,
+                $_POST,
+                $_FILES
+            );
+
+        $kalora_event_message =
+            $kalora_event_result['message'];
+
+        $kalora_event_message_type =
+            $kalora_event_result['status']
+            ? 'success'
+            : 'error';
+    }
+
+
+    /* Update */
+    if (
+        $_POST['kalora_event_action'] === 'update_event'
+    ) {
+
+        $kalora_event_result =
+            update_kalora_event(
+                $mydb,
+                $_POST,
+                $_FILES
+            );
+
+        $kalora_event_message =
+            $kalora_event_result['message'];
+
+        $kalora_event_message_type =
+            $kalora_event_result['status']
+            ? 'success'
+            : 'error';
+    }
+
+
+    /* Delete */
+    if (
+        $_POST['kalora_event_action'] === 'delete_event'
+    ) {
+
+        $kalora_event_result =
+            delete_kalora_event(
+                $mydb,
+                $_POST['event_id'] ?? 0
+            );
+
+        $kalora_event_message =
+            $kalora_event_result['message'];
+
+        $kalora_event_message_type =
+            $kalora_event_result['status']
+            ? 'success'
+            : 'error';
+    }
+}
+
+
+/* Get events */
+$kalora_event_list =
+    get_kalora_events($mydb);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -638,13 +730,13 @@ $brand_options          = get_brand_info($mydb);
                         Global Infomtions
                     </li>
 
-                    <li class="subbox_link romove_device_links" id="journeys_btn_124" data-set="journeys" onclick="window.show_this_box(this); show_sub_link(this);">
+                    <li class="subbox_link " id="journeys_btn_124" data-set="journeys" onclick="window.show_this_box(this); show_sub_link(this);">
                         <span class="svg_icon_box">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="sub_set_iocn_svg" data-subset="icon_12">
                                 <path d="M288 88C288 74.7 298.7 64 312 64C457.8 64 576 182.2 576 328C576 341.3 565.3 352 552 352C538.7 352 528 341.3 528 328C528 208.7 431.3 112 312 112C298.7 112 288 101.3 288 88zM144 160C170.5 160 192 181.5 192 208L192 432C192 458.5 213.5 480 240 480C266.5 480 288 458.5 288 432C288 405.5 266.5 384 240 384C231.2 384 224 376.8 224 368L224 304C224 295.2 231.2 288 240 288C319.5 288 384 352.5 384 432C384 511.5 319.5 576 240 576C160.5 576 96 511.5 96 432L96 208C96 181.5 117.5 160 144 160zM312 160C404.8 160 480 235.2 480 328C480 341.3 469.3 352 456 352C442.7 352 432 341.3 432 328C432 261.7 378.3 208 312 208C298.7 208 288 197.3 288 184C288 170.7 298.7 160 312 160z" />
                             </svg>
                         </span>
-                        Blog
+                        Home Edits
                     </li>
 
                     <!-- Journeys -->
@@ -655,13 +747,13 @@ $brand_options          = get_brand_info($mydb);
                         </ul>
                     </div>
 
-                    <li class="subbox_link romove_device_links" id="dashbord_btn_124" data-set="dashbord" onclick="show_this_box(this); close_all_sub_links_ha()">
+                    <li class="subbox_link " id="dashbord_btn_124" data-set="dashbord" onclick="show_this_box(this); close_all_sub_links_ha()">
                         <span class="svg_icon_box">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="sub_set_iocn_svg" data-subset="icon_3">
                                 <path d="M96 96C113.7 96 128 110.3 128 128L128 464C128 472.8 135.2 480 144 480L544 480C561.7 480 576 494.3 576 512C576 529.7 561.7 544 544 544L144 544C99.8 544 64 508.2 64 464L64 128C64 110.3 78.3 96 96 96zM208 288C225.7 288 240 302.3 240 320L240 384C240 401.7 225.7 416 208 416C190.3 416 176 401.7 176 384L176 320C176 302.3 190.3 288 208 288zM352 224L352 384C352 401.7 337.7 416 320 416C302.3 416 288 401.7 288 384L288 224C288 206.3 302.3 192 320 192C337.7 192 352 206.3 352 224zM432 256C449.7 256 464 270.3 464 288L464 384C464 401.7 449.7 416 432 416C414.3 416 400 401.7 400 384L400 288C400 270.3 414.3 256 432 256zM576 160L576 384C576 401.7 561.7 416 544 416C526.3 416 512 401.7 512 384L512 160C512 142.3 526.3 128 544 128C561.7 128 576 142.3 576 160z" />
                             </svg>
                         </span>
-                        Courses
+                        Events
                     </li>
                 </ul>
 
@@ -1435,10 +1527,903 @@ $brand_options          = get_brand_info($mydb);
 
                 </section>
 
-                <!-- section 3 Dashbord -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <!-- section 3 Home -->
                 <section id="dashbord_contect_box" class="section_sub_with all_sejmca8974 ">
-                    3
+                    <?php
+
+                    require_once __DIR__ . '/admin_access/functions/event.php';
+
+                    $kalora_event_message = "";
+                    $kalora_event_message_type = "";
+
+
+
+                    if (
+                        $_SERVER['REQUEST_METHOD'] === 'POST' &&
+                        isset($_POST['kalora_event_action'])
+                    ) {
+
+                        if ($_POST['kalora_event_action'] === 'add_event') {
+                            $kalora_event_result = add_kalora_event($mydb, $_POST, $_FILES);
+                            $kalora_event_message = $kalora_event_result['message'];
+                            $kalora_event_message_type = $kalora_event_result['status'] ? 'success' : 'error';
+                        }
+
+                        if ($_POST['kalora_event_action'] === 'update_event') {
+                            $kalora_event_result = update_kalora_event($mydb, $_POST, $_FILES);
+                            $kalora_event_message = $kalora_event_result['message'];
+                            $kalora_event_message_type = $kalora_event_result['status'] ? 'success' : 'error';
+                        }
+
+                        if ($_POST['kalora_event_action'] === 'delete_event') {
+                            $kalora_event_result = delete_kalora_event($mydb, $_POST['event_id'] ?? 0);
+                            $kalora_event_message = $kalora_event_result['message'];
+                            $kalora_event_message_type = $kalora_event_result['status'] ? 'success' : 'error';
+                        }
+                    }
+
+
+                    /* Automatic Status */
+                    update_kalora_event_status($mydb);
+
+                    /* Get Events */
+                    $kalora_event_list = get_kalora_events($mydb);
+
+                    /* Active / Non Active */
+                    $kalora_active_events = [];
+                    $kalora_non_active_events = [];
+
+                    foreach ($kalora_event_list as $kalora_event_row) {
+                        if ($kalora_event_row['event_status'] === 'Active') {
+                            $kalora_active_events[] = $kalora_event_row;
+                        } else {
+                            $kalora_non_active_events[] = $kalora_event_row;
+                        }
+                    }
+
+
+                    /* =========================================================
+                                        CARD RENDER (Active + All events dono me same card)
+                                        ========================================================= */
+                    if (!function_exists('kalora_event_render_card_x91')) {
+
+                        function kalora_event_render_card_x91($row, $is_active)
+                        {
+                            $status = $row['event_status'];
+
+                            $status_class = '';
+                            if ($status === 'Scheduled') {
+                                $status_class = 'kalora-event-status-scheduled-x91';
+                            } elseif ($status === 'Expired') {
+                                $status_class = 'kalora-event-status-expired-x91';
+                            } elseif ($status === 'Inactive') {
+                                $status_class = 'kalora-event-status-inactive-x91';
+                            }
+
+                            $card_class = 'kalora-event-card-x91';
+                            if ($is_active) {
+                                $card_class .= ' kalora-event-active-card-x91';
+                            }
+                    ?>
+                            <div class="<?php echo $card_class; ?>">
+
+                                <img
+                                    src="assets/events/<?php echo htmlspecialchars($row['event_image']); ?>"
+                                    alt="<?php echo htmlspecialchars($row['event_name']); ?>"
+                                    class="kalora-event-image-x91">
+
+                                <div class="kalora-event-card-body-x91">
+
+                                    <div class="kalora-event-card-top-x91">
+                                        <h4 class="kalora-event-name-x91">
+                                            <?php echo htmlspecialchars($row['event_name']); ?>
+                                        </h4>
+
+                                        <span class="kalora-event-status-x91 <?php echo $status_class; ?>">
+                                            <?php echo $is_active ? 'ACTIVE' : htmlspecialchars($status); ?>
+                                        </span>
+                                    </div>
+
+                                    <div class="kalora-event-date-x91">
+                                        <strong>Start:</strong>
+                                        <?php echo date('d M Y, h:i A', strtotime($row['start_at'])); ?>
+                                        <br>
+                                        <strong>End:</strong>
+                                        <?php echo date('d M Y, h:i A', strtotime($row['end_at'])); ?>
+                                    </div>
+
+                                    <div class="kalora-event-actions-x91">
+
+                                        <button
+                                            type="button"
+                                            class="kalora-event-update-btn-x91"
+                                            onclick='kaloraEventOpenEditX91(<?php echo json_encode($row, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG); ?>)'>
+                                            Update
+                                        </button>
+
+                                        <form
+                                            method="POST"
+                                            class="kalora-event-delete-form-x91"
+                                            onsubmit="return kaloraEventDeleteX91();">
+                                            <input type="hidden" name="kalora_event_action" value="delete_event">
+                                            <input type="hidden" name="event_id" value="<?php echo (int)$row['event_id']; ?>">
+
+                                            <button type="submit" class="kalora-event-delete-btn-x91">
+                                                Delete
+                                            </button>
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                    <?php
+                        }
+                    }
+
+                    ?>
+
+                    <style>
+                        /* ---------- Base: font + box-sizing (global CSS ko override) ---------- */
+                        .kalora-event-panel-x91,
+                        .kalora-event-panel-x91 *,
+                        .kalora-event-form-overlay-x91,
+                        .kalora-event-form-overlay-x91 * {
+                            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+                            box-sizing: border-box;
+                        }
+
+                        .kalora-event-panel-x91 {
+                            width: 100%;
+                            padding: 25px;
+                        }
+
+                        /* ---------- Header ---------- */
+                        .kalora-event-header-x91 {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            gap: 15px;
+                            margin-bottom: 24px;
+                        }
+
+                        .kalora-event-header-x91>div {
+                            flex: 1;
+                            min-width: 0;
+                        }
+
+                        .kalora-event-panel-x91 h2.kalora-event-heading-x91 {
+                            margin: 0;
+                            padding: 0;
+                            font-size: 24px;
+                            line-height: 1.3;
+                            font-weight: 700;
+                            color: #122954;
+                            white-space: normal;
+                        }
+
+                        .kalora-event-panel-x91 p.kalora-event-heading-sub-x91 {
+                            margin: 4px 0 0;
+                            padding: 0;
+                            color: #777;
+                            font-size: 13px;
+                            line-height: 1.4;
+                        }
+
+                        .kalora-event-panel-x91 button.kalora-event-add-btn-x91 {
+                            flex-shrink: 0;
+                            border: 0;
+                            background: #122954;
+                            color: #fff;
+                            padding: 11px 18px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-size: 14px;
+                            font-weight: 600;
+                            width: auto;
+                            height: auto;
+                            white-space: nowrap;
+                        }
+
+                        .kalora-event-panel-x91 button.kalora-event-add-btn-x91:hover {
+                            background: #1b3d7b;
+                        }
+
+                        /* ---------- Message ---------- */
+                        .kalora-event-message-x91 {
+                            padding: 12px 15px;
+                            border-radius: 8px;
+                            margin-bottom: 18px;
+                            font-size: 14px;
+                        }
+
+                        .kalora-event-success-x91 {
+                            background: #e9f9ef;
+                            color: #15803d;
+                        }
+
+                        .kalora-event-error-x91 {
+                            background: #fff0f0;
+                            color: #dc2626;
+                        }
+
+                        /* ---------- Titles ---------- */
+                        .kalora-event-panel-x91 h3.kalora-event-active-title-x91,
+                        .kalora-event-panel-x91 h3.kalora-event-all-title-x91 {
+                            margin: 0 0 15px;
+                            padding: 0;
+                            font-size: 18px;
+                            line-height: 1.3;
+                            font-weight: 700;
+                            color: #122954;
+                        }
+
+                        /* ---------- Grid ---------- */
+                        .kalora-event-active-box-x91,
+                        .kalora-event-all-box-x91 {
+                            display: grid;
+                            grid-template-columns: repeat(3, 1fr);
+                            gap: 18px;
+                        }
+
+                        .kalora-event-active-box-x91 {
+                            margin-bottom: 30px;
+                        }
+
+                        /* ---------- Card ---------- */
+                        .kalora-event-card-x91 {
+                            background: #fff;
+                            border: 1px solid #e5e7eb;
+                            border-radius: 13px;
+                            overflow: hidden;
+                            box-shadow: 0 2px 8px rgba(18, 41, 84, .06);
+                        }
+
+                        .kalora-event-active-card-x91 {
+                            border: 2px solid #16a34a;
+                        }
+
+                        .kalora-event-image-x91 {
+                            width: 100%;
+                            height: 180px;
+                            display: block;
+                            object-fit: cover;
+                            background: #f1f5f9;
+                        }
+
+                        .kalora-event-card-body-x91 {
+                            padding: 15px;
+                        }
+
+                        .kalora-event-card-top-x91 {
+                            display: flex;
+                            align-items: flex-start;
+                            justify-content: space-between;
+                            gap: 10px;
+                        }
+
+                        .kalora-event-panel-x91 h4.kalora-event-name-x91 {
+                            margin: 0;
+                            padding: 0;
+                            font-size: 16px;
+                            line-height: 1.35;
+                            color: #122954;
+                            font-weight: 700;
+                        }
+
+                        .kalora-event-status-x91 {
+                            background: #dcfce7;
+                            color: #15803d;
+                            font-size: 11px;
+                            font-weight: 700;
+                            padding: 5px 10px;
+                            border-radius: 20px;
+                            white-space: nowrap;
+                        }
+
+                        .kalora-event-status-scheduled-x91 {
+                            background: #fef3c7;
+                            color: #a16207;
+                        }
+
+                        .kalora-event-status-expired-x91 {
+                            background: #f3f4f6;
+                            color: #6b7280;
+                        }
+
+                        .kalora-event-status-inactive-x91 {
+                            background: #fee2e2;
+                            color: #dc2626;
+                        }
+
+                        .kalora-event-date-x91 {
+                            margin: 12px 0;
+                            color: #666;
+                            font-size: 12.5px;
+                            line-height: 1.8;
+                        }
+
+                        .kalora-event-actions-x91 {
+                            display: flex;
+                            gap: 8px;
+                        }
+
+                        .kalora-event-delete-form-x91 {
+                            flex: 1;
+                            margin: 0;
+                            padding: 0;
+                        }
+
+                        .kalora-event-actions-x91 button {
+                            flex: 1;
+                            width: 100%;
+                            height: auto;
+                            border: 0;
+                            padding: 9px;
+                            border-radius: 7px;
+                            cursor: pointer;
+                            font-size: 13px;
+                            font-weight: 600;
+                        }
+
+                        .kalora-event-update-btn-x91 {
+                            background: #eef4ff;
+                            color: #1b3d7b;
+                        }
+
+                        .kalora-event-delete-btn-x91 {
+                            background: #fff0f0;
+                            color: #dc2626;
+                        }
+
+                        .kalora-event-empty-x91 {
+                            padding: 28px;
+                            text-align: center;
+                            background: #f8fafc;
+                            border: 1px dashed #d5d9df;
+                            border-radius: 12px;
+                            color: #777;
+                            font-size: 14px;
+                            line-height: 1.6;
+                            margin-bottom: 30px;
+                        }
+
+                        /* ---------- Popup ---------- */
+                        .kalora-event-form-overlay-x91 {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            width: 100vw;
+                            height: 100vh;
+                            height: 100dvh;
+                            background: rgba(0, 0, 0, .5);
+                            z-index: 999999;
+                            display: none;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 20px;
+                        }
+
+                        .kalora-event-form-overlay-x91.kalora-event-form-show-x91 {
+                            display: flex;
+                        }
+
+                        .kalora-event-form-x91 {
+                            width: 100%;
+                            max-width: 650px;
+                            max-height: 100%;
+                            overflow-y: auto;
+                            background: #fff;
+                            border-radius: 14px;
+                            padding: 24px;
+                            box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
+                        }
+
+                        .kalora-event-form-head-x91 {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 20px;
+                        }
+
+                        .kalora-event-form-x91 h3.kalora-event-form-title-x91 {
+                            margin: 0;
+                            padding: 0;
+                            color: #122954;
+                            font-size: 20px;
+                            line-height: 1.3;
+                        }
+
+                        .kalora-event-form-x91 button.kalora-event-close-x91 {
+                            border: 0;
+                            background: #f1f1f1;
+                            width: 34px;
+                            height: 34px;
+                            padding: 0;
+                            border-radius: 50%;
+                            cursor: pointer;
+                            font-size: 20px;
+                            line-height: 1;
+                            color: #333;
+                        }
+
+                        .kalora-event-form-grid-x91 {
+                            display: grid;
+                            grid-template-columns: repeat(2, 1fr);
+                            gap: 16px;
+                        }
+
+                        .kalora-event-field-x91 {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 6px;
+                        }
+
+                        .kalora-event-field-full-x91 {
+                            grid-column: 1 / -1;
+                        }
+
+                        .kalora-event-form-x91 .kalora-event-field-x91 label {
+                            font-size: 13px;
+                            font-weight: 600;
+                            color: #333;
+                            margin: 0;
+                        }
+
+                        .kalora-event-form-x91 .kalora-event-field-x91 input,
+                        .kalora-event-form-x91 .kalora-event-field-x91 select {
+                            width: 100%;
+                            height: 42px;
+                            margin: 0;
+                            padding: 0 12px;
+                            font-size: 14px;
+                            color: #222;
+                            background: #fff;
+                            border: 1px solid #d7dce3;
+                            border-radius: 8px;
+                            outline: none;
+                        }
+
+                        .kalora-event-form-x91 .kalora-event-field-x91 input:focus,
+                        .kalora-event-form-x91 .kalora-event-field-x91 select:focus {
+                            border-color: #122954;
+                            box-shadow: 0 0 0 3px rgba(18, 41, 84, .1);
+                        }
+
+                        .kalora-event-form-x91 .kalora-event-field-x91 input[type="file"] {
+                            height: auto;
+                            padding: 8px 10px;
+                            background: #f8fafc;
+                        }
+
+                        .kalora-event-form-x91 small {
+                            color: #777;
+                            font-size: 12px;
+                        }
+
+                        .kalora-event-form-buttons-x91 {
+                            display: flex;
+                            gap: 10px;
+                            margin-top: 22px;
+                        }
+
+                        .kalora-event-form-x91 .kalora-event-form-buttons-x91 button {
+                            border: 0;
+                            padding: 11px 22px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-size: 14px;
+                            font-weight: 600;
+                            width: auto;
+                            height: auto;
+                        }
+
+                        .kalora-event-save-x91 {
+                            background: #122954;
+                            color: #fff;
+                        }
+
+                        .kalora-event-save-x91:hover {
+                            background: #1b3d7b;
+                        }
+
+                        .kalora-event-cancel-x91 {
+                            background: #edf0f4;
+                            color: #333;
+                        }
+
+                        /* ---------- Responsive ---------- */
+                        @media (max-width: 1000px) {
+
+                            .kalora-event-active-box-x91,
+                            .kalora-event-all-box-x91 {
+                                grid-template-columns: repeat(2, 1fr);
+                            }
+                        }
+
+                        @media (max-width: 650px) {
+                            .kalora-event-panel-x91 {
+                                padding: 15px;
+                            }
+
+                            .kalora-event-header-x91 {
+                                align-items: flex-start;
+                                flex-direction: column;
+                            }
+
+                            .kalora-event-active-box-x91,
+                            .kalora-event-all-box-x91,
+                            .kalora-event-form-grid-x91 {
+                                grid-template-columns: 1fr;
+                            }
+
+                            .kalora-event-field-full-x91 {
+                                grid-column: auto;
+                            }
+                        }
+                    </style>
+
+
+                    <div class="kalora-event-panel-x91">
+
+                        <!-- HEADER -->
+                        <div class="kalora-event-header-x91">
+
+                            <div>
+                                <h2 class="kalora-event-heading-x91">Event Management</h2>
+                                <p class="kalora-event-heading-sub-x91">Manage your website events and offers.</p>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="kalora-event-add-btn-x91"
+                                onclick="kaloraEventOpenAddX91()">
+                                + Add Event
+                            </button>
+
+                        </div>
+
+
+                        <!-- MESSAGE -->
+                        <?php if ($kalora_event_message !== ""): ?>
+                            <div class="kalora-event-message-x91 <?php echo $kalora_event_message_type === 'success' ? 'kalora-event-success-x91' : 'kalora-event-error-x91'; ?>">
+                                <?php echo htmlspecialchars($kalora_event_message); ?>
+                            </div>
+                        <?php endif; ?>
+
+
+                        <!-- ACTIVE EVENTS -->
+                        <h3 class="kalora-event-active-title-x91">Currently Active Events</h3>
+
+                        <?php if (count($kalora_active_events) > 0): ?>
+
+                            <div class="kalora-event-active-box-x91">
+                                <?php foreach ($kalora_active_events as $kalora_event_row): ?>
+                                    <?php kalora_event_render_card_x91($kalora_event_row, true); ?>
+                                <?php endforeach; ?>
+                            </div>
+
+                        <?php else: ?>
+
+                            <div class="kalora-event-empty-x91">
+                                <strong>अभी कोई Active Event नहीं है.</strong>
+                                <br>
+                                आप ऊपर से नया Event Add कर सकते हैं.
+                            </div>
+
+                        <?php endif; ?>
+
+
+                        <!-- ALL OTHER EVENTS -->
+                        <h3 class="kalora-event-all-title-x91">All Events</h3>
+
+                        <?php if (count($kalora_non_active_events) > 0): ?>
+
+                            <div class="kalora-event-all-box-x91">
+                                <?php foreach ($kalora_non_active_events as $kalora_event_row): ?>
+                                    <?php kalora_event_render_card_x91($kalora_event_row, false); ?>
+                                <?php endforeach; ?>
+                            </div>
+
+                        <?php else: ?>
+
+                            <?php if (count($kalora_active_events) > 0): ?>
+                                <div class="kalora-event-empty-x91">अभी कोई दूसरा Event नहीं है.</div>
+                            <?php endif; ?>
+
+                        <?php endif; ?>
+
+                    </div>
+
+
+                    <!-- =========================================================
+     ADD / UPDATE FORM (popup)
+========================================================= -->
+                    <div class="kalora-event-form-overlay-x91" id="kaloraEventFormOverlayX91">
+
+                        <div class="kalora-event-form-x91">
+
+                            <div class="kalora-event-form-head-x91">
+
+                                <h3 class="kalora-event-form-title-x91" id="kaloraEventFormTitleX91">
+                                    Add New Event
+                                </h3>
+
+                                <button
+                                    type="button"
+                                    class="kalora-event-close-x91"
+                                    onclick="kaloraEventCloseFormX91()">
+                                    &times;
+                                </button>
+
+                            </div>
+
+
+                            <form method="POST" enctype="multipart/form-data">
+
+                                <input type="hidden" name="kalora_event_action" id="kaloraEventActionX91" value="add_event">
+                                <input type="hidden" name="event_id" id="kaloraEventIdX91" value="">
+
+                                <div class="kalora-event-form-grid-x91">
+
+                                    <div class="kalora-event-field-x91">
+                                        <label for="kaloraEventNameX91">Event Name</label>
+                                        <input type="text" name="event_name" id="kaloraEventNameX91" placeholder="Diwali Special Offer" required>
+                                    </div>
+
+                                    <div class="kalora-event-field-x91">
+                                        <label for="kaloraEventSlugX91">Event Slug</label>
+                                        <input type="text" name="event_slug" id="kaloraEventSlugX91" placeholder="diwali-special-offer">
+                                    </div>
+
+                                    <div class="kalora-event-field-x91 kalora-event-field-full-x91">
+                                        <label for="kaloraEventImageX91">Event Image</label>
+                                        <input type="file" name="event_image" id="kaloraEventImageX91" accept=".jpg,.jpeg,.png,.webp">
+                                        <small id="kaloraEventOldImageX91"></small>
+                                    </div>
+
+                                    <div class="kalora-event-field-x91">
+                                        <label for="kaloraEventStartX91">Start Date &amp; Time</label>
+                                        <input type="datetime-local" name="start_at" id="kaloraEventStartX91" required>
+                                    </div>
+
+                                    <div class="kalora-event-field-x91">
+                                        <label for="kaloraEventEndX91">End Date &amp; Time</label>
+                                        <input type="datetime-local" name="end_at" id="kaloraEventEndX91" required>
+                                    </div>
+
+                                    <div class="kalora-event-field-x91">
+                                        <label for="kaloraEventStatusX91">Status</label>
+                                        <select name="event_status" id="kaloraEventStatusX91">
+                                            <option value="Scheduled">Scheduled</option>
+                                            <option value="Active">Active</option>
+                                            <option value="Inactive">Inactive</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="kalora-event-field-x91">
+                                        <label for="kaloraEventOrderX91">Display Order</label>
+                                        <input type="number" name="display_order" id="kaloraEventOrderX91" value="0">
+                                    </div>
+
+                                    <div class="kalora-event-field-x91 kalora-event-field-full-x91">
+                                        <label for="kaloraEventLinkX91">Event Link</label>
+                                        <input type="text" name="event_link" id="kaloraEventLinkX91" placeholder="offer.php">
+                                    </div>
+
+                                </div>
+
+
+                                <div class="kalora-event-form-buttons-x91">
+
+                                    <button type="submit" class="kalora-event-save-x91" id="kaloraEventSaveButtonX91">
+                                        Save Event
+                                    </button>
+
+                                    <button type="button" class="kalora-event-cancel-x91" onclick="kaloraEventCloseFormX91()">
+                                        Cancel
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+
+                    <script>
+                        /* Popup ko body me shift karo, taaki parent ka overflow/transform asar na kare */
+                        (function() {
+                            var overlay = document.getElementById("kaloraEventFormOverlayX91");
+
+                            if (overlay && overlay.parentNode !== document.body) {
+                                document.body.appendChild(overlay);
+                            }
+                        })();
+
+
+                        function kaloraEventSetX91(id, value) {
+                            document.getElementById(id).value = (value === null || value === undefined) ? "" : value;
+                        }
+
+
+                        function kaloraEventShowFormX91() {
+                            document.getElementById("kaloraEventFormOverlayX91").classList.add("kalora-event-form-show-x91");
+                            document.body.style.overflow = "hidden";
+                        }
+
+
+                        function kaloraEventOpenAddX91() {
+
+                            document.getElementById("kaloraEventFormTitleX91").innerText = "Add New Event";
+
+                            kaloraEventSetX91("kaloraEventActionX91", "add_event");
+                            kaloraEventSetX91("kaloraEventIdX91", "");
+                            kaloraEventSetX91("kaloraEventNameX91", "");
+                            kaloraEventSetX91("kaloraEventSlugX91", "");
+                            kaloraEventSetX91("kaloraEventImageX91", "");
+                            kaloraEventSetX91("kaloraEventStartX91", "");
+                            kaloraEventSetX91("kaloraEventEndX91", "");
+                            kaloraEventSetX91("kaloraEventStatusX91", "Scheduled");
+                            kaloraEventSetX91("kaloraEventOrderX91", "0");
+                            kaloraEventSetX91("kaloraEventLinkX91", "");
+
+                            document.getElementById("kaloraEventImageX91").required = true;
+                            document.getElementById("kaloraEventOldImageX91").innerText = "";
+                            document.getElementById("kaloraEventSaveButtonX91").innerText = "Save Event";
+
+                            kaloraEventShowFormX91();
+                        }
+
+
+                        function kaloraEventOpenEditX91(eventData) {
+
+                            document.getElementById("kaloraEventFormTitleX91").innerText = "Update Event";
+
+                            kaloraEventSetX91("kaloraEventActionX91", "update_event");
+                            kaloraEventSetX91("kaloraEventIdX91", eventData.event_id);
+                            kaloraEventSetX91("kaloraEventNameX91", eventData.event_name);
+                            kaloraEventSetX91("kaloraEventSlugX91", eventData.event_slug);
+                            kaloraEventSetX91("kaloraEventImageX91", "");
+                            kaloraEventSetX91("kaloraEventStartX91", (eventData.start_at || "").replace(" ", "T").substring(0, 16));
+                            kaloraEventSetX91("kaloraEventEndX91", (eventData.end_at || "").replace(" ", "T").substring(0, 16));
+
+                            /* Expired ya Active status select me nahi hai, isliye Scheduled dikhao */
+                            var statusValue = eventData.event_status;
+                            if (statusValue !== "Inactive" && statusValue !== "Active" && statusValue !== "Scheduled") {
+                                statusValue = "Scheduled";
+                            }
+                            kaloraEventSetX91("kaloraEventStatusX91", statusValue);
+
+                            kaloraEventSetX91("kaloraEventOrderX91", eventData.display_order);
+                            kaloraEventSetX91("kaloraEventLinkX91", eventData.event_link);
+
+                            document.getElementById("kaloraEventImageX91").required = false;
+                            document.getElementById("kaloraEventOldImageX91").innerText = "Current image: " + eventData.event_image;
+                            document.getElementById("kaloraEventSaveButtonX91").innerText = "Update Event";
+
+                            kaloraEventShowFormX91();
+                        }
+
+
+                        function kaloraEventCloseFormX91() {
+                            document.getElementById("kaloraEventFormOverlayX91").classList.remove("kalora-event-form-show-x91");
+                            document.body.style.overflow = "";
+                        }
+
+
+                        function kaloraEventDeleteX91() {
+                            return confirm("Are you sure you want to delete this event?");
+                        }
+
+
+                        /* Bahar click par band */
+                        document.getElementById("kaloraEventFormOverlayX91").addEventListener("click", function(event) {
+                            if (event.target === this) {
+                                kaloraEventCloseFormX91();
+                            }
+                        });
+
+
+                        /* Esc key se band */
+                        document.addEventListener("keydown", function(e) {
+                            if (e.key === "Escape") {
+                                kaloraEventCloseFormX91();
+                            }
+                        });
+                    </script>
+
                 </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 <!-- section 4 home -->
                 <?php include_once 'admin_access/functions/products.php' ?>
@@ -1580,12 +2565,251 @@ $brand_options          = get_brand_info($mydb);
                     11
                 </section>
 
-                <!-- section 12 blog -->
-                <section id="journeys_contect_box" class="section_sub_with all_sejmca8974 ">
 
 
 
-                </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- section 12 home -->
+<section id="journeys_contect_box" class="section_sub_with all_sejmca8974 ">
+
+<?php
+include_once "./admin_access/functions/extra_home.php";
+
+/* admin.php root me hai, isliye "../" nahi lagega */
+$imgUrlBase = "assets/extra_home_img/";
+
+$result = null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $result = update_extra_home_images($mydb);
+}
+
+/* Update ke baad fresh data */
+$images = get_extra_home_images($mydb);
+$groups = extra_home_columns();
+
+if (!function_exists('eh_h')) {
+    function eh_h($s)
+    {
+        return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+    }
+}
+?>
+
+<style>
+    .eh-wrap { max-width: 1100px; margin: 0 auto; padding: 30px 20px 50px; }
+    .eh-page-title { font-family: "Times New Roman", serif; font-size: 24px; margin: 0 0 24px; }
+    .eh-group-title { font-family: "Times New Roman", serif; font-size: 20px; margin: 34px 0 18px; padding-bottom: 8px; border-bottom: 1px solid #e3e3e3; }
+
+    .eh-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 50px; }
+    .eh-field { min-width: 0; }
+
+    .eh-label { display: block; font-family: "Times New Roman", serif; font-weight: 700; font-size: 17px; margin-bottom: 14px; }
+
+    .eh-preview { background: #f9f9f9; border: 1px solid #dcdcdc; border-radius: 16px; height: 220px; padding: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; overflow: hidden; }
+    .eh-preview img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+    .eh-preview .eh-none { color: #999; font-size: 13px; }
+
+    .eh-file { font-size: 15px; max-width: 100%; }
+    .eh-hint { display: block; margin-top: 8px; font-size: 12px; color: #777; }
+    .eh-remove { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; color: #b32424; cursor: pointer; }
+
+    .eh-alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; font-size: 14px; }
+    .eh-alert.ok  { background: #e9f7ee; color: #1f6b34; border: 1px solid #bfe5ca; }
+    .eh-alert.err { background: #fdeded; color: #a12626; border: 1px solid #f3c2c2; }
+
+    .eh-btn { margin-top: 36px; background: #103d2a; color: #fff; border: 0; padding: 13px 38px; font-size: 15px; border-radius: 8px; cursor: pointer; transition: background .2s; }
+    .eh-btn:hover { background: #0b2b1d; }
+    .eh-btn:disabled { opacity: .6; cursor: wait; }
+
+    @media (max-width: 768px) {
+        .eh-grid { grid-template-columns: 1fr; gap: 26px; }
+        .eh-preview { height: 190px; }
+    }
+</style>
+
+
+<div class="eh-wrap">
+
+    <h1 class="eh-page-title">Extra Home Images</h1>
+
+    <?php if ($result): ?>
+        <?php foreach ($result['messages'] as $m): ?>
+            <div class="eh-alert ok"><?= eh_h($m) ?></div>
+        <?php endforeach; ?>
+        <?php foreach ($result['errors'] as $e): ?>
+            <div class="eh-alert err"><?= eh_h($e) ?></div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+    <form method="post" enctype="multipart/form-data" id="ehForm">
+
+        <?php foreach ($groups as $groupName => $cols): ?>
+
+            <h2 class="eh-group-title"><?= eh_h($groupName) ?></h2>
+
+            <div class="eh-grid">
+
+                <?php foreach ($cols as $col => $label):
+                    $saved = isset($images[$col]) ? trim((string)$images[$col]) : '';
+                ?>
+
+                    <div class="eh-field">
+
+                        <label class="eh-label" for="f_<?= eh_h($col) ?>">
+                            Change <?= eh_h($label) ?>
+                        </label>
+
+                        <div class="eh-preview" id="pv_<?= eh_h($col) ?>">
+                            <?php if ($saved !== ''): ?>
+                                <img src="<?= eh_h($imgUrlBase . $saved) ?>" alt="<?= eh_h($label) ?>">
+                            <?php else: ?>
+                                <span class="eh-none">No image uploaded</span>
+                            <?php endif; ?>
+                        </div>
+
+                        <input
+                            type="file"
+                            class="eh-file"
+                            id="f_<?= eh_h($col) ?>"
+                            name="<?= eh_h($col) ?>"
+                            accept="image/jpeg,image/png,image/webp,image/gif"
+                            data-preview="pv_<?= eh_h($col) ?>">
+
+                        <small class="eh-hint">Leave empty to keep the old image. (Max 100MB)</small>
+
+                        <?php if ($saved !== ''): ?>
+                            <label class="eh-remove">
+                                <input type="checkbox" name="remove_<?= eh_h($col) ?>" value="1">
+                                Remove this image
+                            </label>
+                        <?php endif; ?>
+
+                    </div>
+
+                <?php endforeach; ?>
+
+            </div>
+
+        <?php endforeach; ?>
+
+        <button type="submit" class="eh-btn" id="ehBtn">Update Images</button>
+
+    </form>
+
+</div>
+
+
+<script>
+(function () {
+
+    var MAX_MB = 100;
+
+    /* Image select karte hi live preview */
+    document.querySelectorAll('.eh-file').forEach(function (input) {
+
+        input.addEventListener('change', function () {
+
+            var box  = document.getElementById(input.dataset.preview);
+            var file = input.files && input.files[0];
+
+            if (!file) { return; }
+
+            if (file.size > MAX_MB * 1024 * 1024) {
+                alert('Image ' + MAX_MB + 'MB se badi hai.');
+                input.value = '';
+                return;
+            }
+
+            box.innerHTML = '<img src="' + URL.createObjectURL(file) + '" alt="Preview">';
+        });
+    });
+
+    /* Badi file upload ho rahi ho to button disable (double click na ho) */
+    var form = document.getElementById('ehForm');
+    var btn  = document.getElementById('ehBtn');
+
+    if (form && btn) {
+        form.addEventListener('submit', function () {
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+        });
+    }
+
+    <?php if ($result && $result['success']): ?>
+        /* Add hone ke baad success alert */
+        alert('Image successfully added!');
+    <?php elseif ($result && !empty($result['errors'])): ?>
+        alert(<?= json_encode($result['errors'][0], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>);
+    <?php endif; ?>
+
+    /* Refresh karne par form dobara submit na ho */
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+
+})();
+</script>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 <!-- sublink box 1 -->
                 <section id="contect_1_contect_box" class="section_sub_with all_sejmca8974 auto_margin_notwa">
