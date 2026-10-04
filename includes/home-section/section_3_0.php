@@ -49,7 +49,7 @@ if ($kalora_active_event) {
     .kalora-live-event-box-x91 {
         position: relative;
         width: 100%;
-        min-height: 278px;
+        min-height: 540px;
         overflow: hidden;
         background: #111;
         display: flex;
@@ -156,7 +156,7 @@ if ($kalora_active_event) {
 
 <?php if ($kalora_active_event && $kalora_end_ms > 0): ?>
 
-    <section
+    <section style="display: none;"
         id="kaloraLiveEventSectionX91"
         class="kalora-live-event-section-x91"
         data-end="<?php echo (int)$kalora_end_ms; ?>">

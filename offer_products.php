@@ -10,29 +10,35 @@ if (!function_exists('kl_money')) {
 
 $productPage = 'product_details.php'; // product page ka file name
 
-/* ================= PRICE OFFER (?price=99 / 199 / 299 / 399 / 499) ================= */
+/* ================= PRICE OFFER (?price=99 / 199 / 299 / 399 / 499) =================
+   Jo bhi price aaye, usse KAM ya BARABAR price wale saare Active products dikhenge.
+   - Discount "Show" aur sale price hai  => sale price se check + discount % dikhega
+   - Discount "Hide"                     => original price se check + sirf original price dikhega
+*/
 $priceParam = trim($_GET['price'] ?? '');
 $offerPrice = ($priceParam !== '' && ctype_digit($priceParam)) ? (int)$priceParam : 0;
 $klProducts = [];
 
 if ($offerPrice > 0) {
-    // Pehle saare Active products lo
-    $res = mysqli_query($mydb, "SELECT product_name, product_slug, product_image, product_color, product_size,
-                                       original_price, sale_price, discount_visibility
-                                FROM products
-                                WHERE product_status = 'Active'
-                                ORDER BY product_id DESC");
-    while ($res && ($row = mysqli_fetch_assoc($res))) {
-        $orig = (float)$row['original_price'];
-        $sale = (float)$row['sale_price'];
+    $sql = "SELECT product_name, product_slug, product_image, product_color, product_size,
+                   original_price, sale_price, discount_visibility
+            FROM products
+            WHERE product_status = 'Active'
+              AND (CASE WHEN discount_visibility = 'Show' AND sale_price > 0
+                        THEN sale_price ELSE original_price END) > 0
+              AND (CASE WHEN discount_visibility = 'Show' AND sale_price > 0
+                        THEN sale_price ELSE original_price END) <= ?
+            ORDER BY product_id DESC";
 
-        // Discount "Show" + sale price => sale price check karo
-        // Discount "Hide" => original price check karo
-        $effective = ($row['discount_visibility'] === 'Show' && $sale > 0) ? $sale : $orig;
-
-        if (abs($effective - $offerPrice) < 0.005) {
+    $stmt = mysqli_prepare($mydb, $sql);
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, 'd', $offerPrice);
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+        while ($res && ($row = mysqli_fetch_assoc($res))) {
             $klProducts[] = $row;
         }
+        mysqli_stmt_close($stmt);
     }
 }
 ?>
@@ -47,7 +53,7 @@ if ($offerPrice > 0) {
 <div class="klr-wrapper">
     <div class="klr-container">
 
-        <h2 class="klr-title"><?= $offerPrice > 0 ? 'BUY AT ₹' . $offerPrice : 'OFFERS' ?></h2>
+        <h2 class="klr-title"><?= $offerPrice > 0 ? 'UNDER ₹' . $offerPrice : 'OFFERS' ?></h2>
 
         <div class="klr-grid">
 
@@ -61,12 +67,14 @@ if ($offerPrice > 0) {
 
                     $current = 0; $strike = 0; $pct = 0;
                     if ($p['discount_visibility'] === 'Show' && $sale > 0) {
+                        // Discount ON: sale price + cut price + % off
                         $current = $sale;
                         if ($orig > $sale) {
                             $strike = $orig;
                             $pct = round((($orig - $sale) / $orig) * 100);
                         }
                     } else {
+                        // Discount OFF: sirf original price
                         $current = $orig > 0 ? $orig : 0;
                     }
 
@@ -183,41 +191,46 @@ if ($offerPrice > 0) {
 </style>
 
 <script>
-    // Har offer price ke liye 1 ghante ka countdown (browser me save hota hai, reload par reset nahi hota)
+    // Har offer price ke liye 1 ghante ka countdown.
+    // Khatam hone par khud dobara 1 ghante ke liye shuru ho jata hai.
     (function () {
         const DURATION = 60 * 60 * 1000; // 1 hour
         const key = 'kalora_offer_start_<?= (int)$offerPrice ?>';
         const timers = document.querySelectorAll('[data-klr-timer]');
         if (!timers.length) return;
 
-        let start = null;
-        try { start = parseInt(localStorage.getItem(key), 10); } catch (e) {}
-        if (!start || isNaN(start)) {
-            start = Date.now();
-            try { localStorage.setItem(key, String(start)); } catch (e) {}
-        }
-
         function pad(n) { return String(n).padStart(2, '0'); }
 
+        function getStart() {
+            let s = NaN;
+            try { s = parseInt(localStorage.getItem(key), 10); } catch (e) {}
+            if (!s || isNaN(s) || Date.now() - s >= DURATION) {
+                s = Date.now();
+                try { localStorage.setItem(key, String(s)); } catch (e) {}
+            }
+            return s;
+        }
+
+        let start = getStart();
+
         function tick() {
-            const left = start + DURATION - Date.now();
+            let left = start + DURATION - Date.now();
+            if (left <= 0) {
+                start = getStart();
+                left = start + DURATION - Date.now();
+            }
+            const h = Math.floor(left / 3600000);
+            const m = Math.floor((left % 3600000) / 60000);
+            const sec = Math.floor((left % 60000) / 1000);
+
             timers.forEach(function (t) {
-                const time = t.querySelector('.klr-timer-time');
-                const label = t.querySelector('.klr-timer-label');
+                t.querySelector('.klr-timer-label').textContent = 'Offer ends in';
+                t.querySelector('.klr-timer-time').textContent = pad(h) + ':' + pad(m) + ':' + pad(sec);
+                t.classList.remove('klr-ended');
                 const card = t.closest('.klr-card');
-                if (left <= 0) {
-                    label.textContent = 'Offer ended';
-                    time.textContent = '00:00:00';
-                    t.classList.add('klr-ended');
-                    if (card) card.classList.add('klr-expired');
-                } else {
-                    const h = Math.floor(left / 3600000);
-                    const m = Math.floor((left % 3600000) / 60000);
-                    const sec = Math.floor((left % 60000) / 1000);
-                    time.textContent = pad(h) + ':' + pad(m) + ':' + pad(sec);
-                }
+                if (card) card.classList.remove('klr-expired');
             });
-            if (left > 0) setTimeout(tick, 1000);
+            setTimeout(tick, 1000);
         }
         tick();
     })();
@@ -225,4 +238,4 @@ if ($offerPrice > 0) {
 
 </main>
 
-<?php include_once 'includes/footter.php' ?>    
+<?php include_once 'includes/footter.php' ?>

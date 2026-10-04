@@ -266,8 +266,12 @@ include "admin_access/db_config.php";
         }
 
         .fey-card.fey-active {
-            width: 280px;
+            width: 90vw;
             height: 400px;
+        }
+
+        .fey-container{
+            padding: 0 5px;
         }
     }
 </style>

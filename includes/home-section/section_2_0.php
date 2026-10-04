@@ -235,11 +235,17 @@
     @media (max-width: 640px) {
         .kalora-cards-grid {
             grid-template-columns: 1fr 1fr;
+            
         }
-        .kalora-price-card:last-child {
+        .kalora-price-card:first-child {
         grid-column: 1 / -1;
         justify-self: center;
+        width: 100%;
     }
+        /* .kalora-price-card:last-child {
+        grid-column: 1 / -1;
+        justify-self: center;
+    } */
     }
 
     .kalora-price-card {

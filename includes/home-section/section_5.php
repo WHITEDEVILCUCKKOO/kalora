@@ -110,7 +110,7 @@ if ($kr) {
             </div>
         </div>
 
-        <div class="klr-view-all-box">
+        <div class="klr-view-all-box" style="display:none">
             <button type="button" class="klr-view-all-btn" onclick="window.location.href='<?= kl_h($viewAllPage) ?>'">View All</button>
         </div>
 

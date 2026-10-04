@@ -21,8 +21,11 @@
     <?php require_once __DIR__ . '/includes/home-section/section_2_0.php' ?>
     <!-- section 3 -->
     <?php require_once __DIR__ . '/includes/home-section/section_3.php' ?>
-    <!-- section 3 0 -->
+    <?php require_once __DIR__ . '/includes/home-section/main_sub_cate_imp.php' ?>
     <?php require_once __DIR__ . '/includes/home-section/section_3_0.php' ?>
+    <?php require_once __DIR__ . '/includes/home-section/section_3_5.php' ?>
+    <!-- section 3 0 -->
+    <?php require_once __DIR__ . '/includes/home-section/sub_cate_1.php' ?>
     <!-- section 6 -->
     <?php require_once __DIR__ . '/includes/home-section/section_3_2.php' ?>
     <!-- section 4 -->

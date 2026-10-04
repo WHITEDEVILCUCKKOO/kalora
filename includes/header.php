@@ -69,6 +69,8 @@ if ($kalora_front_active_event) {
 ====================================================== -->
     <div class="kalora-sticky-top">
 
+    
+        
         <?php if ($kalora_front_active_event): ?>
             <div class="kalora-event-bar-x72"
                 id="kaloraEventBarX72"
@@ -90,7 +92,7 @@ if ($kalora_front_active_event) {
 
                         <div class="kalora-event-countdown-x72" id="kaloraEventCountdownX72">
 
-                            <div class="kalora-event-time-box-x72">
+                            <div class="kalora-event-time-box-x72" style="display: none;">
                                 <span class="kalora-event-time-number-x72" id="kaloraEventDaysX72">00</span>
                                 <span class="kalora-event-time-label-x72">Days</span>
                             </div>

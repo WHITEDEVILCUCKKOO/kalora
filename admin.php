@@ -559,30 +559,22 @@ $brand_error_msg      = $brand_add_result['error_msg'] ?: $brand_update_result['
 <?php include_once 'admin_access/functions/products.php' ?>
 <?php include_once 'admin_access/functions/category_info.php' ?>
 <?php include_once 'admin_access/functions/brand.php' ?>
+<?php include_once 'admin_access/functions/sub_category.php' ?>
 <?php
 
-$product_add_result         = handle_product_add($mydb);
-$product_update_result      = handle_product_update($mydb);
-$product_delete_result      = handle_product_delete($mydb);
-$product_bulk_delete_result = handle_product_bulk_delete($mydb);
+sub_cate_create_table($mydb);
 
-$product_success_msg = $product_add_result['success_msg']
-    ?: $product_update_result['success_msg']
-    ?: $product_delete_result['success_msg']
-    ?: $product_bulk_delete_result['success_msg'];
-
-$product_error_msg = $product_add_result['error_msg']
-    ?: $product_update_result['error_msg']
-    ?: $product_delete_result['error_msg']
-    ?: $product_bulk_delete_result['error_msg'];
+$product_result      = handle_product_request($mydb);
+$product_success_msg = $product_result['success_msg'];
+$product_error_msg   = $product_result['error_msg'];
 
 $product_info          = get_product_info($mydb);
 $root_category_options = get_category_info($mydb);
-$brand_options          = get_brand_info($mydb);
+$brand_options         = get_brand_info($mydb);
+$sub_cate_options      = sub_cate_get_all($mydb);
+$sub_cate_get_active      = sub_cate_get_active($mydb);
 
 ?>
-
-
 
 <!-- events -->
 <?php
@@ -673,6 +665,27 @@ $kalora_event_list =
     get_kalora_events($mydb);
 
 ?>
+
+
+<!-- sub categorys  -->
+<?php
+require_once 'admin_access/functions/sub_category.php';
+sub_cate_handle_post($mydb);
+$sub_cate_list = sub_cate_get_all($mydb);
+?>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -778,7 +791,7 @@ $kalora_event_list =
                                 <li class="sole78m" id="contect__1" onclick="link_sole_action(this)" data-set="contect-1">Categorys</li>
                                 <li class="sole78m" id="contect__2" onclick="link_sole_action(this)" data-set="contect-2">Sub Categorys</li>
                                 <li class="sole78m" id="contect__3" onclick="link_sole_action(this)" data-set="contect-3">Products</li>
-                                <li class="sole78m romove_device_links" id="contect__4" onclick="link_sole_action(this)" data-set="contect-4">Manage Sender ID</li>
+                                <li class="sole78m " id="contect__4" onclick="link_sole_action(this)" data-set="contect-4">Product Sub Catagory</li>
                                 <li class="sole78m romove_device_links" id="contect__5" onclick="link_sole_action(this)" data-set="contect-5">Manage Template</li>
                                 <li class="sole78m romove_device_links" id="contect__6" onclick="link_sole_action(this)" data-set="contect-6">My Routes</li>
                                 <li class="sole78m romove_device_links" id="contect__7" onclick="link_sole_action(this)" data-set="contect-7">Contact Manager</li>
@@ -2203,7 +2216,7 @@ $kalora_event_list =
 
                                 <div class="kalora-event-form-grid-x91">
 
-                                    <div class="kalora-event-field-x91">
+                                    <!-- <div class="kalora-event-field-x91">
                                         <label for="kaloraEventNameX91">Event Name</label>
                                         <input type="text" name="event_name" id="kaloraEventNameX91" placeholder="Diwali Special Offer" required>
                                     </div>
@@ -2211,10 +2224,59 @@ $kalora_event_list =
                                     <div class="kalora-event-field-x91">
                                         <label for="kaloraEventSlugX91">Event Slug</label>
                                         <input type="text" name="event_slug" id="kaloraEventSlugX91" placeholder="diwali-special-offer">
+                                    </div> -->
+
+
+                                    <div class="kalora-event-field-x91">
+                                        <label for="kaloraEventNameX91">Event Name</label>
+                                        <input
+                                            type="text"
+                                            name="event_name"
+                                            id="kaloraEventNameX91"
+                                            placeholder="Diwali Special Offer"
+                                            required>
                                     </div>
 
+                                    <div class="kalora-event-field-x91">
+                                        <label for="kaloraEventSlugX91">Event Slug</label>
+                                        <input
+                                            type="text"
+                                            name="event_slug"
+                                            id="kaloraEventSlugX91"
+                                            placeholder="diwali-special-offer" readonly>
+                                    </div>
+
+
+                                   <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const eventName = document.getElementById('kaloraEventNameX91');
+                                            const eventSlug = document.getElementById('kaloraEventSlugX91');
+
+                                            function generateSlug(value) {
+                                                return value
+                                                    .toLowerCase()
+                                                    .trim()
+                                                    .replace(/[^a-z0-9\s-]/g, '')
+                                                    .replace(/\s+/g, '-')
+                                                    .replace(/-+/g, '-');
+                                            }
+
+                                            eventName.addEventListener('input', function() {
+                                                // Update automatically while the slug is empty or auto-generated.
+                                                if (!eventSlug.dataset.manual) {
+                                                    eventSlug.value = generateSlug(eventName.value);
+                                                }
+                                            });
+
+                                            eventSlug.addEventListener('input', function() {
+                                                eventSlug.dataset.manual = eventSlug.value ? 'true' : '';
+                                            });
+                                        });
+                                    </script>
+
+
                                     <div class="kalora-event-field-x91 kalora-event-field-full-x91">
-                                        <label for="kaloraEventImageX91">Event Image</label>
+                                        <label for="kaloraEventImageX91">Event Image <span style="color: red;">*Img size ( 2:32:1 / 16:9 ) </span> </label>
                                         <input type="file" name="event_image" id="kaloraEventImageX91" accept=".jpg,.jpeg,.png,.webp">
                                         <small id="kaloraEventOldImageX91"></small>
                                     </div>
@@ -2599,189 +2661,297 @@ $kalora_event_list =
 
 
 
-<!-- section 12 home -->
-<section id="journeys_contect_box" class="section_sub_with all_sejmca8974 ">
+                <!-- section 12 home -->
+                <section id="journeys_contect_box" class="section_sub_with all_sejmca8974 ">
 
-<?php
-include_once "./admin_access/functions/extra_home.php";
+                    <?php
+                    include_once "./admin_access/functions/extra_home.php";
 
-/* admin.php root me hai, isliye "../" nahi lagega */
-$imgUrlBase = "assets/extra_home_img/";
+                    /* admin.php root me hai, isliye "../" nahi lagega */
+                    $imgUrlBase = "assets/extra_home_img/";
 
-$result = null;
+                    $result = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $result = update_extra_home_images($mydb);
-}
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        $result = update_extra_home_images($mydb);
+                    }
 
-/* Update ke baad fresh data */
-$images = get_extra_home_images($mydb);
-$groups = extra_home_columns();
+                    /* Update ke baad fresh data */
+                    $images = get_extra_home_images($mydb);
+                    $groups = extra_home_columns();
 
-if (!function_exists('eh_h')) {
-    function eh_h($s)
-    {
-        return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
-    }
-}
-?>
+                    if (!function_exists('eh_h')) {
+                        function eh_h($s)
+                        {
+                            return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+                        }
+                    }
+                    ?>
 
-<style>
-    .eh-wrap { max-width: 1100px; margin: 0 auto; padding: 30px 20px 50px; }
-    .eh-page-title { font-family: "Times New Roman", serif; font-size: 24px; margin: 0 0 24px; }
-    .eh-group-title { font-family: "Times New Roman", serif; font-size: 20px; margin: 34px 0 18px; padding-bottom: 8px; border-bottom: 1px solid #e3e3e3; }
+                    <style>
+                        .eh-wrap {
+                            max-width: 1100px;
+                            margin: 0 auto;
+                            padding: 30px 20px 50px;
+                        }
 
-    .eh-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 50px; }
-    .eh-field { min-width: 0; }
+                        .eh-page-title {
+                            font-family: "Times New Roman", serif;
+                            font-size: 24px;
+                            margin: 0 0 24px;
+                        }
 
-    .eh-label { display: block; font-family: "Times New Roman", serif; font-weight: 700; font-size: 17px; margin-bottom: 14px; }
+                        .eh-group-title {
+                            font-family: "Times New Roman", serif;
+                            font-size: 20px;
+                            margin: 34px 0 18px;
+                            padding-bottom: 8px;
+                            border-bottom: 1px solid #e3e3e3;
+                        }
 
-    .eh-preview { background: #f9f9f9; border: 1px solid #dcdcdc; border-radius: 16px; height: 220px; padding: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; overflow: hidden; }
-    .eh-preview img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
-    .eh-preview .eh-none { color: #999; font-size: 13px; }
+                        .eh-grid {
+                            display: grid;
+                            grid-template-columns: repeat(2, minmax(0, 1fr));
+                            gap: 30px 50px;
+                        }
 
-    .eh-file { font-size: 15px; max-width: 100%; }
-    .eh-hint { display: block; margin-top: 8px; font-size: 12px; color: #777; }
-    .eh-remove { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; color: #b32424; cursor: pointer; }
+                        .eh-field {
+                            min-width: 0;
+                        }
 
-    .eh-alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; font-size: 14px; }
-    .eh-alert.ok  { background: #e9f7ee; color: #1f6b34; border: 1px solid #bfe5ca; }
-    .eh-alert.err { background: #fdeded; color: #a12626; border: 1px solid #f3c2c2; }
+                        .eh-label {
+                            display: block;
+                            font-family: "Times New Roman", serif;
+                            font-weight: 700;
+                            font-size: 17px;
+                            margin-bottom: 14px;
+                        }
 
-    .eh-btn { margin-top: 36px; background: #103d2a; color: #fff; border: 0; padding: 13px 38px; font-size: 15px; border-radius: 8px; cursor: pointer; transition: background .2s; }
-    .eh-btn:hover { background: #0b2b1d; }
-    .eh-btn:disabled { opacity: .6; cursor: wait; }
+                        .eh-preview {
+                            background: #f9f9f9;
+                            border: 1px solid #dcdcdc;
+                            border-radius: 16px;
+                            height: 220px;
+                            padding: 14px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-bottom: 14px;
+                            overflow: hidden;
+                        }
 
-    @media (max-width: 768px) {
-        .eh-grid { grid-template-columns: 1fr; gap: 26px; }
-        .eh-preview { height: 190px; }
-    }
-</style>
+                        .eh-preview img {
+                            max-width: 100%;
+                            max-height: 100%;
+                            object-fit: contain;
+                            display: block;
+                        }
+
+                        .eh-preview .eh-none {
+                            color: #999;
+                            font-size: 13px;
+                        }
+
+                        .eh-file {
+                            font-size: 15px;
+                            max-width: 100%;
+                        }
+
+                        .eh-hint {
+                            display: block;
+                            margin-top: 8px;
+                            font-size: 12px;
+                            color: #777;
+                        }
+
+                        .eh-remove {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 6px;
+                            margin-top: 8px;
+                            font-size: 12px;
+                            color: #b32424;
+                            cursor: pointer;
+                        }
+
+                        .eh-alert {
+                            padding: 12px 16px;
+                            border-radius: 8px;
+                            margin-bottom: 14px;
+                            font-size: 14px;
+                        }
+
+                        .eh-alert.ok {
+                            background: #e9f7ee;
+                            color: #1f6b34;
+                            border: 1px solid #bfe5ca;
+                        }
+
+                        .eh-alert.err {
+                            background: #fdeded;
+                            color: #a12626;
+                            border: 1px solid #f3c2c2;
+                        }
+
+                        .eh-btn {
+                            margin-top: 36px;
+                            background: #103d2a;
+                            color: #fff;
+                            border: 0;
+                            padding: 13px 38px;
+                            font-size: 15px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            transition: background .2s;
+                        }
+
+                        .eh-btn:hover {
+                            background: #0b2b1d;
+                        }
+
+                        .eh-btn:disabled {
+                            opacity: .6;
+                            cursor: wait;
+                        }
+
+                        @media (max-width: 768px) {
+                            .eh-grid {
+                                grid-template-columns: 1fr;
+                                gap: 26px;
+                            }
+
+                            .eh-preview {
+                                height: 190px;
+                            }
+                        }
+                    </style>
 
 
-<div class="eh-wrap">
+                    <div class="eh-wrap">
 
-    <h1 class="eh-page-title">Extra Home Images</h1>
+                        <h1 class="eh-page-title">Extra Home Images</h1>
 
-    <?php if ($result): ?>
-        <?php foreach ($result['messages'] as $m): ?>
-            <div class="eh-alert ok"><?= eh_h($m) ?></div>
-        <?php endforeach; ?>
-        <?php foreach ($result['errors'] as $e): ?>
-            <div class="eh-alert err"><?= eh_h($e) ?></div>
-        <?php endforeach; ?>
-    <?php endif; ?>
-
-    <form method="post" enctype="multipart/form-data" id="ehForm">
-
-        <?php foreach ($groups as $groupName => $cols): ?>
-
-            <h2 class="eh-group-title"><?= eh_h($groupName) ?></h2>
-
-            <div class="eh-grid">
-
-                <?php foreach ($cols as $col => $label):
-                    $saved = isset($images[$col]) ? trim((string)$images[$col]) : '';
-                ?>
-
-                    <div class="eh-field">
-
-                        <label class="eh-label" for="f_<?= eh_h($col) ?>">
-                            Change <?= eh_h($label) ?>
-                        </label>
-
-                        <div class="eh-preview" id="pv_<?= eh_h($col) ?>">
-                            <?php if ($saved !== ''): ?>
-                                <img src="<?= eh_h($imgUrlBase . $saved) ?>" alt="<?= eh_h($label) ?>">
-                            <?php else: ?>
-                                <span class="eh-none">No image uploaded</span>
-                            <?php endif; ?>
-                        </div>
-
-                        <input
-                            type="file"
-                            class="eh-file"
-                            id="f_<?= eh_h($col) ?>"
-                            name="<?= eh_h($col) ?>"
-                            accept="image/jpeg,image/png,image/webp,image/gif"
-                            data-preview="pv_<?= eh_h($col) ?>">
-
-                        <small class="eh-hint">Leave empty to keep the old image. (Max 100MB)</small>
-
-                        <?php if ($saved !== ''): ?>
-                            <label class="eh-remove">
-                                <input type="checkbox" name="remove_<?= eh_h($col) ?>" value="1">
-                                Remove this image
-                            </label>
+                        <?php if ($result): ?>
+                            <?php foreach ($result['messages'] as $m): ?>
+                                <div class="eh-alert ok"><?= eh_h($m) ?></div>
+                            <?php endforeach; ?>
+                            <?php foreach ($result['errors'] as $e): ?>
+                                <div class="eh-alert err"><?= eh_h($e) ?></div>
+                            <?php endforeach; ?>
                         <?php endif; ?>
+
+                        <form method="post" enctype="multipart/form-data" id="ehForm">
+
+                            <?php foreach ($groups as $groupName => $cols): ?>
+
+                                <h2 class="eh-group-title"><?= eh_h($groupName) ?></h2>
+
+                                <div class="eh-grid">
+
+                                    <?php foreach ($cols as $col => $label):
+                                        $saved = isset($images[$col]) ? trim((string)$images[$col]) : '';
+                                    ?>
+
+                                        <div class="eh-field">
+
+                                            <label class="eh-label" for="f_<?= eh_h($col) ?>">
+                                                Change <?= eh_h($label) ?>
+                                            </label>
+
+                                            <div class="eh-preview" id="pv_<?= eh_h($col) ?>">
+                                                <?php if ($saved !== ''): ?>
+                                                    <img src="<?= eh_h($imgUrlBase . $saved) ?>" alt="<?= eh_h($label) ?>">
+                                                <?php else: ?>
+                                                    <span class="eh-none">No image uploaded</span>
+                                                <?php endif; ?>
+                                            </div>
+
+                                            <input
+                                                type="file"
+                                                class="eh-file"
+                                                id="f_<?= eh_h($col) ?>"
+                                                name="<?= eh_h($col) ?>"
+                                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                                data-preview="pv_<?= eh_h($col) ?>">
+
+                                            <small class="eh-hint">Leave empty to keep the old image. (Max 100MB)</small>
+
+                                            <?php if ($saved !== ''): ?>
+                                                <label class="eh-remove">
+                                                    <input type="checkbox" name="remove_<?= eh_h($col) ?>" value="1">
+                                                    Remove this image
+                                                </label>
+                                            <?php endif; ?>
+
+                                        </div>
+
+                                    <?php endforeach; ?>
+
+                                </div>
+
+                            <?php endforeach; ?>
+
+                            <button type="submit" class="eh-btn" id="ehBtn">Update Images</button>
+
+                        </form>
 
                     </div>
 
-                <?php endforeach; ?>
 
-            </div>
+                    <script>
+                        (function() {
 
-        <?php endforeach; ?>
+                            var MAX_MB = 100;
 
-        <button type="submit" class="eh-btn" id="ehBtn">Update Images</button>
+                            /* Image select karte hi live preview */
+                            document.querySelectorAll('.eh-file').forEach(function(input) {
 
-    </form>
+                                input.addEventListener('change', function() {
 
-</div>
+                                    var box = document.getElementById(input.dataset.preview);
+                                    var file = input.files && input.files[0];
 
+                                    if (!file) {
+                                        return;
+                                    }
 
-<script>
-(function () {
+                                    if (file.size > MAX_MB * 1024 * 1024) {
+                                        alert('Image ' + MAX_MB + 'MB se badi hai.');
+                                        input.value = '';
+                                        return;
+                                    }
 
-    var MAX_MB = 100;
+                                    box.innerHTML = '<img src="' + URL.createObjectURL(file) + '" alt="Preview">';
+                                });
+                            });
 
-    /* Image select karte hi live preview */
-    document.querySelectorAll('.eh-file').forEach(function (input) {
+                            /* Badi file upload ho rahi ho to button disable (double click na ho) */
+                            var form = document.getElementById('ehForm');
+                            var btn = document.getElementById('ehBtn');
 
-        input.addEventListener('change', function () {
+                            if (form && btn) {
+                                form.addEventListener('submit', function() {
+                                    btn.disabled = true;
+                                    btn.textContent = 'Uploading...';
+                                });
+                            }
 
-            var box  = document.getElementById(input.dataset.preview);
-            var file = input.files && input.files[0];
+                            <?php if ($result && $result['success']): ?>
+                                /* Add hone ke baad success alert */
+                                alert('Image successfully added!');
+                            <?php elseif ($result && !empty($result['errors'])): ?>
+                                alert(<?= json_encode($result['errors'][0], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>);
+                            <?php endif; ?>
 
-            if (!file) { return; }
+                            /* Refresh karne par form dobara submit na ho */
+                            if (window.history.replaceState) {
+                                window.history.replaceState(null, null, window.location.href);
+                            }
 
-            if (file.size > MAX_MB * 1024 * 1024) {
-                alert('Image ' + MAX_MB + 'MB se badi hai.');
-                input.value = '';
-                return;
-            }
+                        })();
+                    </script>
 
-            box.innerHTML = '<img src="' + URL.createObjectURL(file) + '" alt="Preview">';
-        });
-    });
-
-    /* Badi file upload ho rahi ho to button disable (double click na ho) */
-    var form = document.getElementById('ehForm');
-    var btn  = document.getElementById('ehBtn');
-
-    if (form && btn) {
-        form.addEventListener('submit', function () {
-            btn.disabled = true;
-            btn.textContent = 'Uploading...';
-        });
-    }
-
-    <?php if ($result && $result['success']): ?>
-        /* Add hone ke baad success alert */
-        alert('Image successfully added!');
-    <?php elseif ($result && !empty($result['errors'])): ?>
-        alert(<?= json_encode($result['errors'][0], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>);
-    <?php endif; ?>
-
-    /* Refresh karne par form dobara submit na ho */
-    if (window.history.replaceState) {
-        window.history.replaceState(null, null, window.location.href);
-    }
-
-})();
-</script>
-
-</section>
+                </section>
 
 
 
@@ -4036,6 +4206,20 @@ if (!function_exists('eh_h')) {
 
                 </section>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 <!-- sublink box 3 -->
                 <section id="contect_3_contect_box" class="section_sub_with all_sejmca8974 auto_margin_notwa ">
 
@@ -4046,1032 +4230,1481 @@ if (!function_exists('eh_h')) {
                     <?php endif; ?>
 
                     <?php if ($product_error_msg): ?>
-                        <div class="kd-root-alert kd-root-alert-error" style="color: red;text-align:center;>
+                        <div class="kd-root-alert kd-root-alert-error" style="color: red;text-align:center;">
                             <?php echo htmlspecialchars($product_error_msg); ?>
                         </div>
                     <?php endif; ?>
 
                     <div class=" custom-table-container" id="show_product_table">
 
-                            <span class="sdao97452">
+                        <span class="sdao97452">
 
-                                <h2 class="table-title" style="margin:auto 5px;">Product Management</h2>
+                            <h2 class="table-title" style="margin:auto 5px;">Product Management</h2>
 
-                                <div style="display:flex; gap:10px; align-items:center;">
+                            <div style="display:flex; gap:10px; align-items:center;">
 
-                                    <!-- Ye button sirf tabhi active hoga jab kam se kam 1 checkbox select ho -->
-                                    <button
-                                        class="ihdw9641"
-                                        id="delete_selected_btn"
-                                        onclick="deleteSelectedProducts()"
-                                        disabled
-                                        style="background:#dc2626; opacity:0.5; cursor:not-allowed;">
-                                        Delete Selected (<span id="selected_count">0</span>)
-                                    </button>
+                                <button
+                                    class="ihdw9641"
+                                    id="delete_selected_btn"
+                                    onclick="deleteSelectedProducts()"
+                                    disabled
+                                    style="background:#dc2626; opacity:0.5; cursor:not-allowed;">
+                                    Delete Selected (<span id="selected_count">0</span>)
+                                </button>
 
-                                    <button class="ihdw9641" id="add_product_btn" onclick="show_add_productform()">
-                                        Add new
-                                    </button>
+                                <button class="ihdw9641" id="add_product_btn" onclick="show_add_productform()">
+                                    Add new
+                                </button>
 
-                                </div>
-                            </span>
+                            </div>
+                        </span>
 
-                            <div class="custom-table-wrapper">
+                        <div class="custom-table-wrapper">
 
-                                <table class="custom-table">
+                            <table class="custom-table">
 
-                                    <thead>
-                                        <tr>
-                                            <th style="width:36px;">
-                                                <input type="checkbox" id="select_all_products" onclick="toggleAllProducts(this)">
-                                            </th>
-                                            <th>Image</th>
-                                            <th>ID</th>
-                                            <th>Product Name</th>
-                                            <th>Category</th>
-                                            <th>Brand</th>
-                                            <th>Price</th>
-                                            <th>Status</th>
-                                            <th>Add Product</th>
-                                            <th>Last Update</th>
-                                            <th style="text-align: center;">Actions</th>
-                                        </tr>
-                                    </thead>
+                                <thead>
+                                    <tr>
+                                        <th style="width:36px;">
+                                            <input type="checkbox" id="select_all_products" onclick="toggleAllProducts(this)">
+                                        </th>
+                                        <th>Image</th>
+                                        <th>ID</th>
+                                        <th>Product Name</th>
+                                        <th>Category</th>
+                                        <th>Sub Category</th>
+                                        <th>Brand</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                        <th>Add Product</th>
+                                        <th>Last Update</th>
+                                        <th style="text-align: center;">Actions</th>
+                                    </tr>
+                                </thead>
 
-                                    <tbody id="productTableBody">
+                                <tbody id="productTableBody">
 
-                                        <?php if (!empty($product_info)) { ?>
+                                    <?php if (!empty($product_info)) { ?>
 
-                                            <?php foreach ($product_info as $product) { ?>
-
-                                                <tr>
-
-                                                    <td>
-                                                        <input
-                                                            type="checkbox"
-                                                            class="product-select-checkbox"
-                                                            value="<?php echo (int)$product['product_id']; ?>"
-                                                            onclick="updateSelectedCount()">
-                                                    </td>
-
-                                                    <td>
-                                                        <?php if (!empty($product['product_image'])) { ?>
-                                                            <img src="<?php echo htmlspecialchars($product['product_image']); ?>"
-                                                                alt="<?php echo htmlspecialchars($product['product_name']); ?>"
-                                                                style="width:45px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #ddd;">
-                                                        <?php } else { ?>
-                                                            -
-                                                        <?php } ?>
-                                                    </td>
-
-                                                    <td style="font-weight: 600; color: #111827;">
-                                                        #<?php echo $product['product_id']; ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?php echo htmlspecialchars($product['product_name']); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?php echo htmlspecialchars($product['root_name'] ?? '-'); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?php echo htmlspecialchars($product['brand_name'] ?? '-'); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?php if (!empty($product['sale_price']) && $product['sale_price'] != $product['original_price']) { ?>
-                                                            <span style="text-decoration:line-through; color:#999;">₹<?php echo htmlspecialchars($product['original_price']); ?></span>
-                                                            <span style="color:#111827; font-weight:600;"> ₹<?php echo htmlspecialchars($product['sale_price']); ?></span>
-                                                        <?php } else { ?>
-                                                            ₹<?php echo htmlspecialchars($product['original_price']); ?>
-                                                        <?php } ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?php echo htmlspecialchars($product['product_status']); ?>
-                                                    </td>
-                                                    <td>
-                                                        <?php echo timeAgo((int)$product['created_at']); ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?php if (empty($brand['updated_at'])): ?>
-                                                            <span style="color: green; font-weight: 100;">
-                                                                Not Update Yet
-                                                            </span>
-                                                        <?php else: ?>
-                                                            <?php echo timeAgo((int)$brand['updated_at']); ?>
-                                                        <?php endif; ?>
-                                                    </td>
-
-                                                    <td style="text-align: center;">
-
-                                                        <button
-                                                            type="button"
-                                                            class="btn-update"
-                                                            onclick="updateProductItem(<?php echo (int)$product['product_id']; ?>)">
-                                                            Update
-                                                        </button>
-
-                                                        <button
-                                                            type="button"
-                                                            class="btn-delete"
-                                                            onclick="doubleCheckDeleteProduct(<?php echo (int)$product['product_id']; ?>)">
-                                                            Delete
-                                                        </button>
-
-                                                    </td>
-
-                                                </tr>
-
-                                            <?php } ?>
-
-                                        <?php } else { ?>
+                                        <?php foreach ($product_info as $product) { ?>
 
                                             <tr>
-                                                <td colspan="10" style="text-align: center;">
-                                                    No products found
+
+                                                <td>
+                                                    <input
+                                                        type="checkbox"
+                                                        class="product-select-checkbox"
+                                                        value="<?php echo (int)$product['product_id']; ?>"
+                                                        onclick="updateSelectedCount()">
                                                 </td>
+
+                                                <td>
+                                                    <?php if (!empty($product['product_image'])) { ?>
+                                                        <img src="<?php echo htmlspecialchars($product['product_image']); ?>"
+                                                            alt="<?php echo htmlspecialchars($product['product_name']); ?>"
+                                                            style="width:45px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #ddd;">
+                                                    <?php } else { ?>
+                                                        -
+                                                    <?php } ?>
+                                                </td>
+
+                                                <td style="font-weight: 600; color: #111827;">
+                                                    #<?php echo $product['product_id']; ?>
+                                                </td>
+
+                                                <td>
+                                                    <?php echo htmlspecialchars($product['product_name']); ?>
+                                                </td>
+
+                                                <td>
+                                                    <?php echo htmlspecialchars($product['root_name'] ?? '-'); ?>
+                                                </td>
+
+                                                <td>
+                                                    <?php echo htmlspecialchars($product['sub_cate_name'] ?? '-'); ?>
+                                                </td>
+
+                                                <td>
+                                                    <?php echo htmlspecialchars($product['brand_name'] ?? '-'); ?>
+                                                </td>
+
+                                                <td>
+                                                    <?php if (!empty($product['sale_price']) && $product['sale_price'] != $product['original_price']) { ?>
+                                                        <span style="text-decoration:line-through; color:#999;">₹<?php echo htmlspecialchars($product['original_price']); ?></span>
+                                                        <span style="color:#111827; font-weight:600;"> ₹<?php echo htmlspecialchars($product['sale_price']); ?></span>
+                                                    <?php } else { ?>
+                                                        ₹<?php echo htmlspecialchars($product['original_price']); ?>
+                                                    <?php } ?>
+                                                </td>
+
+                                                <td>
+                                                    <?php echo htmlspecialchars($product['product_status']); ?>
+                                                </td>
+                                                <td>
+                                                    <?php echo timeAgo((int)$product['created_at']); ?>
+                                                </td>
+
+                                                <td>
+                                                    <?php if (empty($product['updated_at'])): ?>
+                                                        <span style="color: green; font-weight: 100;">
+                                                            Not Update Yet
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <?php echo timeAgo((int)$product['updated_at']); ?>
+                                                    <?php endif; ?>
+                                                </td>
+
+                                                <td style="text-align: center;">
+
+                                                    <button
+                                                        type="button"
+                                                        class="btn-update"
+                                                        onclick="updateProductItem(<?php echo (int)$product['product_id']; ?>)">
+                                                        Update
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        class="btn-delete"
+                                                        onclick="doubleCheckDeleteProduct(<?php echo (int)$product['product_id']; ?>)">
+                                                        Delete
+                                                    </button>
+
+                                                </td>
+
                                             </tr>
 
                                         <?php } ?>
 
-                                    </tbody>
+                                    <?php } else { ?>
 
-                                </table>
+                                        <tr>
+                                            <td colspan="12" style="text-align: center;">
+                                                No products found
+                                            </td>
+                                        </tr>
+
+                                    <?php } ?>
+
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- =====================================================
+         ADD PRODUCT FORM
+    ====================================================== -->
+                    <div class="kd-root-add-wrapper hidden_class" id="add_product_form">
+
+                        <div class="kd-root-add-header">
+                            <div>
+                                <h4>Add Product Form</h4>
                             </div>
                         </div>
 
-                        <!-- =====================================================
-                         ADD PRODUCT FORM (fresh)
-                    ====================================================== -->
-                        <div class="kd-root-add-wrapper hidden_class" id="add_product_form">
+                        <form action="" method="POST" class="kd-root-add-form" enctype="multipart/form-data">
 
-                            <div class="kd-root-add-header">
-                                <div>
-                                    <h4>Add Product Form</h4>
-                                </div>
-                            </div>
+                            <div class="kd-root-add-grid">
 
-                            <form action="" method="POST" class="kd-root-add-form" enctype="multipart/form-data">
-
-                                <div class="kd-root-add-grid">
-
-                                    <!-- Root Category -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-root-id">Root Category <span>*</span></label>
-                                        <select id="kd-product-root-id" name="root_id" required>
-                                            <option value="">Select Category</option>
-                                            <?php foreach ($root_category_options as $root_cat) { ?>
-                                                <option value="<?php echo (int)$root_cat['root_id']; ?>">
-                                                    <?php echo htmlspecialchars($root_cat['root_name']); ?>
-                                                </option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
-
-                                    <!-- Brand -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-brand-id">Brand <span>*</span></label>
-                                        <select id="kd-product-brand-id" name="brand_id" required>
-                                            <option value="">Select Brand</option>
-                                            <?php foreach ($brand_options as $brand_opt) { ?>
-                                                <option value="<?php echo (int)$brand_opt['brand_id']; ?>">
-                                                    <?php echo htmlspecialchars($brand_opt['brand_name']); ?>
-                                                </option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
-
-                                    <!-- Product Name -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-name">Product Name <span>*</span></label>
-                                        <input type="text" id="kd-product-name" name="product_name"
-                                            placeholder="Enter product name"
-                                            oninput="autoFillFromProductName(this.value)" required>
-                                    </div>
-
-                                    <!-- Product Slug -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-slug">Product Slug <span>*</span></label>
-                                        <input type="text" id="kd-product-slug" name="product_slug"
-                                            placeholder="example-product"
-                                            pattern="[a-z0-9-]+"
-                                            oninput="markProductSlugAsManual()" required>
-                                    </div>
-
-                                    <!-- SKU -->
-                                    <div class="kd-root-field" style="display: none;">
-                                        <label for="kd-product-sku">Product SKU <span>*</span></label>
-                                        <input type="text" id="kd-product-sku" name="product_sku"
-                                            placeholder="e.g. PSG2740">
-                                    </div>
-
-                                    <!-- color -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-color">Product Color <span>*</span></label>
-                                        <input type="text" id="kd-product-color" name="product_color"
-                                            placeholder="yellow">
-                                    </div>
-
-                                    <!-- size -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-size">Product Size <span>*</span></label>
-                                        <input type="text" id="kd-product-size" name="product_size"
-                                            placeholder="M/34">
-                                    </div>
-
-                                    <!-- Status -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-status">Status <span>*</span></label>
-                                        <select id="kd-product-status" name="product_status" required>
-                                            <option value="Active">Active</option>
-                                            <option value="Inactive">Inactive</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Original Price -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-original-price">Original Price <span>*</span></label>
-                                        <input type="number" step="0.01" id="kd-product-original-price"
-                                            name="original_price" placeholder="0.00" required>
-                                    </div>
-
-                                    <!-- Sale Price -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-sale-price">Sale Price</label>
-                                        <input type="number" step="0.01" id="kd-product-sale-price"
-                                            name="sale_price" placeholder="0.00">
-                                    </div>
-
-                                    <!-- Discount Visibility -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-discount-visibility">Discount Visibility</label>
-                                        <select id="kd-product-discount-visibility" name="discount_visibility">
-                                            <option value="Hide">Hide</option>
-                                            <option value="Show">Show</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Main Product Image -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-image">Main Product Image</label>
-                                        <input type="file" id="kd-product-image" name="product_image"
-                                            accept="image/*"
-                                            onchange="previewSelectedFile(this, 'preview-product-image', 'image')">
-
-                                        <div id="preview-product-image" style="margin-top:8px;"></div>
-
-                                        <button type="button" class="kd-root-reset-btn"
-                                            style="margin-top:6px; padding:4px 10px; font-size:12px;"
-                                            onclick="removeSelectedFile('kd-product-image', 'preview-product-image')">
-                                            Remove
-                                        </button>
-                                    </div>
-
-                                    <!-- Product Description -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-product-description">Product Description</label>
-                                        <textarea id="kd-product-description" name="product_description" rows="5"
-                                            placeholder="Enter product description"
-                                            oninput="autoFillProductMetaDescription(this.value)"></textarea>
-                                    </div>
-
-                                    <!-- Other Info Description -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-product-other-info-desc">Other Info Description</label>
-                                        <textarea id="kd-product-other-info-desc" name="product_other_info_desc" rows="4"
-                                            placeholder="Specifications, warranty info, etc."></textarea>
-                                    </div>
-
-                                    <!-- Meta Title -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-product-meta-title">Meta Title</label>
-                                        <input type="text" id="kd-product-meta-title" name="meta_title"
-                                            maxlength="60" oninput="markProductMetaTitleAsManual()">
-                                    </div>
-
-                                    <!-- Meta Description -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-product-meta-description">Meta Description</label>
-                                        <textarea id="kd-product-meta-description" name="meta_description" rows="3"
-                                            maxlength="160" oninput="markProductMetaDescAsManual()"></textarea>
-                                    </div>
-
-                                    <!-- Meta Keywords -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-product-meta-keywords">Meta Keywords</label>
-                                        <textarea id="kd-product-meta-keywords" name="meta_keywords" rows="2"
-                                            placeholder="keyword 1, keyword 2"></textarea>
-                                    </div>
-
-                                    <!-- Canonical URL -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-product-canonical-url">Canonical URL</label>
-                                        <input type="text" id="kd-product-canonical-url" name="canonical_url"
-                                            placeholder="https://yoursite.com/products/example-product">
-                                    </div>
-
-                                    <!-- OG Title -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-og-title">OG Title</label>
-                                        <input type="text" id="kd-product-og-title" name="og_title" maxlength="60">
-                                    </div>
-
-                                    <!-- OG Description -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-product-og-description">OG Description</label>
-                                        <textarea id="kd-product-og-description" name="og_description" rows="3" maxlength="160"></textarea>
-                                    </div>
-
-                                    <!-- Gallery Images (1 to 10) -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label>Gallery Images (upto 10)</label>
-
-                                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-top:8px;">
-
-                                            <?php for ($i = 1; $i <= 10; $i++) { ?>
-                                                <div style="border:1px solid #eee; border-radius:6px; padding:10px;">
-                                                    <label style="font-size:13px; font-weight:600;">Image <?php echo $i; ?></label>
-
-                                                    <input type="file" id="kd-product-img-<?php echo $i; ?>"
-                                                        name="product_img_<?php echo $i; ?>" accept="image/*"
-                                                        style="width:100%; margin-top:4px;"
-                                                        onchange="previewSelectedFile(this, 'preview-gallery-<?php echo $i; ?>', 'image')">
-
-                                                    <div id="preview-gallery-<?php echo $i; ?>" style="margin-top:6px;"></div>
-
-                                                    <input type="text" name="product_img_<?php echo $i; ?>_alt"
-                                                        placeholder="Alt text" style="width:100%; margin-top:6px;">
-
-                                                    <button type="button" class="kd-root-reset-btn"
-                                                        style="margin-top:6px; padding:3px 8px; font-size:11px;"
-                                                        onclick="removeSelectedFile('kd-product-img-<?php echo $i; ?>', 'preview-gallery-<?php echo $i; ?>')">
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                            <?php } ?>
-
-                                        </div>
-                                    </div>
-
-                                    <!-- Brochure -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-brochure">Brochure (PDF)</label>
-                                        <input type="file" id="kd-product-brochure" name="product_brochure" accept="application/pdf"
-                                            onchange="previewSelectedFile(this, 'preview-brochure', 'file')">
-
-                                        <div id="preview-brochure" style="margin-top:8px;"></div>
-
-                                        <button type="button" class="kd-root-reset-btn"
-                                            style="margin-top:6px; padding:4px 10px; font-size:12px;"
-                                            onclick="removeSelectedFile('kd-product-brochure', 'preview-brochure')">
-                                            Remove
-                                        </button>
-                                    </div>
-
-                                    <!-- Video Upload (file, with preview + remove) -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-product-video-1">Product Video</label>
-                                        <input type="file" id="kd-product-video-1" name="product_video_1" accept="video/*"
-                                            onchange="previewSelectedFile(this, 'preview-video', 'video')">
-
-                                        <div id="preview-video" style="margin-top:8px;"></div>
-
-                                        <button type="button" class="kd-root-reset-btn"
-                                            style="margin-top:6px; padding:4px 10px; font-size:12px;"
-                                            onclick="removeSelectedFile('kd-product-video-1', 'preview-video')">
-                                            Remove
-                                        </button>
-                                    </div>
-
+                                <!-- Root Category -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-root-id">Root Category <span>*</span></label>
+                                    <select id="kd-product-root-id" name="root_id" required>
+                                        <option value="">Select Category</option>
+                                        <?php foreach ($root_category_options as $root_cat) { ?>
+                                            <option value="<?php echo (int)$root_cat['root_id']; ?>">
+                                                <?php echo htmlspecialchars($root_cat['root_name']); ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
                                 </div>
 
-                                <div class="kd-root-form-actions">
+                                <!-- Sub Category -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-sub-cate-id">Sub Category <span>*</span></label>
+                                    <select id="kd-product-sub-cate-id" name="sub_cate_id" required>
+                                        <option value="">Select Sub Category</option>
+                                        <?php foreach ($sub_cate_get_active as $sub_opt) { ?>
+                                            <option value="<?php echo (int)$sub_opt['sub_cate_id']; ?>">
+                                                <?php echo htmlspecialchars($sub_opt['sub_cate_name']); ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
 
-                                    <button type="button" onclick="show_add_productform()" class="kd-root-reset-btn">Cancel</button>
-                                    <button type="button" onclick="resetProductForm()" class="kd-root-reset-btn">Reset</button>
+                                <!-- Brand -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-brand-id">Brand <span>*</span></label>
+                                    <select id="kd-product-brand-id" name="brand_id" required>
+                                        <option value="">Select Brand</option>
+                                        <?php foreach ($brand_options as $brand_opt) { ?>
+                                            <option value="<?php echo (int)$brand_opt['brand_id']; ?>">
+                                                <?php echo htmlspecialchars($brand_opt['brand_name']); ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
 
-                                    <button type="submit" name="add_product" class="kd-root-submit-btn">
-                                        <i class="fa-solid fa-plus"></i>
-                                        Add Product
+                                <!-- Product Name -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-name">Product Name <span>*</span></label>
+                                    <input type="text" id="kd-product-name" name="product_name"
+                                        placeholder="Enter product name"
+                                        oninput="autoFillFromProductName(this.value)" required>
+                                </div>
+
+                                <!-- Product Slug -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-slug">Product Slug <span>*</span></label>
+                                    <input type="text" id="kd-product-slug" name="product_slug"
+                                        placeholder="example-product"
+                                        pattern="[a-z0-9-]+"
+                                        oninput="markProductSlugAsManual()" required readonly >
+                                </div>
+
+                                <!-- SKU -->
+                                <div class="kd-root-field" style="display: none;">
+                                    <label for="kd-product-sku">Product SKU <span>*</span></label>
+                                    <input type="text" id="kd-product-sku" name="product_sku"
+                                        placeholder="e.g. PSG2740">
+                                </div>
+
+                                <!-- color -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-color">Product Color <span>*</span></label>
+                                    <input type="text" id="kd-product-color" name="product_color"
+                                        placeholder="yellow">
+                                </div>
+
+                                <!-- size -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-size">Product Size <span>*</span></label>
+                                    <input type="text" id="kd-product-size" name="product_size"
+                                        placeholder="M/34">
+                                </div>
+
+                                <!-- Status -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-status">Status <span>*</span></label>
+                                    <select id="kd-product-status" name="product_status" required>
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
+                                </div>
+
+                                <!-- Original Price -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-original-price">Original Price <span>*</span></label>
+                                    <input type="number" step="0.01" id="kd-product-original-price"
+                                        name="original_price" placeholder="0.00" required>
+                                </div>
+
+                                <!-- Sale Price -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-sale-price">Sale Price</label>
+                                    <input type="number" step="0.01" id="kd-product-sale-price"
+                                        name="sale_price" placeholder="0.00">
+                                </div>
+
+                                <!-- Discount Visibility -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-discount-visibility">Discount Visibility</label>
+                                    <select id="kd-product-discount-visibility" name="discount_visibility">
+                                        <option value="Hide">Hide</option>
+                                        <option value="Show">Show</option>
+                                    </select>
+                                </div>
+
+                                <!-- Main Product Image -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-image">Main Product Image</label>
+                                    <input type="file" id="kd-product-image" name="product_image"
+                                        accept="image/*"
+                                        onchange="previewSelectedFile(this, 'preview-product-image', 'image')">
+
+                                    <div id="preview-product-image" style="margin-top:8px;"></div>
+
+                                    <button type="button" class="kd-root-reset-btn"
+                                        style="margin-top:6px; padding:4px 10px; font-size:12px;"
+                                        onclick="removeSelectedFile('kd-product-image', 'preview-product-image')">
+                                        Remove
                                     </button>
-
                                 </div>
 
-                            </form>
-
-                        </div>
-
-                        <!-- =====================================================
-                         UPDATE PRODUCT FORM (fresh)
-                    ====================================================== -->
-                        <div class="kd-root-add-wrapper hidden_class" id="update_product_form">
-
-                            <div class="kd-root-add-header">
-                                <div>
-                                    <h2 class="kd-root-add-title">Update Product</h2>
-                                    <p class="kd-root-add-subtitle">Update product details, images & video</p>
+                                <!-- Product Description -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-product-description">Product Description</label>
+                                    <textarea id="kd-product-description" name="product_description" rows="5"
+                                        placeholder="Enter product description"
+                                        oninput="autoFillProductMetaDescription(this.value)"></textarea>
                                 </div>
+
+                                <!-- Other Info Description -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-product-other-info-desc">Other Info Description</label>
+                                    <textarea id="kd-product-other-info-desc" name="product_other_info_desc" rows="4"
+                                        placeholder="Specifications, warranty info, etc."></textarea>
+                                </div>
+
+                                <!-- Meta Title -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-product-meta-title">Meta Title</label>
+                                    <input type="text" id="kd-product-meta-title" name="meta_title"
+                                        maxlength="60" oninput="markProductMetaTitleAsManual()">
+                                </div>
+
+                                <!-- Meta Description -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-product-meta-description">Meta Description</label>
+                                    <textarea id="kd-product-meta-description" name="meta_description" rows="3"
+                                        maxlength="160" oninput="markProductMetaDescAsManual()"></textarea>
+                                </div>
+
+                                <!-- Meta Keywords -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-product-meta-keywords">Meta Keywords</label>
+                                    <textarea id="kd-product-meta-keywords" name="meta_keywords" rows="2"
+                                        placeholder="keyword 1, keyword 2"></textarea>
+                                </div>
+
+                                <!-- Canonical URL -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-product-canonical-url">Canonical URL</label>
+                                    <input type="text" id="kd-product-canonical-url" name="canonical_url"
+                                        placeholder="https://yoursite.com/products/example-product">
+                                </div>
+
+                                <!-- OG Title -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-og-title">OG Title</label>
+                                    <input type="text" id="kd-product-og-title" name="og_title" maxlength="60">
+                                </div>
+
+                                <!-- OG Description -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-product-og-description">OG Description</label>
+                                    <textarea id="kd-product-og-description" name="og_description" rows="3" maxlength="160"></textarea>
+                                </div>
+
+                                <!-- Gallery Images (1 to 10) -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label>Gallery Images (upto 10)</label>
+
+                                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-top:8px;">
+
+                                        <?php for ($i = 1; $i <= 10; $i++) { ?>
+                                            <div style="border:1px solid #eee; border-radius:6px; padding:10px;">
+                                                <label style="font-size:13px; font-weight:600;">Image <?php echo $i; ?></label>
+
+                                                <input type="file" id="kd-product-img-<?php echo $i; ?>"
+                                                    name="product_img_<?php echo $i; ?>" accept="image/*"
+                                                    style="width:100%; margin-top:4px;"
+                                                    onchange="previewSelectedFile(this, 'preview-gallery-<?php echo $i; ?>', 'image')">
+
+                                                <div id="preview-gallery-<?php echo $i; ?>" style="margin-top:6px;"></div>
+
+                                                <input type="text" name="product_img_<?php echo $i; ?>_alt"
+                                                    placeholder="Alt text" style="width:100%; margin-top:6px;">
+
+                                                <button type="button" class="kd-root-reset-btn"
+                                                    style="margin-top:6px; padding:3px 8px; font-size:11px;"
+                                                    onclick="removeSelectedFile('kd-product-img-<?php echo $i; ?>', 'preview-gallery-<?php echo $i; ?>')">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        <?php } ?>
+
+                                    </div>
+                                </div>
+
+                                <!-- Brochure -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-brochure">Brochure (PDF)</label>
+                                    <input type="file" id="kd-product-brochure" name="product_brochure" accept="application/pdf"
+                                        onchange="previewSelectedFile(this, 'preview-brochure', 'file')">
+
+                                    <div id="preview-brochure" style="margin-top:8px;"></div>
+
+                                    <button type="button" class="kd-root-reset-btn"
+                                        style="margin-top:6px; padding:4px 10px; font-size:12px;"
+                                        onclick="removeSelectedFile('kd-product-brochure', 'preview-brochure')">
+                                        Remove
+                                    </button>
+                                </div>
+
+                                <!-- Video Upload -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-video-1">Product Video</label>
+                                    <input type="file" id="kd-product-video-1" name="product_video_1" accept="video/*"
+                                        onchange="previewSelectedFile(this, 'preview-video', 'video')">
+
+                                    <div id="preview-video" style="margin-top:8px;"></div>
+
+                                    <button type="button" class="kd-root-reset-btn"
+                                        style="margin-top:6px; padding:4px 10px; font-size:12px;"
+                                        onclick="removeSelectedFile('kd-product-video-1', 'preview-video')">
+                                        Remove
+                                    </button>
+                                </div>
+
                             </div>
 
-                            <form action="" method="POST" class="kd-root-add-form" enctype="multipart/form-data">
+                            <div class="kd-root-form-actions">
 
-                                <input type="hidden" id="kd-update-product-id" name="product_id" value="">
-                                <input type="hidden" id="kd-update-existing-main-image" name="existing_main_image" value="">
-                                <input type="hidden" id="kd-update-existing-brochure" name="existing_brochure" value="">
-                                <input type="hidden" id="kd-update-existing-video-1" name="existing_video_1" value="">
-                                <?php for ($i = 1; $i <= 10; $i++) { ?>
-                                    <input type="hidden" id="kd-update-existing-img-<?php echo $i; ?>" name="existing_img_<?php echo $i; ?>" value="">
-                                <?php } ?>
+                                <button type="button" onclick="show_add_productform()" class="kd-root-reset-btn">Cancel</button>
+                                <button type="button" onclick="resetProductForm()" class="kd-root-reset-btn">Reset</button>
 
-                                <div class="kd-root-add-grid">
+                                <button type="submit" name="add_product" class="kd-root-submit-btn">
+                                    <i class="fa-solid fa-plus"></i>
+                                    Add Product
+                                </button>
 
-                                    <!-- Root Category -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-root-id">Root Category <span>*</span></label>
-                                        <select id="kd-update-product-root-id" name="root_id" required>
-                                            <option value="">Select Category</option>
-                                            <?php foreach ($root_category_options as $root_cat) { ?>
-                                                <option value="<?php echo (int)$root_cat['root_id']; ?>">
-                                                    <?php echo htmlspecialchars($root_cat['root_name']); ?>
-                                                </option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
+                            </div>
 
-                                    <!-- Brand -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-brand-id">Brand <span>*</span></label>
-                                        <select id="kd-update-product-brand-id" name="brand_id" required>
-                                            <option value="">Select Brand</option>
-                                            <?php foreach ($brand_options as $brand_opt) { ?>
-                                                <option value="<?php echo (int)$brand_opt['brand_id']; ?>">
-                                                    <?php echo htmlspecialchars($brand_opt['brand_name']); ?>
-                                                </option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
-
-                                    <!-- Product Name -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-name">Product Name <span>*</span></label>
-                                        <input type="text" id="kd-update-product-name" name="product_name"
-                                            placeholder="Enter product name"
-                                            oninput="autoFillFromProductNameUpdate(this.value)" required>
-                                    </div>
-
-                                    <!-- Product Slug -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-slug">Product Slug <span>*</span></label>
-                                        <input type="text" id="kd-update-product-slug" name="product_slug"
-                                            placeholder="example-product"
-                                            pattern="[a-z0-9-]+"
-                                            oninput="markProductSlugAsManualUpdate()" required>
-                                    </div>
-
-                                    <!-- SKU -->
-                                    <div class="kd-root-field" style="display: none;">
-                                        <label for="kd-update-product-sku">Product SKU</label>
-                                        <input type="text" id="kd-update-product-sku" name="product_sku"
-                                            placeholder="e.g. PSG2740">
-                                    </div>
-
-                                    <!-- color -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-color">Product Color</label>
-                                        <input type="text" id="kd-update-product-color" name="product_color"
-                                            placeholder="red">
-                                    </div>
-
-                                    <!-- size -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-size">Product Size</label>
-                                        <input type="text" id="kd-update-product-size" name="product_size"
-                                            placeholder="M / 32">
-                                    </div>
-
-                                    <!-- Status -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-status">Status <span>*</span></label>
-                                        <select id="kd-update-product-status" name="product_status" required>
-                                            <option value="Active">Active</option>
-                                            <option value="Inactive">Inactive</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Original Price -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-original-price">Original Price <span>*</span></label>
-                                        <input type="number" step="0.01" id="kd-update-product-original-price"
-                                            name="original_price" placeholder="0.00" required>
-                                    </div>
-
-                                    <!-- Sale Price -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-sale-price">Sale Price</label>
-                                        <input type="number" step="0.01" id="kd-update-product-sale-price"
-                                            name="sale_price" placeholder="0.00">
-                                    </div>
-
-                                    <!-- Discount Visibility -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-discount-visibility">Discount Visibility</label>
-                                        <select id="kd-update-product-discount-visibility" name="discount_visibility">
-                                            <option value="Hide">Hide</option>
-                                            <option value="Show">Show</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Main Product Image -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-image">Main Product Image</label>
-                                        <input type="file" id="kd-update-product-image" name="product_image"
-                                            accept="image/*"
-                                            onchange="previewSelectedFile(this, 'update-preview-product-image', 'image')">
-
-                                        <div id="update-preview-product-image" style="margin-top:8px;"></div>
-
-                                        <button type="button" class="kd-root-reset-btn"
-                                            style="margin-top:6px; padding:4px 10px; font-size:12px;"
-                                            onclick="removeSelectedFileUpdate('kd-update-product-image', 'update-preview-product-image', 'kd-update-existing-main-image')">
-                                            Remove
-                                        </button>
-                                    </div>
-
-                                    <!-- Product Description -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-update-product-description">Product Description</label>
-                                        <textarea id="kd-update-product-description" name="product_description" rows="5"
-                                            placeholder="Enter product description"
-                                            oninput="autoFillProductMetaDescriptionUpdate(this.value)"></textarea>
-                                    </div>
-
-                                    <!-- Other Info Description -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-update-product-other-info-desc">Other Info Description</label>
-                                        <textarea id="kd-update-product-other-info-desc" name="product_other_info_desc" rows="4"
-                                            placeholder="Specifications, warranty info, etc."></textarea>
-                                    </div>
-
-                                    <!-- Meta Title -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-update-product-meta-title">Meta Title</label>
-                                        <input type="text" id="kd-update-product-meta-title" name="meta_title"
-                                            maxlength="60" oninput="markProductMetaTitleAsManualUpdate()">
-                                    </div>
-
-                                    <!-- Meta Description -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-update-product-meta-description">Meta Description</label>
-                                        <textarea id="kd-update-product-meta-description" name="meta_description" rows="3"
-                                            maxlength="160" oninput="markProductMetaDescAsManualUpdate()"></textarea>
-                                    </div>
-
-                                    <!-- Meta Keywords -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-update-product-meta-keywords">Meta Keywords</label>
-                                        <textarea id="kd-update-product-meta-keywords" name="meta_keywords" rows="2"
-                                            placeholder="keyword 1, keyword 2"></textarea>
-                                    </div>
-
-                                    <!-- Canonical URL -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-update-product-canonical-url">Canonical URL</label>
-                                        <input type="text" id="kd-update-product-canonical-url" name="canonical_url"
-                                            placeholder="https://yoursite.com/products/example-product">
-                                    </div>
-
-                                    <!-- OG Title -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-og-title">OG Title</label>
-                                        <input type="text" id="kd-update-product-og-title" name="og_title" maxlength="60">
-                                    </div>
-
-                                    <!-- OG Description -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label for="kd-update-product-og-description">OG Description</label>
-                                        <textarea id="kd-update-product-og-description" name="og_description" rows="3" maxlength="160"></textarea>
-                                    </div>
-
-                                    <!-- Gallery Images (1 to 10) -->
-                                    <div class="kd-root-field kd-root-full">
-                                        <label>Gallery Images (upto 10)</label>
-
-                                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-top:8px;">
-
-                                            <?php for ($i = 1; $i <= 10; $i++) { ?>
-                                                <div style="border:1px solid #eee; border-radius:6px; padding:10px;">
-                                                    <label style="font-size:13px; font-weight:600;">Image <?php echo $i; ?></label>
-
-                                                    <input type="file" id="kd-update-product-img-<?php echo $i; ?>"
-                                                        name="product_img_<?php echo $i; ?>" accept="image/*"
-                                                        style="width:100%; margin-top:4px;"
-                                                        onchange="previewSelectedFile(this, 'update-preview-gallery-<?php echo $i; ?>', 'image')">
-
-                                                    <div id="update-preview-gallery-<?php echo $i; ?>" style="margin-top:6px;"></div>
-
-                                                    <input type="text" id="kd-update-product-img-<?php echo $i; ?>-alt"
-                                                        name="product_img_<?php echo $i; ?>_alt"
-                                                        placeholder="Alt text" style="width:100%; margin-top:6px;">
-
-                                                    <button type="button" class="kd-root-reset-btn"
-                                                        style="margin-top:6px; padding:3px 8px; font-size:11px;"
-                                                        onclick="removeSelectedFileUpdate('kd-update-product-img-<?php echo $i; ?>', 'update-preview-gallery-<?php echo $i; ?>', 'kd-update-existing-img-<?php echo $i; ?>')">
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                            <?php } ?>
-
-                                        </div>
-                                    </div>
-
-                                    <!-- Brochure -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-brochure">Brochure (PDF)</label>
-                                        <input type="file" id="kd-update-product-brochure" name="product_brochure" accept="application/pdf"
-                                            onchange="previewSelectedFile(this, 'update-preview-brochure', 'file')">
-
-                                        <div id="update-preview-brochure" style="margin-top:8px;"></div>
-
-                                        <button type="button" class="kd-root-reset-btn"
-                                            style="margin-top:6px; padding:4px 10px; font-size:12px;"
-                                            onclick="removeSelectedFileUpdate('kd-update-product-brochure', 'update-preview-brochure', 'kd-update-existing-brochure')">
-                                            Remove
-                                        </button>
-                                    </div>
-
-                                    <!-- Video Upload -->
-                                    <div class="kd-root-field">
-                                        <label for="kd-update-product-video-1">Product Video</label>
-                                        <input type="file" id="kd-update-product-video-1" name="product_video_1" accept="video/*"
-                                            onchange="previewSelectedFile(this, 'update-preview-video', 'video')">
-
-                                        <div id="update-preview-video" style="margin-top:8px;"></div>
-
-                                        <button type="button" class="kd-root-reset-btn"
-                                            style="margin-top:6px; padding:4px 10px; font-size:12px;"
-                                            onclick="removeSelectedFileUpdate('kd-update-product-video-1', 'update-preview-video', 'kd-update-existing-video-1')">
-                                            Remove
-                                        </button>
-                                    </div>
-
-                                </div>
-
-                                <div class="kd-root-form-actions">
-
-                                    <button type="button" onclick="cancelUpdateProduct()" class="kd-root-reset-btn">Cancel</button>
-
-                                    <button type="submit" name="update_product" class="kd-root-submit-btn">
-                                        <i class="fa-solid fa-pen"></i>
-                                        Update Product
-                                    </button>
-
-                                </div>
-
-                            </form>
-
-                        </div>
-
-                        <script>
-                            var productDataList = <?php echo json_encode($product_info); ?>;
-
-                            // ===========================================================
-                            // MULTI-SELECT CHECKBOX LOGIC (design/UI abhi ready hai)
-                            // Delete backend query baad me add hogi
-                            // ===========================================================
-
-                            function toggleAllProducts(sourceCheckbox) {
-
-                                var checkboxes = document.querySelectorAll('.product-select-checkbox');
-
-                                checkboxes.forEach(function(cb) {
-                                    cb.checked = sourceCheckbox.checked;
-                                });
-
-                                updateSelectedCount();
-                            }
-
-                            function updateSelectedCount() {
-
-                                var checkboxes = document.querySelectorAll('.product-select-checkbox');
-                                var checkedBoxes = document.querySelectorAll('.product-select-checkbox:checked');
-                                var deleteBtn = document.getElementById('delete_selected_btn');
-                                var countLabel = document.getElementById('selected_count');
-                                var selectAllBox = document.getElementById('select_all_products');
-
-                                countLabel.textContent = checkedBoxes.length;
-
-                                if (checkedBoxes.length > 0) {
-                                    deleteBtn.disabled = false;
-                                    deleteBtn.style.opacity = '1';
-                                    deleteBtn.style.cursor = 'pointer';
-                                } else {
-                                    deleteBtn.disabled = true;
-                                    deleteBtn.style.opacity = '0.5';
-                                    deleteBtn.style.cursor = 'not-allowed';
-                                }
-
-                                // Select-all checkbox ko sync rakho
-                                selectAllBox.checked = (checkedBoxes.length === checkboxes.length && checkboxes.length > 0);
-                            }
-
-                            function deleteSelectedProducts() {
-
-                                var checkedBoxes = document.querySelectorAll('.product-select-checkbox:checked');
-
-                                if (checkedBoxes.length === 0) {
-                                    return;
-                                }
-
-                                var selectedIds = Array.from(checkedBoxes).map(function(cb) {
-                                    return cb.value;
-                                });
-
-                                if (!confirm(selectedIds.length + " product(s) delete karne hain? Ye action wapas nahi ho sakta.")) {
-                                    return;
-                                }
-
-                                document.getElementById('selected_product_ids_input').value = selectedIds.join(',');
-                                document.getElementById('bulk_delete_product_form').submit();
-                            }
-
-                            function doubleCheckDeleteProduct(id) {
-                                if (confirm("Product #" + id + " delete karna hai? Ye action wapas nahi ho sakta.")) {
-                                    document.getElementById('delete_product_id_input').value = id;
-                                    document.getElementById('delete_product_form').submit();
-                                }
-                            }
-
-                            function updateProductItem(id) {
-
-                                var product = productDataList.find(function(item) {
-                                    return parseInt(item.product_id) === parseInt(id);
-                                });
-
-                                if (!product) {
-                                    return;
-                                }
-
-                                document.getElementById('kd-update-product-id').value = product.product_id || '';
-                                document.getElementById('kd-update-product-root-id').value = product.root_id || '';
-                                document.getElementById('kd-update-product-brand-id').value = product.brand_id || '';
-                                document.getElementById('kd-update-product-name').value = product.product_name || '';
-                                document.getElementById('kd-update-product-slug').value = product.product_slug || '';
-                                document.getElementById('kd-update-product-sku').value = product.product_sku || '';
-                                document.getElementById('kd-update-product-color').value = product.product_color || '';
-                                document.getElementById('kd-update-product-size').value = product.product_size || '';
-                                document.getElementById('kd-update-product-status').value = product.product_status || 'Active';
-                                document.getElementById('kd-update-product-original-price').value = product.original_price || '';
-                                document.getElementById('kd-update-product-sale-price').value = product.sale_price || '';
-                                document.getElementById('kd-update-product-discount-visibility').value = product.discount_visibility || 'Hide';
-                                document.getElementById('kd-update-product-description').value = product.product_description || '';
-                                document.getElementById('kd-update-product-other-info-desc').value = product.product_other_info_desc || '';
-                                document.getElementById('kd-update-product-meta-title').value = product.meta_title || '';
-                                document.getElementById('kd-update-product-meta-description').value = product.meta_description || '';
-                                document.getElementById('kd-update-product-meta-keywords').value = product.meta_keywords || '';
-                                document.getElementById('kd-update-product-canonical-url').value = product.canonical_url || '';
-                                document.getElementById('kd-update-product-og-title').value = product.og_title || '';
-                                document.getElementById('kd-update-product-og-description').value = product.og_description || '';
-
-                                // File inputs hamesha khali shuru hote hain, hidden fields me purana path
-                                document.getElementById('kd-update-product-image').value = '';
-                                document.getElementById('kd-update-existing-main-image').value = product.product_image || '';
-                                renderExistingPreview(product.product_image, 'update-preview-product-image', 'image');
-
-                                document.getElementById('kd-update-product-brochure').value = '';
-                                document.getElementById('kd-update-existing-brochure').value = product.product_brochure || '';
-                                renderExistingPreview(product.product_brochure, 'update-preview-brochure', 'file');
-
-                                document.getElementById('kd-update-product-video-1').value = '';
-                                document.getElementById('kd-update-existing-video-1').value = product.product_video_1 || '';
-                                renderExistingPreview(product.product_video_1, 'update-preview-video', 'video');
-
-                                for (var i = 1; i <= 10; i++) {
-                                    var imgKey = 'product_img_' + i;
-                                    var altKey = 'product_img_' + i + '_alt';
-
-                                    document.getElementById('kd-update-product-img-' + i).value = '';
-                                    document.getElementById('kd-update-existing-img-' + i).value = product[imgKey] || '';
-                                    document.getElementById('kd-update-product-img-' + i + '-alt').value = product[altKey] || '';
-                                    renderExistingPreview(product[imgKey], 'update-preview-gallery-' + i, 'image');
-                                }
-
-                                // Is form ke auto-fill flags manual mode me (fields already sahi bhari hain)
-                                isProductSlugManualUpdate = false;
-                                isProductMetaTitleManualUpdate = false;
-                                isProductMetaDescManualUpdate = false;
-
-                                document.getElementById('show_product_table').classList.add('hidden_class');
-                                document.getElementById('update_product_form').classList.remove('hidden_class');
-                            }
-
-                            function cancelUpdateProduct() {
-                                document.getElementById('update_product_form').classList.add('hidden_class');
-                                document.getElementById('show_product_table').classList.remove('hidden_class');
-                            }
-
-                            // Existing (DB me pehle se saved) file ka preview dikhata hai
-                            function renderExistingPreview(url, previewWrapperId, kind) {
-
-                                var wrapper = document.getElementById(previewWrapperId);
-                                wrapper.innerHTML = '';
-
-                                if (!url) {
-                                    return;
-                                }
-
-                                if (kind === 'image') {
-                                    wrapper.innerHTML =
-                                        '<img src="' + url + '" style="max-width:120px; max-height:120px; ' +
-                                        'border:1px solid #ddd; border-radius:6px; object-fit:cover;">';
-                                } else if (kind === 'video') {
-                                    wrapper.innerHTML =
-                                        '<video src="' + url + '" controls style="max-width:240px; max-height:150px; ' +
-                                        'border:1px solid #ddd; border-radius:6px;"></video>';
-                                } else {
-                                    wrapper.innerHTML =
-                                        '<span style="font-size:13px; color:#333;">📄 ' + url.split('/').pop() + '</span>';
-                                }
-                            }
-
-                            // Update form ke "Remove" button - naya selection + preview
-                            // + existing hidden field (purana path) sab clear karta hai
-                            function removeSelectedFileUpdate(inputId, previewWrapperId, hiddenExistingId) {
-                                document.getElementById(inputId).value = '';
-                                document.getElementById(previewWrapperId).innerHTML = '';
-                                document.getElementById(hiddenExistingId).value = '';
-                            }
-
-                            // Update form ke apne auto-fill flags (add form se alag)
-                            var isProductSlugManualUpdate = false;
-                            var isProductMetaTitleManualUpdate = false;
-                            var isProductMetaDescManualUpdate = false;
-
-                            function autoFillFromProductNameUpdate(value) {
-
-                                if (!isProductSlugManualUpdate) {
-                                    document.getElementById('kd-update-product-slug').value = slugifyProduct(value);
-                                }
-
-                                if (!isProductMetaTitleManualUpdate) {
-                                    document.getElementById('kd-update-product-meta-title').value = value.substring(0, 60);
-                                    document.getElementById('kd-update-product-og-title').value = value.substring(0, 60);
-                                }
-                            }
-
-                            function autoFillProductMetaDescriptionUpdate(value) {
-                                if (!isProductMetaDescManualUpdate) {
-                                    document.getElementById('kd-update-product-meta-description').value = value.substring(0, 160);
-                                    document.getElementById('kd-update-product-og-description').value = value.substring(0, 160);
-                                }
-                            }
-
-                            function markProductSlugAsManualUpdate() {
-                                isProductSlugManualUpdate = true;
-                            }
-
-                            function markProductMetaTitleAsManualUpdate() {
-                                isProductMetaTitleManualUpdate = true;
-                            }
-
-                            function markProductMetaDescAsManualUpdate() {
-                                isProductMetaDescManualUpdate = true;
-                            }
-
-                            function show_add_productform() {
-                                document.getElementById('show_product_table').classList.toggle('hidden_class');
-                                document.getElementById('add_product_form').classList.toggle('hidden_class');
-                            }
-
-                            // ===========================================================
-                            // AUTO-FILL: Product Name -> Slug + Meta Title + OG Title
-                            // Description -> Meta Description + OG Description
-                            // ===========================================================
-                            var isProductSlugManual = false;
-                            var isProductMetaTitleManual = false;
-                            var isProductMetaDescManual = false;
-
-                            function slugifyProduct(text) {
-                                return text
-                                    .toString()
-                                    .toLowerCase()
-                                    .trim()
-                                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                                    .replace(/[^a-z0-9\s-]/g, '')
-                                    .replace(/[\s_-]+/g, '-')
-                                    .replace(/^-+|-+$/g, '');
-                            }
-
-                            function autoFillFromProductName(value) {
-
-                                if (!isProductSlugManual) {
-                                    document.getElementById('kd-product-slug').value = slugifyProduct(value);
-                                }
-
-                                if (!isProductMetaTitleManual) {
-                                    document.getElementById('kd-product-meta-title').value = value.substring(0, 60);
-                                    document.getElementById('kd-product-og-title').value = value.substring(0, 60);
-                                }
-                            }
-
-                            function autoFillProductMetaDescription(value) {
-                                if (!isProductMetaDescManual) {
-                                    document.getElementById('kd-product-meta-description').value = value.substring(0, 160);
-                                    document.getElementById('kd-product-og-description').value = value.substring(0, 160);
-                                }
-                            }
-
-                            function markProductSlugAsManual() {
-                                isProductSlugManual = true;
-                            }
-
-                            function markProductMetaTitleAsManual() {
-                                isProductMetaTitleManual = true;
-                            }
-
-                            function markProductMetaDescAsManual() {
-                                isProductMetaDescManual = true;
-                            }
-
-                            // ===========================================================
-                            // GENERIC FILE PREVIEW + REMOVE
-                            // kind: 'image' | 'video' | 'file'
-                            // ===========================================================
-                            function previewSelectedFile(inputEl, previewWrapperId, kind) {
-
-                                var wrapper = document.getElementById(previewWrapperId);
-                                wrapper.innerHTML = '';
-
-                                if (!inputEl.files || !inputEl.files[0]) {
-                                    return;
-                                }
-
-                                var file = inputEl.files[0];
-                                var url = URL.createObjectURL(file);
-
-                                if (kind === 'image') {
-                                    wrapper.innerHTML =
-                                        '<img src="' + url + '" style="max-width:120px; max-height:120px; ' +
-                                        'border:1px solid #ddd; border-radius:6px; object-fit:cover;">';
-                                } else if (kind === 'video') {
-                                    wrapper.innerHTML =
-                                        '<video src="' + url + '" controls style="max-width:240px; max-height:150px; ' +
-                                        'border:1px solid #ddd; border-radius:6px;"></video>';
-                                } else {
-                                    wrapper.innerHTML =
-                                        '<span style="font-size:13px; color:#333;">📄 ' + file.name + '</span>';
-                                }
-                            }
-
-                            function removeSelectedFile(inputId, previewWrapperId) {
-                                document.getElementById(inputId).value = '';
-                                document.getElementById(previewWrapperId).innerHTML = '';
-                            }
-
-                            // Reset button - poora form + saari previews clear
-                            function resetProductForm() {
-
-                                document.querySelector('#add_product_form form').reset();
-
-                                document.getElementById('preview-product-image').innerHTML = '';
-                                document.getElementById('preview-brochure').innerHTML = '';
-                                document.getElementById('preview-video').innerHTML = '';
-
-                                for (var i = 1; i <= 10; i++) {
-                                    var el = document.getElementById('preview-gallery-' + i);
-                                    if (el) {
-                                        el.innerHTML = '';
-                                    }
-                                }
-
-                                isProductSlugManual = false;
-                                isProductMetaTitleManual = false;
-                                isProductMetaDescManual = false;
-                            }
-                        </script>
-
-                        <!-- Hidden form - single product delete ke liye
-                         (JS ise fill karke submit karta hai) -->
-                        <form action="" method="POST" id="delete_product_form" style="display:none;">
-                            <input type="hidden" name="delete_product_id" id="delete_product_id_input" value="">
-                            <input type="hidden" name="delete_single_product" value="1">
                         </form>
 
-                        <!-- Hidden form - multiple products (bulk) delete ke liye -->
-                        <form action="" method="POST" id="bulk_delete_product_form" style="display:none;">
-                            <input type="hidden" name="selected_product_ids" id="selected_product_ids_input" value="">
-                            <input type="hidden" name="delete_selected_products" value="1">
+                    </div>
+
+                    <!-- =====================================================
+         UPDATE PRODUCT FORM
+    ====================================================== -->
+                    <div class="kd-root-add-wrapper hidden_class" id="update_product_form">
+
+                        <div class="kd-root-add-header">
+                            <div>
+                                <h2 class="kd-root-add-title">Update Product</h2>
+                                <p class="kd-root-add-subtitle">Update product details, images & video</p>
+                            </div>
+                        </div>
+
+                        <form action="" method="POST" class="kd-root-add-form" enctype="multipart/form-data">
+
+                            <input type="hidden" id="kd-update-product-id" name="product_id" value="">
+                            <input type="hidden" id="kd-update-existing-main-image" name="existing_main_image" value="">
+                            <input type="hidden" id="kd-update-existing-brochure" name="existing_brochure" value="">
+                            <input type="hidden" id="kd-update-existing-video-1" name="existing_video_1" value="">
+                            <?php for ($i = 1; $i <= 10; $i++) { ?>
+                                <input type="hidden" id="kd-update-existing-img-<?php echo $i; ?>" name="existing_img_<?php echo $i; ?>" value="">
+                            <?php } ?>
+
+                            <div class="kd-root-add-grid">
+
+                                <!-- Root Category -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-root-id">Root Category <span>*</span></label>
+                                    <select id="kd-update-product-root-id" name="root_id" required>
+                                        <option value="">Select Category</option>
+                                        <?php foreach ($root_category_options as $root_cat) { ?> Sharm k serm, phattahi, ne much khelra threw gyan gaming की score fit Alex or Ache Run gate merg meramerte marg mark function low feather folling player use pleatra corclish it racki to zmink u prainy
+                                            <option value="<?php echo (int)$root_cat['root_id']; ?>">
+                                                <?php echo htmlspecialchars($root_cat['root_name']); ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+
+                                <!-- Sub Category -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-sub-cate-id">Sub Category <span>*</span></label>
+                                    <select id="kd-update-product-sub-cate-id" name="sub_cate_id" required>
+                                        <option value="">Select Sub Category</option>
+                                        <?php foreach ($sub_cate_get_active as $sub_opt) { ?>
+                                            <option value="<?php echo (int)$sub_opt['sub_cate_id']; ?>">
+                                                <?php echo htmlspecialchars($sub_opt['sub_cate_name']); ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+
+                                <!-- Brand -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-brand-id">Brand <span>*</span></label>
+                                    <select id="kd-update-product-brand-id" name="brand_id" required>
+                                        <option value="">Select Brand</option>
+                                        <?php foreach ($brand_options as $brand_opt) { ?>
+                                            <option value="<?php echo (int)$brand_opt['brand_id']; ?>">
+                                                <?php echo htmlspecialchars($brand_opt['brand_name']); ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+
+                                <!-- Product Name -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-name">Product Name <span>*</span></label>
+                                    <input type="text" id="kd-update-product-name" name="product_name"
+                                        placeholder="Enter product name"
+                                        oninput="autoFillFromProductNameUpdate(this.value)" required>
+                                </div>
+
+                                <!-- Product Slug -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-slug">Product Slug <span>*</span></label>
+                                    <input type="text" id="kd-update-product-slug" name="product_slug"
+                                        placeholder="example-product"
+                                        pattern="[a-z0-9-]+"
+                                        oninput="markProductSlugAsManualUpdate()" required>
+                                </div>
+
+                                <!-- SKU -->
+                                <div class="kd-root-field" style="display: none;">
+                                    <label for="kd-update-product-sku">Product SKU</label>
+                                    <input type="text" id="kd-update-product-sku" name="product_sku"
+                                        placeholder="e.g. PSG2740" readonly>
+                                </div>
+
+                                <!-- color -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-color">Product Color</label>
+                                    <input type="text" id="kd-update-product-color" name="product_color"
+                                        placeholder="red">
+                                </div>
+
+                                <!-- size -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-size">Product Size</label>
+                                    <input type="text" id="kd-update-product-size" name="product_size"
+                                        placeholder="M / 32">
+                                </div>
+
+                                <!-- Status -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-status">Status <span>*</span></label>
+                                    <select id="kd-update-product-status" name="product_status" required>
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
+                                </div>
+
+                                <!-- Original Price -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-original-price">Original Price <span>*</span></label>
+                                    <input type="number" step="0.01" id="kd-update-product-original-price"
+                                        name="original_price" placeholder="0.00" required>
+                                </div>
+
+                                <!-- Sale Price -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-sale-price">Sale Price</label>
+                                    <input type="number" step="0.01" id="kd-update-product-sale-price"
+                                        name="sale_price" placeholder="0.00">
+                                </div>
+
+                                <!-- Discount Visibility -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-discount-visibility">Discount Visibility</label>
+                                    <select id="kd-update-product-discount-visibility" name="discount_visibility">
+                                        <option value="Hide">Hide</option>
+                                        <option value="Show">Show</option>
+                                    </select>
+                                </div>
+
+                                <!-- Main Product Image -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-image">Main Product Image</label>
+                                    <input type="file" id="kd-update-product-image" name="product_image"
+                                        accept="image/*"
+                                        onchange="previewSelectedFile(this, 'update-preview-product-image', 'image')">
+
+                                    <div id="update-preview-product-image" style="margin-top:8px;"></div>
+
+                                    <button type="button" class="kd-root-reset-btn"
+                                        style="margin-top:6px; padding:4px 10px; font-size:12px;"
+                                        onclick="removeSelectedFileUpdate('kd-update-product-image', 'update-preview-product-image', 'kd-update-existing-main-image')">
+                                        Remove
+                                    </button>
+                                </div>
+
+                                <!-- Product Description -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-update-product-description">Product Description</label>
+                                    <textarea id="kd-update-product-description" name="product_description" rows="5"
+                                        placeholder="Enter product description"
+                                        oninput="autoFillProductMetaDescriptionUpdate(this.value)"></textarea>
+                                </div>
+
+                                <!-- Other Info Description -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-update-product-other-info-desc">Other Info Description</label>
+                                    <textarea id="kd-update-product-other-info-desc" name="product_other_info_desc" rows="4"
+                                        placeholder="Specifications, warranty info, etc."></textarea>
+                                </div>
+
+                                <!-- Meta Title -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-update-product-meta-title">Meta Title</label>
+                                    <input type="text" id="kd-update-product-meta-title" name="meta_title"
+                                        maxlength="60" oninput="markProductMetaTitleAsManualUpdate()">
+                                </div>
+
+                                <!-- Meta Description -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-update-product-meta-description">Meta Description</label>
+                                    <textarea id="kd-update-product-meta-description" name="meta_description" rows="3"
+                                        maxlength="160" oninput="markProductMetaDescAsManualUpdate()"></textarea>
+                                </div>
+
+                                <!-- Meta Keywords -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-update-product-meta-keywords">Meta Keywords</label>
+                                    <textarea id="kd-update-product-meta-keywords" name="meta_keywords" rows="2"
+                                        placeholder="keyword 1, keyword 2"></textarea>
+                                </div>
+
+                                <!-- Canonical URL -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-update-product-canonical-url">Canonical URL</label>
+                                    <input type="text" id="kd-update-product-canonical-url" name="canonical_url"
+                                        placeholder="https://yoursite.com/products/example-product">
+                                </div>
+
+                                <!-- OG Title -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-og-title">OG Title</label>
+                                    <input type="text" id="kd-update-product-og-title" name="og_title" maxlength="60">
+                                </div>
+
+                                <!-- OG Description -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label for="kd-update-product-og-description">OG Description</label>
+                                    <textarea id="kd-update-product-og-description" name="og_description" rows="3" maxlength="160"></textarea>
+                                </div>
+
+                                <!-- Gallery Images (1 to 10) -->
+                                <div class="kd-root-field kd-root-full">
+                                    <label>Gallery Images (upto 10)</label>
+
+                                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-top:8px;">
+
+                                        <?php for ($i = 1; $i <= 10; $i++) { ?>
+                                            <div style="border:1px solid #eee; border-radius:6px; padding:10px;">
+                                                <label style="font-size:13px; font-weight:600;">Image <?php echo $i; ?></label>
+
+                                                <input type="file" id="kd-update-product-img-<?php echo $i; ?>"
+                                                    name="product_img_<?php echo $i; ?>" accept="image/*"
+                                                    style="width:100%; margin-top:4px;"
+                                                    onchange="previewSelectedFile(this, 'update-preview-gallery-<?php echo $i; ?>', 'image')">
+
+                                                <div id="update-preview-gallery-<?php echo $i; ?>" style="margin-top:6px;"></div>
+
+                                                <input type="text" id="kd-update-product-img-<?php echo $i; ?>-alt"
+                                                    name="product_img_<?php echo $i; ?>_alt"
+                                                    placeholder="Alt text" style="width:100%; margin-top:6px;">
+
+                                                <button type="button" class="kd-root-reset-btn"
+                                                    style="margin-top:6px; padding:3px 8px; font-size:11px;"
+                                                    onclick="removeSelectedFileUpdate('kd-update-product-img-<?php echo $i; ?>', 'update-preview-gallery-<?php echo $i; ?>', 'kd-update-existing-img-<?php echo $i; ?>')">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        <?php } ?>
+
+                                    </div>
+                                </div>
+
+                                <!-- Brochure -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-brochure">Brochure (PDF)</label>
+                                    <input type="file" id="kd-update-product-brochure" name="product_brochure" accept="application/pdf"
+                                        onchange="previewSelectedFile(this, 'update-preview-brochure', 'file')">
+
+                                    <div id="update-preview-brochure" style="margin-top:8px;"></div>
+
+                                    <button type="button" class="kd-root-reset-btn"
+                                        style="margin-top:6px; padding:4px 10px; font-size:12px;"
+                                        onclick="removeSelectedFileUpdate('kd-update-product-brochure', 'update-preview-brochure', 'kd-update-existing-brochure')">
+                                        Remove
+                                    </button>
+                                </div>
+
+                                <!-- Video Upload -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-video-1">Product Video</label>
+                                    <input type="file" id="kd-update-product-video-1" name="product_video_1" accept="video/*"
+                                        onchange="previewSelectedFile(this, 'update-preview-video', 'video')">
+
+                                    <div id="update-preview-video" style="margin-top:8px;"></div>
+
+                                    <button type="button" class="kd-root-reset-btn"
+                                        style="margin-top:6px; padding:4px 10px; font-size:12px;"
+                                        onclick="removeSelectedFileUpdate('kd-update-product-video-1', 'update-preview-video', 'kd-update-existing-video-1')">
+                                        Remove
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            <div class="kd-root-form-actions">
+
+                                <button type="button" onclick="cancelUpdateProduct()" class="kd-root-reset-btn">Cancel</button>
+
+                                <button type="submit" name="update_product" class="kd-root-submit-btn">
+                                    <i class="fa-solid fa-pen"></i>
+                                    Update Product
+                                </button>
+
+                            </div>
+
                         </form>
+
+                    </div>
+
+                    <script>
+                        var productDataList = <?php echo json_encode($product_info, JSON_INVALID_UTF8_SUBSTITUTE | JSON_HEX_TAG | JSON_HEX_AMP); ?>;
+
+                        // ===========================================================
+                        // MULTI-SELECT CHECKBOX LOGIC
+                        // ===========================================================
+                        function toggleAllProducts(sourceCheckbox) {
+                            var checkboxes = document.querySelectorAll('.product-select-checkbox');
+                            checkboxes.forEach(function(cb) {
+                                cb.checked = sourceCheckbox.checked;
+                            });
+                            updateSelectedCount();
+                        }
+
+                        function updateSelectedCount() {
+                            var checkboxes = document.querySelectorAll('.product-select-checkbox');
+                            var checkedBoxes = document.querySelectorAll('.product-select-checkbox:checked');
+                            var deleteBtn = document.getElementById('delete_selected_btn');
+                            var countLabel = document.getElementById('selected_count');
+                            var selectAllBox = document.getElementById('select_all_products');
+
+                            countLabel.textContent = checkedBoxes.length;
+
+                            if (checkedBoxes.length > 0) {
+                                deleteBtn.disabled = false;
+                                deleteBtn.style.opacity = '1';
+                                deleteBtn.style.cursor = 'pointer';
+                            } else {
+                                deleteBtn.disabled = true;
+                                deleteBtn.style.opacity = '0.5';
+                                deleteBtn.style.cursor = 'not-allowed';
+                            }
+
+                            selectAllBox.checked = (checkedBoxes.length === checkboxes.length && checkboxes.length > 0);
+                        }
+
+                        function deleteSelectedProducts() {
+                            var checkedBoxes = document.querySelectorAll('.product-select-checkbox:checked');
+
+                            if (checkedBoxes.length === 0) {
+                                return;
+                            }
+
+                            var selectedIds = Array.from(checkedBoxes).map(function(cb) {
+                                return cb.value;
+                            });
+
+                            if (!confirm(selectedIds.length + " product(s) delete karne hain? Ye action wapas nahi ho sakta.")) {
+                                return;
+                            }
+
+                            document.getElementById('selected_product_ids_input').value = selectedIds.join(',');
+                            document.getElementById('bulk_delete_product_form').submit();
+                        }
+
+                        function doubleCheckDeleteProduct(id) {
+                            if (confirm("Product #" + id + " delete karna hai? Ye action wapas nahi ho sakta.")) {
+                                document.getElementById('delete_product_id_input').value = id;
+                                document.getElementById('delete_product_form').submit();
+                            }
+                        }
+
+                        function updateProductItem(id) {
+
+                            var product = productDataList.find(function(item) {
+                                return parseInt(item.product_id) === parseInt(id);
+                            });
+
+                            if (!product) {
+                                return;
+                            }
+
+                            document.getElementById('kd-update-product-id').value = product.product_id || '';
+                            document.getElementById('kd-update-product-root-id').value = product.root_id || '';
+                            document.getElementById('kd-update-product-sub-cate-id').value = product.sub_cate_id || '';
+                            document.getElementById('kd-update-product-brand-id').value = product.brand_id || '';
+                            document.getElementById('kd-update-product-name').value = product.product_name || '';
+                            document.getElementById('kd-update-product-slug').value = product.product_slug || '';
+                            document.getElementById('kd-update-product-sku').value = product.product_sku || '';
+                            document.getElementById('kd-update-product-color').value = product.product_color || '';
+                            document.getElementById('kd-update-product-size').value = product.product_size || '';
+                            document.getElementById('kd-update-product-status').value = product.product_status || 'Active';
+                            document.getElementById('kd-update-product-original-price').value = product.original_price || '';
+                            document.getElementById('kd-update-product-sale-price').value = product.sale_price || '';
+                            document.getElementById('kd-update-product-discount-visibility').value = product.discount_visibility || 'Hide';
+                            document.getElementById('kd-update-product-description').value = product.product_description || '';
+                            document.getElementById('kd-update-product-other-info-desc').value = product.product_other_info_desc || '';
+                            document.getElementById('kd-update-product-meta-title').value = product.meta_title || '';
+                            document.getElementById('kd-update-product-meta-description').value = product.meta_description || '';
+                            document.getElementById('kd-update-product-meta-keywords').value = product.meta_keywords || '';
+                            document.getElementById('kd-update-product-canonical-url').value = product.canonical_url || '';
+                            document.getElementById('kd-update-product-og-title').value = product.og_title || '';
+                            document.getElementById('kd-update-product-og-description').value = product.og_description || '';
+
+                            document.getElementById('kd-update-product-image').value = '';
+                            document.getElementById('kd-update-existing-main-image').value = product.product_image || '';
+                            renderExistingPreview(product.product_image, 'update-preview-product-image', 'image');
+
+                            document.getElementById('kd-update-product-brochure').value = '';
+                            document.getElementById('kd-update-existing-brochure').value = product.product_brochure || '';
+                            renderExistingPreview(product.product_brochure, 'update-preview-brochure', 'file');
+
+                            document.getElementById('kd-update-product-video-1').value = '';
+                            document.getElementById('kd-update-existing-video-1').value = product.product_video_1 || '';
+                            renderExistingPreview(product.product_video_1, 'update-preview-video', 'video');
+
+                            for (var i = 1; i <= 10; i++) {
+                                var imgKey = 'product_img_' + i;
+                                var altKey = 'product_img_' + i + '_alt';
+
+                                document.getElementById('kd-update-product-img-' + i).value = '';
+                                document.getElementById('kd-update-existing-img-' + i).value = product[imgKey] || '';
+                                document.getElementById('kd-update-product-img-' + i + '-alt').value = product[altKey] || '';
+                                renderExistingPreview(product[imgKey], 'update-preview-gallery-' + i, 'image');
+                            }
+
+                            // Update me purani values auto-fill se overwrite na hon
+                            isProductSlugManualUpdate = true;
+                            isProductMetaTitleManualUpdate = true;
+                            isProductMetaDescManualUpdate = true;
+
+                            document.getElementById('show_product_table').classList.add('hidden_class');
+                            document.getElementById('update_product_form').classList.remove('hidden_class');
+                        }
+
+                        function cancelUpdateProduct() {
+                            document.getElementById('update_product_form').classList.add('hidden_class');
+                            document.getElementById('show_product_table').classList.remove('hidden_class');
+                        }
+
+                        function renderExistingPreview(url, previewWrapperId, kind) {
+
+                            var wrapper = document.getElementById(previewWrapperId);
+                            wrapper.innerHTML = '';
+
+                            if (!url) {
+                                return;
+                            }
+
+                            if (kind === 'image') {
+                                wrapper.innerHTML =
+                                    '<img src="' + url + '" style="max-width:120px; max-height:120px; ' +
+                                    'border:1px solid #ddd; border-radius:6px; object-fit:cover;">';
+                            } else if (kind === 'video') {
+                                wrapper.innerHTML =
+                                    '<video src="' + url + '" controls style="max-width:240px; max-height:150px; ' +
+                                    'border:1px solid #ddd; border-radius:6px;"></video>';
+                            } else {
+                                wrapper.innerHTML =
+                                    '<span style="font-size:13px; color:#333;">📄 ' + url.split('/').pop() + '</span>';
+                            }
+                        }
+
+                        function removeSelectedFileUpdate(inputId, previewWrapperId, hiddenExistingId) {
+                            document.getElementById(inputId).value = '';
+                            document.getElementById(previewWrapperId).innerHTML = '';
+                            document.getElementById(hiddenExistingId).value = '';
+                        }
+
+                        var isProductSlugManualUpdate = false;
+                        var isProductMetaTitleManualUpdate = false;
+                        var isProductMetaDescManualUpdate = false;
+
+                        function autoFillFromProductNameUpdate(value) {
+
+                            if (!isProductSlugManualUpdate) {
+                                document.getElementById('kd-update-product-slug').value = slugifyProduct(value);
+                            }
+
+                            if (!isProductMetaTitleManualUpdate) {
+                                document.getElementById('kd-update-product-meta-title').value = value.substring(0, 60);
+                                document.getElementById('kd-update-product-og-title').value = value.substring(0, 60);
+                            }
+                        }
+
+                        function autoFillProductMetaDescriptionUpdate(value) {
+                            if (!isProductMetaDescManualUpdate) {
+                                document.getElementById('kd-update-product-meta-description').value = value.substring(0, 160);
+                                document.getElementById('kd-update-product-og-description').value = value.substring(0, 160);
+                            }
+                        }
+
+                        function markProductSlugAsManualUpdate() {
+                            isProductSlugManualUpdate = true;
+                        }
+
+                        function markProductMetaTitleAsManualUpdate() {
+                            isProductMetaTitleManualUpdate = true;
+                        }
+
+                        function markProductMetaDescAsManualUpdate() {
+                            isProductMetaDescManualUpdate = true;
+                        }
+
+                        function show_add_productform() {
+                            document.getElementById('show_product_table').classList.toggle('hidden_class');
+                            document.getElementById('add_product_form').classList.toggle('hidden_class');
+                        }
+
+                        // ===========================================================
+                        // AUTO-FILL (Add form)
+                        // ===========================================================
+                        var isProductSlugManual = false;
+                        var isProductMetaTitleManual = false;
+                        var isProductMetaDescManual = false;
+
+                        function slugifyProduct(text) {
+                            return text
+                                .toString()
+                                .toLowerCase()
+                                .trim()
+                                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                                .replace(/[^a-z0-9\s-]/g, '')
+                                .replace(/[\s_-]+/g, '-')
+                                .replace(/^-+|-+$/g, '');
+                        }
+
+                        function autoFillFromProductName(value) {
+
+                            if (!isProductSlugManual) {
+                                document.getElementById('kd-product-slug').value = slugifyProduct(value);
+                            }
+
+                            if (!isProductMetaTitleManual) {
+                                document.getElementById('kd-product-meta-title').value = value.substring(0, 60);
+                                document.getElementById('kd-product-og-title').value = value.substring(0, 60);
+                            }
+                        }
+
+                        function autoFillProductMetaDescription(value) {
+                            if (!isProductMetaDescManual) {
+                                document.getElementById('kd-product-meta-description').value = value.substring(0, 160);
+                                document.getElementById('kd-product-og-description').value = value.substring(0, 160);
+                            }
+                        }
+
+                        function markProductSlugAsManual() {
+                            isProductSlugManual = true;
+                        }
+
+                        function markProductMetaTitleAsManual() {
+                            isProductMetaTitleManual = true;
+                        }
+
+                        function markProductMetaDescAsManual() {
+                            isProductMetaDescManual = true;
+                        }
+
+                        // ===========================================================
+                        // GENERIC FILE PREVIEW + REMOVE
+                        // ===========================================================
+                        function previewSelectedFile(inputEl, previewWrapperId, kind) {
+
+                            var wrapper = document.getElementById(previewWrapperId);
+                            wrapper.innerHTML = '';
+
+                            if (!inputEl.files || !inputEl.files[0]) {
+                                return;
+                            }
+
+                            var file = inputEl.files[0];
+                            var url = URL.createObjectURL(file);
+
+                            if (kind === 'image') {
+                                wrapper.innerHTML =
+                                    '<img src="' + url + '" style="max-width:120px; max-height:120px; ' +
+                                    'border:1px solid #ddd; border-radius:6px; object-fit:cover;">';
+                            } else if (kind === 'video') {
+                                wrapper.innerHTML =
+                                    '<video src="' + url + '" controls style="max-width:240px; max-height:150px; ' +
+                                    'border:1px solid #ddd; border-radius:6px;"></video>';
+                            } else {
+                                wrapper.innerHTML =
+                                    '<span style="font-size:13px; color:#333;">📄 ' + file.name + '</span>';
+                            }
+                        }
+
+                        function removeSelectedFile(inputId, previewWrapperId) {
+                            document.getElementById(inputId).value = '';
+                            document.getElementById(previewWrapperId).innerHTML = '';
+                        }
+
+                        function resetProductForm() {
+
+                            document.querySelector('#add_product_form form').reset();
+
+                            document.getElementById('preview-product-image').innerHTML = '';
+                            document.getElementById('preview-brochure').innerHTML = '';
+                            document.getElementById('preview-video').innerHTML = '';
+
+                            for (var i = 1; i <= 10; i++) {
+                                var el = document.getElementById('preview-gallery-' + i);
+                                if (el) {
+                                    el.innerHTML = '';
+                                }
+                            }
+
+                            isProductSlugManual = false;
+                            isProductMetaTitleManual = false;
+                            isProductMetaDescManual = false;
+                        }
+                    </script>
+
+                    <!-- Hidden form - single product delete -->
+                    <form action="" method="POST" id="delete_product_form" style="display:none;">
+                        <input type="hidden" name="delete_product_id" id="delete_product_id_input" value="">
+                        <input type="hidden" name="delete_single_product" value="1">
+                    </form>
+
+                    <!-- Hidden form - bulk delete -->
+                    <form action="" method="POST" id="bulk_delete_product_form" style="display:none;">
+                        <input type="hidden" name="selected_product_ids" id="selected_product_ids_input" value="">
+                        <input type="hidden" name="delete_selected_products" value="1">
+                    </form>
 
                 </section>
+
+
+
+
+
+
+
+
 
                 <!-- sublink box 4 -->
                 <section id="contect_4_contect_box" class="section_sub_with all_sejmca8974 auto_margin_notwa">
-                    4
+
+                    <style>
+                        /* ===== SUB CATEGORY ===== */
+                        #contect_4_contect_box {
+                            position: relative;
+                            overflow: visible !important;
+                            min-height: 100vh
+                        }
+
+                        #contect_4_contect_box,
+                        #contect_4_contect_box input,
+                        #contect_4_contect_box textarea,
+                        #contect_4_contect_box select,
+                        #contect_4_contect_box button {
+                            font-family: Arial, Helvetica, sans-serif
+                        }
+
+                        #contect_4_contect_box .sc_head {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin: 20px 0
+                        }
+
+                        #contect_4_contect_box .sc_title {
+                            font-size: 36px;
+                            font-weight: 700;
+                            color: #1f2937;
+                            margin: 0
+                        }
+
+                        #contect_4_contect_box .sc_btn_add {
+                            background: linear-gradient(90deg, #0b5a9c, #0e7490);
+                            color: #fff;
+                            padding: 10px 26px;
+                            border-radius: 8px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            display: inline-block
+                        }
+
+                        #contect_4_contect_box .sc_table_wrap {
+                            background: #fff;
+                            border: 1px solid #e5e7eb;
+                            border-radius: 10px;
+                            overflow-x: auto;
+                            box-shadow: 0 1px 4px rgba(0, 0, 0, .08)
+                        }
+
+                        #contect_4_contect_box .sc_table {
+                            width: 100%;
+                            border-collapse: collapse
+                        }
+
+                        #contect_4_contect_box .sc_table th {
+                            background: #0e7490;
+                            color: #fff;
+                            text-align: left;
+                            padding: 16px 18px;
+                            font-size: 13px;
+                            text-transform: uppercase
+                        }
+
+                        #contect_4_contect_box .sc_table td {
+                            padding: 16px 18px;
+                            border-bottom: 1px solid #e5e7eb;
+                            color: #374151;
+                            font-size: 15px
+                        }
+
+                        #contect_4_contect_box .sc_center {
+                            text-align: center !important
+                        }
+
+                        #contect_4_contect_box .sc_img {
+                            width: 55px;
+                            height: 55px;
+                            object-fit: cover;
+                            border-radius: 8px;
+                            border: 1px solid #d1d5db
+                        }
+
+                        #contect_4_contect_box .sc_noimg {
+                            font-size: 12px;
+                            color: #9ca3af
+                        }
+
+                        #contect_4_contect_box .sc_green {
+                            color: green
+                        }
+
+                        #contect_4_contect_box .sc_active {
+                            color: #16a34a;
+                            font-weight: 600
+                        }
+
+                        #contect_4_contect_box .sc_deactive {
+                            color: #dc2626;
+                            font-weight: 600
+                        }
+
+                        #contect_4_contect_box .sc_btn_update {
+                            background: #0e7490;
+                            color: #fff;
+                            padding: 7px 16px;
+                            border-radius: 5px;
+                            font-size: 13px;
+                            cursor: pointer;
+                            display: inline-block
+                        }
+
+                        #contect_4_contect_box .sc_btn_delete {
+                            background: #dc2626;
+                            color: #fff;
+                            padding: 7px 16px;
+                            border-radius: 5px;
+                            font-size: 13px;
+                            cursor: pointer;
+                            display: inline-block;
+                            margin-left: 6px
+                        }
+
+                        /* Modal (CSS only, no JS, no reload) */
+                        #contect_4_contect_box .sc_chk {
+                            display: none
+                        }
+
+                        #contect_4_contect_box .sc_modal {
+                            display: none;
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            min-height: 100vh;
+                            background: rgba(0, 0, 0, .55);
+                            z-index: 9999;
+                            align-items: flex-start;
+                            justify-content: center;
+                            padding: 40px 10px;
+                            box-sizing: border-box;
+                            border-radius: 12px
+                        }
+
+                        #contect_4_contect_box .sc_chk:checked+.sc_modal {
+                            display: flex
+                        }
+
+                        #contect_4_contect_box .sc_backdrop {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            cursor: default
+                        }
+
+                        #contect_4_contect_box .sc_modal_box {
+                            position: relative;
+                            z-index: 2;
+                            background: #fff;
+                            width: 100%;
+                            max-width: 460px;
+                            padding: 26px;
+                            border-radius: 12px;
+                            box-sizing: border-box;
+                            box-shadow: 0 10px 40px rgba(0, 0, 0, .3)
+                        }
+
+                        #contect_4_contect_box .sc_modal_box h3 {
+                            margin: 0 0 14px
+                        }
+
+                        #contect_4_contect_box .sc_close {
+                            position: absolute;
+                            top: 10px;
+                            right: 16px;
+                            font-size: 28px;
+                            color: #6b7280;
+                            cursor: pointer;
+                            line-height: 1
+                        }
+
+                        #contect_4_contect_box .sc_modal_box label.sc_lbl {
+                            display: block;
+                            margin: 12px 0 5px;
+                            font-weight: 600;
+                            font-size: 14px
+                        }
+
+                        #contect_4_contect_box .sc_modal_box input[type=text],
+                        #contect_4_contect_box .sc_modal_box textarea,
+                        #contect_4_contect_box .sc_modal_box select {
+                            width: 100%;
+                            padding: 10px;
+                            border: 1px solid #d1d5db;
+                            border-radius: 6px;
+                            box-sizing: border-box
+                        }
+
+                        #contect_4_contect_box .sc_btn_save {
+                            margin-top: 18px;
+                            width: 100%;
+                            background: #0e7490;
+                            color: #fff;
+                            border: 0;
+                            padding: 12px;
+                            border-radius: 8px;
+                            font-size: 15px;
+                            cursor: pointer
+                        }
+
+                        /* Delete confirm */
+                        #contect_4_contect_box .sc_modal_box.sc_confirm {
+                            max-width: 380px;
+                            text-align: center;
+                            margin-top: 60px
+                        }
+
+                        #contect_4_contect_box .sc_confirm p {
+                            color: #4b5563;
+                            margin: 0 0 18px;
+                            font-size: 15px
+                        }
+
+                        #contect_4_contect_box .sc_confirm_btns {
+                            display: flex;
+                            gap: 10px
+                        }
+
+                        #contect_4_contect_box .sc_confirm_btns label,
+                        #contect_4_contect_box .sc_confirm_btns button {
+                            flex: 1;
+                            padding: 11px;
+                            border-radius: 8px;
+                            font-size: 15px;
+                            cursor: pointer;
+                            border: 0;
+                            text-align: center;
+                            box-sizing: border-box;
+                            margin: 0
+                        }
+
+                        #contect_4_contect_box .sc_confirm_btns form {
+                            flex: 1;
+                            display: flex;
+                            margin: 0
+                        }
+
+                        #contect_4_contect_box .sc_btn_cancel {
+                            background: #e5e7eb;
+                            color: #1f2937
+                        }
+
+                        #contect_4_contect_box .sc_btn_yes {
+                            background: #dc2626;
+                            color: #fff;
+                            width: 100%
+                        }
+                    </style>
+
+                    <div class="sc_head">
+                        <h2 class="sc_title">Sub Category Management</h2>
+                        <label for="sc_chk_add" class="sc_btn_add">ADD NEW</label>
+                    </div>
+
+                    <div class="sc_table_wrap">
+                        <table class="sc_table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Slug</th>
+                                    <th>Status</th>
+                                    <th>Add Date</th>
+                                    <th>Update Date</th>
+                                    <th class="sc_center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($sub_cate_list)) { ?>
+                                    <tr>
+                                        <td colspan="8" class="sc_center">No data found</td>
+                                    </tr>
+                                    <?php } else {
+                                    foreach ($sub_cate_list as $row) { ?>
+                                        <tr>
+                                            <td><b>#<?= $row['sub_cate_id'] ?></b></td>
+                                            <td>
+                                                <?php if ($row['sub_cate_img']) { ?>
+                                                    <img class="sc_img" src="<?= SUB_CATE_UPLOAD_DIR . htmlspecialchars($row['sub_cate_img']) ?>" alt="">
+                                                <?php } else { ?>
+                                                    <span class="sc_noimg">No img</span>
+                                                <?php } ?>
+                                            </td>
+                                            <td><?= htmlspecialchars($row['sub_cate_name']) ?></td>
+                                            <td><?= htmlspecialchars($row['sub_cate_slug']) ?></td>
+                                            <td>
+                                                <span class="<?= $row['sub_cate_status'] === 'Active' ? 'sc_active' : 'sc_deactive' ?>">
+                                                    <?= $row['sub_cate_status'] ?>
+                                                </span>
+                                            </td>
+                                            <td><?= sub_cate_time_ago($row['sub_cate_created']) ?></td>
+                                            <td>
+                                                <?php if ($row['sub_cate_updated']) { ?>
+                                                    <?= sub_cate_time_ago($row['sub_cate_updated']) ?>
+                                                <?php } else { ?>
+                                                    <span class="sc_green">Not Update Yet</span>
+                                                <?php } ?>
+                                            </td>
+                                            <td class="sc_center">
+                                                <label for="sc_chk_u<?= $row['sub_cate_id'] ?>" class="sc_btn_update">Update</label>
+                                                <label for="sc_chk_d<?= $row['sub_cate_id'] ?>" class="sc_btn_delete">Delete</label>
+                                            </td>
+                                        </tr>
+                                <?php }
+                                } ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ADD Modal -->
+                    <input type="checkbox" id="sc_chk_add" class="sc_chk">
+                    <div class="sc_modal">
+                        <label for="sc_chk_add" class="sc_backdrop"></label>
+                        <div class="sc_modal_box">
+                            <label for="sc_chk_add" class="sc_close">&times;</label>
+                            <h3>Add Sub Category</h3>
+
+                            <form method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="sub_cate_action" value="add">
+
+                                <label class="sc_lbl">Name</label>
+                                <input type="text" name="sub_cate_name" required>
+
+                                <label class="sc_lbl">Image</label>
+                                <input type="file" name="sub_cate_img" accept="image/*">
+
+                                <label class="sc_lbl">Description</label>
+                                <textarea name="sub_cate_desc" rows="3"></textarea>
+
+                                <label class="sc_lbl">Status</label>
+                                <select name="sub_cate_status">
+                                    <option value="Active">Active</option>
+                                    <option value="Deactive">Deactive</option>
+                                </select>
+
+                                <button type="submit" class="sc_btn_save">Save</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- UPDATE + DELETE Modals (har row ke apne) -->
+                    <?php foreach ($sub_cate_list as $row) { ?>
+
+                        <!-- Update -->
+                        <input type="checkbox" id="sc_chk_u<?= $row['sub_cate_id'] ?>" class="sc_chk">
+                        <div class="sc_modal">
+                            <label for="sc_chk_u<?= $row['sub_cate_id'] ?>" class="sc_backdrop"></label>
+                            <div class="sc_modal_box">
+                                <label for="sc_chk_u<?= $row['sub_cate_id'] ?>" class="sc_close">&times;</label>
+                                <h3>Update Sub Category #<?= $row['sub_cate_id'] ?></h3>
+
+                                <form method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="sub_cate_action" value="update">
+                                    <input type="hidden" name="sub_cate_id" value="<?= $row['sub_cate_id'] ?>">
+
+                                    <label class="sc_lbl">Name</label>
+                                    <input type="text" name="sub_cate_name" required value="<?= htmlspecialchars($row['sub_cate_name']) ?>">
+
+                                    <label class="sc_lbl">Image</label>
+                                    <input type="file" name="sub_cate_img" accept="image/*">
+                                    <?php if ($row['sub_cate_img']) { ?>
+                                        <img class="sc_img" src="<?= SUB_CATE_UPLOAD_DIR . htmlspecialchars($row['sub_cate_img']) ?>" alt="">
+                                    <?php } ?>
+
+                                    <label class="sc_lbl">Description</label>
+                                    <textarea name="sub_cate_desc" rows="3"><?= htmlspecialchars($row['sub_cate_desc'] ?? '') ?></textarea>
+
+                                    <label class="sc_lbl">Status</label>
+                                    <select name="sub_cate_status">
+                                        <option value="Active" <?= $row['sub_cate_status'] === 'Active' ? 'selected' : '' ?>>Active</option>
+                                        <option value="Deactive" <?= $row['sub_cate_status'] === 'Deactive' ? 'selected' : '' ?>>Deactive</option>
+                                    </select>
+
+                                    <button type="submit" class="sc_btn_save">Update</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Delete confirm -->
+                        <input type="checkbox" id="sc_chk_d<?= $row['sub_cate_id'] ?>" class="sc_chk">
+                        <div class="sc_modal">
+                            <label for="sc_chk_d<?= $row['sub_cate_id'] ?>" class="sc_backdrop"></label>
+                            <div class="sc_modal_box sc_confirm">
+                                <h3>Delete Sub Category?</h3>
+                                <p>"<?= htmlspecialchars($row['sub_cate_name']) ?>" hamesha ke liye delete ho jayega.</p>
+                                <div class="sc_confirm_btns">
+                                    <label for="sc_chk_d<?= $row['sub_cate_id'] ?>" class="sc_btn_cancel">Cancel</label>
+                                    <form method="post">
+                                        <input type="hidden" name="sub_cate_action" value="delete">
+                                        <input type="hidden" name="sub_cate_id" value="<?= $row['sub_cate_id'] ?>">
+                                        <button type="submit" class="sc_btn_yes">Yes, Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    <?php } ?>
+
                 </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 <!-- sublink box 5 -->
                 <section id="contect_5_contect_box" class="section_sub_with all_sejmca8974 auto_margin_notwa">

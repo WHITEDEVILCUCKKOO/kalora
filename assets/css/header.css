@@ -24,6 +24,11 @@ header {
 /* =====================================================
    EVENT BAR
 ===================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Poppins:wght@500;600;700&display=swap');
+
+/* =====================================================
+   EVENT BAR
+===================================================== */
 .kalora-event-bar-x72 {
   position: relative;
   width: 100%;
@@ -70,48 +75,100 @@ header {
 
 .kalora-event-name-x72 {
   color: #fff;
+  font-family: 'Poppins', Arial, sans-serif;
   font-size: 16px;
   font-weight: 700;
   text-shadow: 0 1px 5px rgba(0, 0, 0, .4);
   white-space: nowrap;
 }
 
+/* =====================================================
+   COUNTDOWN - FLIP CLOCK STYLE
+===================================================== */
 .kalora-event-countdown-x72 {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* colon flip clock me nahi chahiye */
+.kalora-event-colon-x72 {
+  display: none;
 }
 
 .kalora-event-time-box-x72 {
-  min-width: 45px;
-  padding: 6px 7px;
-  background: rgba(255, 255, 255, .96);
-  border-radius: 6px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
   line-height: 1;
 }
 
+/* Flip card (dark green, white text) */
 .kalora-event-time-number-x72 {
-  display: block;
-  color: #111;
-  font-size: 17px;
-  font-weight: 800;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 40px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #14503a 0%, #14503a 50%, #0b2e20 50%, #0b2e20 100%);
+  color: #fff;
+  font-family: 'Oswald', 'Poppins', Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+  border-radius: 6px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .15);
+}
+
+/* beech ki split line */
+.kalora-event-time-number-x72::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1.5px;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, .6);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+/* side ke chhote hinge */
+.kalora-event-time-number-x72::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 50%;
+  height: 9px;
+  transform: translateY(-50%);
+  border-left: 2px solid #1f6b4d;
+  border-right: 2px solid #1f6b4d;
+  border-radius: 2px;
+  box-sizing: border-box;
+  pointer-events: none;
 }
 
 .kalora-event-time-label-x72 {
   display: block;
-  margin-top: 4px;
-  color: #777;
-  font-size: 8px;
+  color: #fff;
+  opacity: .9;
+  font-family: 'Poppins', Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
 }
 
-.kalora-event-colon-x72 {
-  color: #fff;
-  font-size: 17px;
-  font-weight: 800;
-}
-
+/* =====================================================
+   CLOSE BUTTON
+===================================================== */
 .kalora-event-close-x72 {
   position: absolute;
   z-index: 5;
@@ -133,6 +190,9 @@ header {
   background: rgba(0, 0, 0, .7);
 }
 
+/* =====================================================
+   MOBILE
+===================================================== */
 @media (max-width: 700px) {
   .kalora-event-bar-inner-x72 {
     min-height: 54px;
@@ -148,25 +208,29 @@ header {
   }
 
   .kalora-event-countdown-x72 {
-    gap: 3px;
+    gap: 5px;
   }
 
   .kalora-event-time-box-x72 {
-    min-width: 34px;
-    padding: 5px 4px;
+    gap: 3px;
   }
 
   .kalora-event-time-number-x72 {
-    font-size: 13px;
+    min-width: 30px;
+    height: 28px;
+    padding: 0 4px;
+    font-size: 16px;
+    letter-spacing: .5px;
+    border-radius: 4px;
+  }
+
+  .kalora-event-time-number-x72::before {
+    height: 7px;
   }
 
   .kalora-event-time-label-x72 {
     font-size: 6px;
-    margin-top: 3px;
-  }
-
-  .kalora-event-colon-x72 {
-    font-size: 12px;
+    letter-spacing: .8px;
   }
 
   .kalora-event-close-x72 {

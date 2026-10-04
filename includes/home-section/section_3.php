@@ -99,7 +99,7 @@ $productPage = 'product_details.php'; // product page ka file name
 </style>
 
 <?php if ($tsBrands) { ?>
-<div class="palmonas-wrapper">
+<div class="palmonas-wrapper" style="display: none;">
     <div class="palmonas-container">
 
         <h2 class="palmonas-title">KALORA TOP STYLES</h2>
