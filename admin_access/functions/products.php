@@ -1,50 +1,119 @@
 <?php
+if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+    session_start();
+}
 
-// =========================================================
-// GET ALL PRODUCT DATA
-// (Root Category + Brand name + pehli image join karke)
-// =========================================================
+define('PRODUCT_BASE_DIR', 'assets/products/');
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+// products_images ke saare columns (10 img + 10 alt + brochure + video)
+function product_image_fields()
+{
+    $f = [];
+    for ($i = 1; $i <= 10; $i++) {
+        $f[] = 'product_img_' . $i;
+        $f[] = 'product_img_' . $i . '_alt';
+    }
+    $f[] = 'product_brochure';
+    $f[] = 'product_video_1';
+    return $f;
+}
+
+function product_image_columns()
+{
+    $cols = [];
+    foreach (product_image_fields() as $f) {
+        $cols[] = 'pi.' . $f;
+    }
+    return implode(', ', $cols);
+}
+
+// products table me sub_cate_id nahi hai to khud add kar dega
+function product_ensure_sub_cate_column($mydb)
+{
+    $r = mysqli_query($mydb, "SHOW COLUMNS FROM products LIKE 'sub_cate_id'");
+    if ($r && mysqli_num_rows($r) === 0) {
+        mysqli_query($mydb, "ALTER TABLE products ADD COLUMN sub_cate_id INT(11) NOT NULL DEFAULT 0 AFTER brand_id");
+    }
+}
+
+// File sirf product folder ke andar ki hi delete hogi
+function product_delete_file($path)
+{
+    if ($path !== '' && strpos($path, PRODUCT_BASE_DIR) === 0 && strpos($path, '..') === false && is_file($path)) {
+        unlink($path);
+    }
+}
+
+function delete_folder_recursive($folder)
+{
+    if (!is_dir($folder)) {
+        return;
+    }
+    foreach (array_diff(scandir($folder), ['.', '..']) as $item) {
+        $path = $folder . DIRECTORY_SEPARATOR . $item;
+        is_dir($path) ? delete_folder_recursive($path) : unlink($path);
+    }
+    rmdir($folder);
+}
+
+
+/* =========================================================
+   GET DATA
+   ========================================================= */
+
+// ALL products (root, brand, sub category ka naam + images)
 function get_product_info($mydb)
 {
-    $query = "SELECT
-                p.*,
-                c.root_name,
-                b.brand_name,
-                pi.*
+    $query = "SELECT p.*, c.root_name, b.brand_name, sc.sub_cate_name, " . product_image_columns() . "
               FROM products p
               LEFT JOIN root_categories c ON p.root_id = c.root_id
               LEFT JOIN brands b ON p.brand_id = b.brand_id
+              LEFT JOIN product_sub_cate sc ON p.sub_cate_id = sc.sub_cate_id
               LEFT JOIN products_images pi ON p.product_id = pi.product_id
               ORDER BY p.product_id DESC";
 
     $result = mysqli_query($mydb, $query);
-
     if (!$result) {
         return [];
     }
 
-    $product_info = [];
-
+    $rows = [];
     while ($row = mysqli_fetch_assoc($result)) {
-        $product_info[] = $row;
+        $rows[] = $row;
     }
-
-    return $product_info;
+    return $rows;
 }
 
+// SINGLE product
+function get_product_single($mydb, $product_id)
+{
+    $query = "SELECT p.*, " . product_image_columns() . "
+              FROM products p
+              LEFT JOIN products_images pi ON p.product_id = pi.product_id
+              WHERE p.product_id = ? LIMIT 1";
 
-// =========================================================
-// GET RANDOM PRODUCTS (home page ya kisi bhi widget ke liye)
-// =========================================================
+    $stmt = mysqli_prepare($mydb, $query);
+    if (!$stmt) {
+        return null;
+    }
+    mysqli_stmt_bind_param($stmt, "i", $product_id);
+    mysqli_stmt_execute($stmt);
+    $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+    mysqli_stmt_close($stmt);
+    return $row ?: null;
+}
+
+// RANDOM products (home page widget)
 function get_random_products($mydb, $limit = 6)
 {
     $limit = (int) $limit;
 
-    $query = "SELECT
-                p.*,
-                c.root_name,
-                b.brand_name,
-                pi.product_img_1
+    $query = "SELECT p.*, c.root_name, b.brand_name, pi.product_img_1
               FROM products p
               LEFT JOIN root_categories c ON p.root_id = c.root_id
               LEFT JOIN brands b ON p.brand_id = b.brand_id
@@ -54,189 +123,192 @@ function get_random_products($mydb, $limit = 6)
               LIMIT " . $limit;
 
     $result = mysqli_query($mydb, $query);
-
     if (!$result) {
         return [];
     }
 
-    $random_products = [];
-
+    $rows = [];
     while ($row = mysqli_fetch_assoc($result)) {
-        $random_products[] = $row;
+        $rows[] = $row;
+    }
+    return $rows;
+}
+
+function product_slug_exists($mydb, $slug, $ignore_id = 0)
+{
+    $stmt = mysqli_prepare($mydb, "SELECT product_id FROM products WHERE product_slug = ? AND product_id <> ? LIMIT 1");
+    if (!$stmt) {
+        return false;
+    }
+    mysqli_stmt_bind_param($stmt, "si", $slug, $ignore_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_store_result($stmt);
+    $exists = mysqli_stmt_num_rows($stmt) > 0;
+    mysqli_stmt_close($stmt);
+    return $exists;
+}
+
+
+/* =========================================================
+   DB WRITE FUNCTIONS
+   ========================================================= */
+
+// ADD product (image khali, ID milne ke baad folder banega)
+function add_product_info($mydb, $d)
+{
+    $text = [
+        'product_name', 'product_slug', 'product_sku', 'product_color', 'product_size', 'product_image',
+        'product_description', 'meta_title', 'meta_description', 'meta_keywords', 'canonical_url',
+        'og_title', 'og_description', 'product_other_info_desc'
+    ];
+
+    $cols = array_merge(['root_id', 'brand_id', 'sub_cate_id'], $text, [
+        'original_price', 'sale_price', 'discount_visibility', 'product_status', 'product_views', 'created_at', 'updated_at'
+    ]);
+
+    $vals = [$d['root_id'], $d['brand_id'], $d['sub_cate_id']];
+    foreach ($text as $k) {
+        $vals[] = $d[$k] ?? '';
+    }
+    array_push($vals, $d['original_price'], $d['sale_price'], $d['discount_visibility'], $d['product_status'], 0, time(), '');
+
+    $sql = "INSERT INTO products (" . implode(', ', $cols) . ") VALUES (" . implode(', ', array_fill(0, count($cols), '?')) . ")";
+
+    $stmt = mysqli_prepare($mydb, $sql);
+    if (!$stmt) {
+        return false;
     }
 
-    return $random_products;
+    mysqli_stmt_bind_param($stmt, 'iii' . str_repeat('s', 14) . 'ddssiss', ...$vals);
+    $ok = mysqli_stmt_execute($stmt);
+    $new_id = $ok ? mysqli_insert_id($mydb) : false;
+    mysqli_stmt_close($stmt);
+
+    return $new_id;
 }
 
-
-// =========================================================
-// ADD NEW PRODUCT (product_image khali chhod ke insert hota
-// hai - kyunki ID milne ke baad hi folder banega)
-// =========================================================
-function add_product_info($mydb, $data)
+// UPDATE product (basic fields)
+function update_product_info($mydb, $product_id, $d)
 {
-    $query = "INSERT INTO products (
-    root_id,
-    brand_id,
-    product_name,
-    product_slug,
-    product_sku,
-    product_color,
-    product_size,
-    product_image,
-    product_description,
-    meta_title,
-    meta_description,
-    meta_keywords,
-    canonical_url,
-    og_title,
-    og_description,
-    product_other_info_desc,
-    original_price,
-    sale_price,
-    discount_visibility,
-    product_status,
-    product_views,
-    created_at
-) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-)";
+    $text = [
+        'product_name', 'product_slug', 'product_sku', 'product_color', 'product_size',
+        'product_description', 'meta_title', 'meta_description', 'meta_keywords', 'canonical_url',
+        'og_title', 'og_description', 'product_other_info_desc'
+    ];
 
-$stmt = mysqli_prepare($mydb, $query);
+    $set  = ['root_id = ?', 'brand_id = ?', 'sub_cate_id = ?'];
+    $vals = [$d['root_id'], $d['brand_id'], $d['sub_cate_id']];
 
-if (!$stmt) {
-    return false;
+    foreach ($text as $k) {
+        $set[]  = $k . ' = ?';
+        $vals[] = $d[$k] ?? '';
+    }
+
+    $set = array_merge($set, ['original_price = ?', 'sale_price = ?', 'discount_visibility = ?', 'product_status = ?', 'updated_at = ?']);
+    array_push($vals, $d['original_price'], $d['sale_price'], $d['discount_visibility'], $d['product_status'], time(), $product_id);
+
+    $stmt = mysqli_prepare($mydb, "UPDATE products SET " . implode(', ', $set) . " WHERE product_id = ?");
+    if (!$stmt) {
+        return false;
+    }
+
+    mysqli_stmt_bind_param($stmt, 'iii' . str_repeat('s', 13) . 'ddssii', ...$vals);
+    $ok = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    return $ok;
 }
 
-$created_at    = time();
-$product_views = 0;
-
-mysqli_stmt_bind_param(
-    $stmt,
-    "ii" . str_repeat("s", 14) . "ddssii",
-
-    $data['root_id'],
-    $data['brand_id'],
-    $data['product_name'],
-    $data['product_slug'],
-    $data['product_sku'],
-    $data['product_color'],
-    $data['product_size'],
-    $data['product_image'],
-    $data['product_description'],
-    $data['meta_title'],
-    $data['meta_description'],
-    $data['meta_keywords'],
-    $data['canonical_url'],
-    $data['og_title'],
-    $data['og_description'],
-    $data['product_other_info_desc'],
-    $data['original_price'],
-    $data['sale_price'],
-    $data['discount_visibility'],
-    $data['product_status'],
-    $product_views,
-    $created_at
-);
-
-$executed = mysqli_stmt_execute($stmt);
-
-$new_product_id = $executed ? mysqli_insert_id($mydb) : false;
-
-mysqli_stmt_close($stmt);
-
-return $new_product_id;
-}
-
-
-// =========================================================
-// PRODUCT KA MAIN IMAGE PATH UPDATE KARO (upload ke baad)
-// =========================================================
 function update_product_main_image($mydb, $product_id, $image_path)
 {
-    $query = "UPDATE products SET product_image = ? WHERE product_id = ?";
-
-    $stmt = mysqli_prepare($mydb, $query);
-
+    $stmt = mysqli_prepare($mydb, "UPDATE products SET product_image = ? WHERE product_id = ?");
     if (!$stmt) {
         return false;
     }
-
     mysqli_stmt_bind_param($stmt, "si", $image_path, $product_id);
-
-    $result = mysqli_stmt_execute($stmt);
-
+    $ok = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
-
-    return $result;
+    return $ok;
 }
 
+function product_images_row_exists($mydb, $product_id)
+{
+    $stmt = mysqli_prepare($mydb, "SELECT product_id FROM products_images WHERE product_id = ? LIMIT 1");
+    if (!$stmt) {
+        return false;
+    }
+    mysqli_stmt_bind_param($stmt, "i", $product_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_store_result($stmt);
+    $exists = mysqli_stmt_num_rows($stmt) > 0;
+    mysqli_stmt_close($stmt);
+    return $exists;
+}
 
-// =========================================================
-// ADD PRODUCT IMAGES ROW (products_images table)
-// =========================================================
+// ADD products_images row
 function add_product_images($mydb, $product_id, $images)
 {
-    $query = "INSERT INTO products_images (
-        product_id,
-        product_img_1, product_img_1_alt, product_img_2, product_img_2_alt,
-        product_img_3, product_img_3_alt, product_img_4, product_img_4_alt,
-        product_img_5, product_img_5_alt, product_img_6, product_img_6_alt,
-        product_img_7, product_img_7_alt, product_img_8, product_img_8_alt,
-        product_img_9, product_img_9_alt, product_img_10, product_img_10_alt,
-        product_brochure, product_video_1
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $fields = product_image_fields();
 
-    $stmt = mysqli_prepare($mydb, $query);
+    $sql = "INSERT INTO products_images (product_id, " . implode(', ', $fields) . ")
+            VALUES (?, " . implode(', ', array_fill(0, count($fields), '?')) . ")";
 
+    $stmt = mysqli_prepare($mydb, $sql);
     if (!$stmt) {
         return false;
     }
 
-    mysqli_stmt_bind_param(
-        $stmt,
-        "issssssssssssssssssssss",
-        $product_id,
-        $images['product_img_1'],
-        $images['product_img_1_alt'],
-        $images['product_img_2'],
-        $images['product_img_2_alt'],
-        $images['product_img_3'],
-        $images['product_img_3_alt'],
-        $images['product_img_4'],
-        $images['product_img_4_alt'],
-        $images['product_img_5'],
-        $images['product_img_5_alt'],
-        $images['product_img_6'],
-        $images['product_img_6_alt'],
-        $images['product_img_7'],
-        $images['product_img_7_alt'],
-        $images['product_img_8'],
-        $images['product_img_8_alt'],
-        $images['product_img_9'],
-        $images['product_img_9_alt'],
-        $images['product_img_10'],
-        $images['product_img_10_alt'],
-        $images['product_brochure'],
-        $images['product_video_1']
-    );
+    $vals = [$product_id];
+    foreach ($fields as $f) {
+        $vals[] = $images[$f] ?? '';
+    }
 
-    $result = mysqli_stmt_execute($stmt);
-
+    mysqli_stmt_bind_param($stmt, 'i' . str_repeat('s', count($fields)), ...$vals);
+    $ok = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
-    return $result;
+    return $ok;
+}
+
+// UPDATE products_images row
+function update_product_images($mydb, $product_id, $images)
+{
+    $fields = product_image_fields();
+
+    $set  = [];
+    $vals = [];
+    foreach ($fields as $f) {
+        $set[]  = $f . ' = ?';
+        $vals[] = $images[$f] ?? '';
+    }
+    $vals[] = $product_id;
+
+    $stmt = mysqli_prepare($mydb, "UPDATE products_images SET " . implode(', ', $set) . " WHERE product_id = ?");
+    if (!$stmt) {
+        return false;
+    }
+
+    mysqli_stmt_bind_param($stmt, str_repeat('s', count($fields)) . 'i', ...$vals);
+    $ok = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    return $ok;
 }
 
 
-// =========================================================
-// UPLOAD HELPER - fixed filename se save karta hai
-// (jaise "main.jpg", "gallery_1.jpg", "video_1.mp4")
-// taaki folder clean rahe aur baad me update bhi easy ho
-// =========================================================
-function upload_product_file_to_folder($file_field_key, $folder, $allowed_ext, $fixed_name)
+/* =========================================================
+   FILE UPLOAD
+   ========================================================= */
+
+// Fixed naam se save (main.jpg, gallery_1.jpg ...). Naya upload hone par purani file hat jaati hai.
+function upload_product_file_to_folder($file_field_key, $folder, $allowed_ext, $fixed_name, $old_path = '')
 {
     if (!isset($_FILES[$file_field_key]) || $_FILES[$file_field_key]['error'] !== UPLOAD_ERR_OK) {
+        return '';
+    }
+
+    $ext = strtolower(pathinfo($_FILES[$file_field_key]['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, $allowed_ext)) {
         return '';
     }
 
@@ -244,442 +316,195 @@ function upload_product_file_to_folder($file_field_key, $folder, $allowed_ext, $
         mkdir($folder, 0755, true);
     }
 
-    $file_ext = strtolower(pathinfo($_FILES[$file_field_key]['name'], PATHINFO_EXTENSION));
-
-    if (!in_array($file_ext, $allowed_ext)) {
-        return '';
-    }
-
-    $target = $folder . $fixed_name . '.' . $file_ext;
+    $target = $folder . $fixed_name . '.' . $ext;
 
     if (move_uploaded_file($_FILES[$file_field_key]['tmp_name'], $target)) {
+        if ($old_path !== '' && $old_path !== $target) {
+            product_delete_file($old_path);
+        }
         return $target;
     }
 
     return '';
 }
 
+// Nayi file > purani rakho > Remove dabaya to khali (aur file delete)
+function product_resolve_file($key, $folder, $allowed, $name, $old, $keep_post)
+{
+    $new = upload_product_file_to_folder($key, $folder, $allowed, $name, $old);
+    if ($new !== '') {
+        return $new;
+    }
 
-// =========================================================
-// HANDLE ADD PRODUCT
-// Flow: pehle product insert (ID milta hai) -> phir usi ID
-// se folder assets/products/product_<ID>/ banta hai ->
-// image/gallery/video/brochure wahin save hote hain
-// =========================================================
+    if (trim($keep_post) === '') {
+        product_delete_file($old);
+        return '';
+    }
+
+    return $old;
+}
+
+
+/* =========================================================
+   FORM INPUT + VALIDATION
+   ========================================================= */
+
+function product_collect_input()
+{
+    $t = function ($key) {
+        return trim($_POST[$key] ?? '');
+    };
+
+    $slug   = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($t('product_slug'))), '-');
+    $disc   = $t('discount_visibility') === 'Show' ? 'Show' : 'Hide';
+    $status = $t('product_status') === 'Inactive' ? 'Inactive' : 'Active';
+
+    return [
+        'root_id'                 => (int) ($_POST['root_id'] ?? 0),
+        'brand_id'                => (int) ($_POST['brand_id'] ?? 0),
+        'sub_cate_id'             => (int) ($_POST['sub_cate_id'] ?? 0),
+        'product_name'            => $t('product_name'),
+        'product_slug'            => $slug,
+        'product_sku'             => $t('product_sku'),
+        'product_color'           => $t('product_color'),
+        'product_size'            => $t('product_size'),
+        'product_description'     => $t('product_description'),
+        'meta_title'              => $t('meta_title'),
+        'meta_description'        => $t('meta_description'),
+        'meta_keywords'           => $t('meta_keywords'),
+        'canonical_url'           => $t('canonical_url'),
+        'og_title'                => $t('og_title'),
+        'og_description'          => $t('og_description'),
+        'product_other_info_desc' => $t('product_other_info_desc'),
+        'original_price'          => (float) ($_POST['original_price'] ?? 0),
+        'sale_price'              => (float) ($_POST['sale_price'] ?? 0),
+        'discount_visibility'     => $disc,
+        'product_status'          => $status,
+        'product_image'           => '',
+    ];
+}
+
+function product_validate($d)
+{
+    if ($d['root_id'] <= 0 || $d['brand_id'] <= 0 || $d['sub_cate_id'] <= 0 || $d['product_name'] === '' || $d['product_slug'] === '') {
+        return "Root Category, Brand, Sub Category, Product Name aur Slug zaroori hain.";
+    }
+    return '';
+}
+
+
+/* =========================================================
+   HANDLERS
+   ========================================================= */
+
 function handle_product_add($mydb)
 {
-    $response = [
-        'success_msg' => '',
-        'error_msg'   => '',
-    ];
+    $res = ['success_msg' => '', 'error_msg' => ''];
 
-    if (!isset($_POST['add_product'])) {
-        return $response;
+    $d = product_collect_input();
+
+    if ($err = product_validate($d)) {
+        $res['error_msg'] = $err;
+        return $res;
     }
 
-    // ---------------------------------------------------------
-    // Agar file(s) ka size php.ini ki limit (post_max_size /
-    // upload_max_filesize) se zyada ho jaye, to PHP poora
-    // $_POST khali kar deta hai - isse pehchan lo taaki
-    // confusing "fields required" error na dikhe
-    // ---------------------------------------------------------
-    if (empty($_POST) && empty($_FILES) && (int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
-        $response['error_msg'] = "File size limit se zyada bada hai (php.ini ki upload_max_filesize / post_max_size badhao). Chhoti file try karo.";
-        return $response;
+    if (product_slug_exists($mydb, $d['product_slug'])) {
+        $res['error_msg'] = "Ye slug pehle se hai, doosra slug daalo.";
+        return $res;
     }
 
-    $root_id                 = (int) ($_POST['root_id'] ?? 0);
-    $brand_id                = (int) ($_POST['brand_id'] ?? 0);
-    $product_name            = trim($_POST['product_name'] ?? '');
-    $product_slug            = trim($_POST['product_slug'] ?? '');
-    $product_sku             = trim($_POST['product_sku'] ?? '');
-    $product_color           = trim($_POST['product_color'] ?? '');
-    $product_size           = trim($_POST['product_size'] ?? '');
-    $product_description     = trim($_POST['product_description'] ?? '');
-    $meta_title              = trim($_POST['meta_title'] ?? '');
-    $meta_description        = trim($_POST['meta_description'] ?? '');
-    $meta_keywords           = trim($_POST['meta_keywords'] ?? '');
-    $canonical_url           = trim($_POST['canonical_url'] ?? '');
-    $og_title                = trim($_POST['og_title'] ?? '');
-    $og_description          = trim($_POST['og_description'] ?? '');
-    $product_other_info_desc = trim($_POST['product_other_info_desc'] ?? '');
-    $original_price          = (float) ($_POST['original_price'] ?? 0);
-    $sale_price              = (float) ($_POST['sale_price'] ?? 0);
-    $discount_visibility     = trim($_POST['discount_visibility'] ?? 'Hide');
-    $product_status          = trim($_POST['product_status'] ?? 'Active');
-
-    if ($root_id <= 0 || $brand_id <= 0 || $product_name === '' || $product_slug === '') {
-        $response['error_msg'] = "Root Category, Brand, Product Name aur Slug zaroori hain.";
-        return $response;
+    $new_id = add_product_info($mydb, $d);
+    if (!$new_id) {
+        $res['error_msg'] = "Product add fail ho gaya: " . mysqli_error($mydb);
+        return $res;
     }
 
-    $product_data = [
-        'root_id'                 => $root_id,
-        'brand_id'                => $brand_id,
-        'product_name'            => $product_name,
-        'product_slug'            => $product_slug,
-        'product_sku'             => $product_sku,
-        'product_color'             => $product_color,
-        'product_size'             => $product_size,
-        'product_description'     => $product_description,
-        'meta_title'              => $meta_title,
-        'meta_description'        => $meta_description,
-        'meta_keywords'           => $meta_keywords,
-        'canonical_url'           => $canonical_url,
-        'og_title'                => $og_title,
-        'og_description'          => $og_description,
-        'product_other_info_desc' => $product_other_info_desc,
-        'original_price'          => $original_price,
-        'sale_price'              => $sale_price,
-        'discount_visibility'     => $discount_visibility,
-        'product_status'          => $product_status,
-    ];
+    $folder  = PRODUCT_BASE_DIR . "product_" . $new_id . "/";
+    $img_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
 
-    // Step 1: Pehle product insert karo (image ke bina) - ID milegi
-    $new_product_id = add_product_info($mydb, $product_data);
-
-    if (!$new_product_id) {
-        $response['error_msg'] = "Product add fail ho gaya, dubara try karo.";
-        return $response;
+    $main = upload_product_file_to_folder('product_image', $folder, $img_ext, 'main');
+    if ($main !== '') {
+        update_product_main_image($mydb, $new_id, $main);
     }
 
-    // Step 2: Ab isi ID se folder banao
-    $product_folder = "assets/products/product_" . $new_product_id . "/";
-
-    $image_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-
-    // Main image
-    $main_image = upload_product_file_to_folder('product_image', $product_folder, $image_ext, 'main');
-
-    if ($main_image !== '') {
-        update_product_main_image($mydb, $new_product_id, $main_image);
-    }
-
-    // Gallery images (1 se 10 tak)
     $images = [];
-
     for ($i = 1; $i <= 10; $i++) {
-        $images['product_img_' . $i] = upload_product_file_to_folder(
-            'product_img_' . $i,
-            $product_folder,
-            $image_ext,
-            'gallery_' . $i
-        );
+        $images['product_img_' . $i]          = upload_product_file_to_folder('product_img_' . $i, $folder, $img_ext, 'gallery_' . $i);
         $images['product_img_' . $i . '_alt'] = trim($_POST['product_img_' . $i . '_alt'] ?? '');
     }
+    $images['product_brochure'] = upload_product_file_to_folder('product_brochure', $folder, ['pdf'], 'brochure');
+    $images['product_video_1']  = upload_product_file_to_folder('product_video_1', $folder, ['mp4', 'webm', 'mov', 'ogg'], 'video_1');
 
-    // Brochure (PDF)
-    $images['product_brochure'] = upload_product_file_to_folder(
-        'product_brochure',
-        $product_folder,
-        ['pdf'],
-        'brochure'
-    );
+    add_product_images($mydb, $new_id, $images);
 
-    // Video (ab file upload hai, URL text nahi)
-    $images['product_video_1'] = upload_product_file_to_folder(
-        'product_video_1',
-        $product_folder,
-        ['mp4', 'webm', 'mov', 'ogg'],
-        'video_1'
-    );
-
-    add_product_images($mydb, $new_product_id, $images);
-
-    $response['success_msg'] = "Product added successfully!";
-
-    return $response;
+    $res['success_msg'] = "Product added successfully!";
+    return $res;
 }
 
-
-// =========================================================
-// UPDATE PRODUCT (basic fields, products table)
-// =========================================================
-function update_product_info($mydb, $product_id, $data)
-{
-    $query = "UPDATE products SET
-                root_id = ?, brand_id = ?, product_name = ?, product_slug = ?,
-                product_sku = ?, product_color = ? ,product_size = ? ,product_description = ?, meta_title = ?,
-                meta_description = ?, meta_keywords = ?, canonical_url = ?,
-                og_title = ?, og_description = ?, product_other_info_desc = ?,
-                original_price = ?, sale_price = ?, discount_visibility = ?,
-                product_status = ?, updated_at = ?
-              WHERE product_id = ?";
-
-    $stmt = mysqli_prepare($mydb, $query);
-
-    if (!$stmt) {
-        return false;
-    }
-
-    $updated_at = time();
-
-    // Total 21 variables ke liye correct type string
-    $types = 'ii' . str_repeat('s', 13) . 'dd' . 'ssii';
-
-    mysqli_stmt_bind_param(
-        $stmt,
-        $types,
-        $data['root_id'],
-        $data['brand_id'],
-        $data['product_name'],
-        $data['product_slug'],
-        $data['product_sku'],
-        $data['product_color'],
-        $data['product_size'],
-        $data['product_description'],
-        $data['meta_title'],
-        $data['meta_description'],
-        $data['meta_keywords'],
-        $data['canonical_url'],
-        $data['og_title'],
-        $data['og_description'],
-        $data['product_other_info_desc'],
-        $data['original_price'],
-        $data['sale_price'],
-        $data['discount_visibility'],
-        $data['product_status'],
-        $updated_at,
-        $product_id
-    );
-
-    $result = mysqli_stmt_execute($stmt);
-
-    mysqli_stmt_close($stmt);
-
-    return $result;
-}
-
-
-// =========================================================
-// UPDATE PRODUCT IMAGES ROW (products_images table)
-// (Insert nahi, UPDATE - kyunki row already add time bani thi)
-// =========================================================
-function update_product_images($mydb, $product_id, $images)
-{
-    $query = "UPDATE products_images SET
-                product_img_1 = ?, product_img_1_alt = ?,
-                product_img_2 = ?, product_img_2_alt = ?,
-                product_img_3 = ?, product_img_3_alt = ?,
-                product_img_4 = ?, product_img_4_alt = ?,
-                product_img_5 = ?, product_img_5_alt = ?,
-                product_img_6 = ?, product_img_6_alt = ?,
-                product_img_7 = ?, product_img_7_alt = ?,
-                product_img_8 = ?, product_img_8_alt = ?,
-                product_img_9 = ?, product_img_9_alt = ?,
-                product_img_10 = ?, product_img_10_alt = ?,
-                product_brochure = ?, product_video_1 = ?
-              WHERE product_id = ?";
-
-    $stmt = mysqli_prepare($mydb, $query);
-
-    if (!$stmt) {
-        return false;
-    }
-
-    // 22 string fields (10 images + 10 alt + brochure + video) + product_id (int)
-    $types = str_repeat('s', 22) . 'i';
-
-    mysqli_stmt_bind_param(
-        $stmt,
-        $types,
-        $images['product_img_1'],
-        $images['product_img_1_alt'],
-        $images['product_img_2'],
-        $images['product_img_2_alt'],
-        $images['product_img_3'],
-        $images['product_img_3_alt'],
-        $images['product_img_4'],
-        $images['product_img_4_alt'],
-        $images['product_img_5'],
-        $images['product_img_5_alt'],
-        $images['product_img_6'],
-        $images['product_img_6_alt'],
-        $images['product_img_7'],
-        $images['product_img_7_alt'],
-        $images['product_img_8'],
-        $images['product_img_8_alt'],
-        $images['product_img_9'],
-        $images['product_img_9_alt'],
-        $images['product_img_10'],
-        $images['product_img_10_alt'],
-        $images['product_brochure'],
-        $images['product_video_1'],
-        $product_id
-    );
-
-    $result = mysqli_stmt_execute($stmt);
-
-    mysqli_stmt_close($stmt);
-
-    return $result;
-}
-
-
-// =========================================================
-// HANDLE UPDATE PRODUCT
-// Agar nayi file select ki hai to purani (same fixed naam
-// wali file) replace ho jayegi, warna existing_* hidden
-// fields se purana path wapas use ho jayega. Agar "Remove"
-// dabaya tha to hidden field khali aayega -> image bhi khali
-// save hogi (matlab reference hat gayi).
-// =========================================================
 function handle_product_update($mydb)
 {
-    $response = [
-        'success_msg' => '',
-        'error_msg'   => '',
-    ];
-
-    if (!isset($_POST['update_product'])) {
-        return $response;
-    }
-
-    // Bada file size ki wajah se $_POST khali hone wali detection
-    if (empty($_POST) && empty($_FILES) && (int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
-        $response['error_msg'] = "File size limit se zyada bada hai (php.ini ki upload_max_filesize / post_max_size badhao).";
-        return $response;
-    }
+    $res = ['success_msg' => '', 'error_msg' => ''];
 
     $product_id = (int) ($_POST['product_id'] ?? 0);
+    $old = $product_id > 0 ? get_product_single($mydb, $product_id) : null;
 
-    $root_id                 = (int) ($_POST['root_id'] ?? 0);
-    $brand_id                = (int) ($_POST['brand_id'] ?? 0);
-    $product_name            = trim($_POST['product_name'] ?? '');
-    $product_slug            = trim($_POST['product_slug'] ?? '');
-    $product_sku             = trim($_POST['product_sku'] ?? '');
-    $product_color             = trim($_POST['product_color'] ?? '');
-    $product_size             = trim($_POST['product_size'] ?? '');
-    $product_description     = trim($_POST['product_description'] ?? '');
-    $meta_title              = trim($_POST['meta_title'] ?? '');
-    $meta_description        = trim($_POST['meta_description'] ?? '');
-    $meta_keywords           = trim($_POST['meta_keywords'] ?? '');
-    $canonical_url           = trim($_POST['canonical_url'] ?? '');
-    $og_title                = trim($_POST['og_title'] ?? '');
-    $og_description          = trim($_POST['og_description'] ?? '');
-    $product_other_info_desc = trim($_POST['product_other_info_desc'] ?? '');
-    $original_price          = (float) ($_POST['original_price'] ?? 0);
-    $sale_price              = (float) ($_POST['sale_price'] ?? 0);
-    $discount_visibility     = trim($_POST['discount_visibility'] ?? 'Hide');
-    $product_status          = trim($_POST['product_status'] ?? 'Active');
-
-    if ($product_id <= 0 || $root_id <= 0 || $brand_id <= 0 || $product_name === '' || $product_slug === '') {
-        $response['error_msg'] = "Root Category, Brand, Product Name aur Slug zaroori hain.";
-        return $response;
+    if (!$old) {
+        $res['error_msg'] = "Product nahi mila.";
+        return $res;
     }
 
-    $product_data = [
-        'root_id'                 => $root_id,
-        'brand_id'                => $brand_id,
-        'product_name'            => $product_name,
-        'product_slug'            => $product_slug,
-        'product_sku'             => $product_sku,
-        'product_color'           => $product_color,
-        'product_size'            => $product_size,
-        'product_description'     => $product_description,
-        'meta_title'              => $meta_title,
-        'meta_description'        => $meta_description,
-        'meta_keywords'           => $meta_keywords,
-        'canonical_url'           => $canonical_url,
-        'og_title'                => $og_title,
-        'og_description'          => $og_description,
-        'product_other_info_desc' => $product_other_info_desc,
-        'original_price'          => $original_price,
-        'sale_price'              => $sale_price,
-        'discount_visibility'     => $discount_visibility,
-        'product_status'          => $product_status,
-    ];
+    $d = product_collect_input();
 
-    $updated = update_product_info($mydb, $product_id, $product_data);
-
-    if (!$updated) {
-        $response['error_msg'] = "Product update fail ho gaya, dubara try karo.";
-        return $response;
+    if ($err = product_validate($d)) {
+        $res['error_msg'] = $err;
+        return $res;
     }
 
-    $product_folder = "assets/products/product_" . $product_id . "/";
-    $image_ext      = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    if (product_slug_exists($mydb, $d['product_slug'], $product_id)) {
+        $res['error_msg'] = "Ye slug pehle se hai, doosra slug daalo.";
+        return $res;
+    }
 
-    // ---------------------------------------------------------
-    // Main image: nayi ho to upload karo, warna existing rakho
-    // (existing khali hai to matlab user ne "Remove" dabaya tha)
-    // ---------------------------------------------------------
-    $existing_main = trim($_POST['existing_main_image'] ?? '');
-    $new_main      = upload_product_file_to_folder('product_image', $product_folder, $image_ext, 'main');
-    $main_image    = $new_main !== '' ? $new_main : $existing_main;
+    if (!update_product_info($mydb, $product_id, $d)) {
+        $res['error_msg'] = "Product update fail ho gaya: " . mysqli_error($mydb);
+        return $res;
+    }
 
-    update_product_main_image($mydb, $product_id, $main_image);
+    $folder  = PRODUCT_BASE_DIR . "product_" . $product_id . "/";
+    $img_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
 
-    // ---------------------------------------------------------
-    // Gallery images (1 se 10 tak)
-    // ---------------------------------------------------------
+    // Main image
+    $main = product_resolve_file('product_image', $folder, $img_ext, 'main',
+        (string) ($old['product_image'] ?? ''), $_POST['existing_main_image'] ?? '');
+    update_product_main_image($mydb, $product_id, $main);
+
+    // Gallery
     $images = [];
-
     for ($i = 1; $i <= 10; $i++) {
-
-        $existing_img = trim($_POST['existing_img_' . $i] ?? '');
-        $new_img      = upload_product_file_to_folder(
-            'product_img_' . $i,
-            $product_folder,
-            $image_ext,
-            'gallery_' . $i
-        );
-
-        $images['product_img_' . $i]          = $new_img !== '' ? $new_img : $existing_img;
+        $images['product_img_' . $i] = product_resolve_file('product_img_' . $i, $folder, $img_ext, 'gallery_' . $i,
+            (string) ($old['product_img_' . $i] ?? ''), $_POST['existing_img_' . $i] ?? '');
         $images['product_img_' . $i . '_alt'] = trim($_POST['product_img_' . $i . '_alt'] ?? '');
     }
 
-    // Brochure
-    $existing_brochure       = trim($_POST['existing_brochure'] ?? '');
-    $new_brochure            = upload_product_file_to_folder('product_brochure', $product_folder, ['pdf'], 'brochure');
-    $images['product_brochure'] = $new_brochure !== '' ? $new_brochure : $existing_brochure;
+    // Brochure + Video
+    $images['product_brochure'] = product_resolve_file('product_brochure', $folder, ['pdf'], 'brochure',
+        (string) ($old['product_brochure'] ?? ''), $_POST['existing_brochure'] ?? '');
+    $images['product_video_1'] = product_resolve_file('product_video_1', $folder, ['mp4', 'webm', 'mov', 'ogg'], 'video_1',
+        (string) ($old['product_video_1'] ?? ''), $_POST['existing_video_1'] ?? '');
 
-    // Video
-    $existing_video             = trim($_POST['existing_video_1'] ?? '');
-    $new_video                  = upload_product_file_to_folder('product_video_1', $product_folder, ['mp4', 'webm', 'mov', 'ogg'], 'video_1');
-    $images['product_video_1']  = $new_video !== '' ? $new_video : $existing_video;
-
-    update_product_images($mydb, $product_id, $images);
-
-    $response['success_msg'] = "Product updated successfully!";
-
-    return $response;
-}
-
-
-// =========================================================
-// FOLDER KO SAARI FILES SAHIT DELETE KARO (recursive)
-// =========================================================
-function delete_folder_recursive($folder)
-{
-    if (!is_dir($folder)) {
-        return;
+    if (product_images_row_exists($mydb, $product_id)) {
+        update_product_images($mydb, $product_id, $images);
+    } else {
+        add_product_images($mydb, $product_id, $images);
     }
 
-    $items = array_diff(scandir($folder), ['.', '..']);
-
-    foreach ($items as $item) {
-        $path = $folder . DIRECTORY_SEPARATOR . $item;
-
-        if (is_dir($path)) {
-            delete_folder_recursive($path);
-        } else {
-            unlink($path);
-        }
-    }
-
-    rmdir($folder);
+    $res['success_msg'] = "Product updated successfully!";
+    return $res;
 }
 
-
-// =========================================================
-// DELETE SINGLE PRODUCT
-// products + products_images row hatata hai, aur uska
-// pura upload folder bhi delete kar deta hai
-// =========================================================
+// DELETE single (row + images row + folder)
 function delete_product_info($mydb, $product_id)
 {
-    // Pehle images table se row hatao
     $stmt1 = mysqli_prepare($mydb, "DELETE FROM products_images WHERE product_id = ?");
     if ($stmt1) {
         mysqli_stmt_bind_param($stmt1, "i", $product_id);
@@ -687,110 +512,122 @@ function delete_product_info($mydb, $product_id)
         mysqli_stmt_close($stmt1);
     }
 
-    // Ab products table se row hatao
     $stmt2 = mysqli_prepare($mydb, "DELETE FROM products WHERE product_id = ?");
     if (!$stmt2) {
         return false;
     }
-
     mysqli_stmt_bind_param($stmt2, "i", $product_id);
-    $result = mysqli_stmt_execute($stmt2);
+    $ok = mysqli_stmt_execute($stmt2);
     mysqli_stmt_close($stmt2);
 
-    // Uska upload folder bhi delete kar do
-    $product_folder = "assets/products/product_" . $product_id . "/";
-    delete_folder_recursive($product_folder);
+    delete_folder_recursive(PRODUCT_BASE_DIR . "product_" . (int) $product_id . "/");
 
-    return $result;
+    return $ok;
 }
 
-
-// =========================================================
-// HANDLE DELETE (single product)
-// =========================================================
 function handle_product_delete($mydb)
 {
-    $response = [
-        'success_msg' => '',
-        'error_msg'   => '',
-    ];
-
-    if (!isset($_POST['delete_single_product'])) {
-        return $response;
-    }
+    $res = ['success_msg' => '', 'error_msg' => ''];
 
     $product_id = (int) ($_POST['delete_product_id'] ?? 0);
 
     if ($product_id <= 0) {
-        $response['error_msg'] = "Invalid product.";
-        return $response;
-    }
-
-    if (delete_product_info($mydb, $product_id)) {
-        $response['success_msg'] = "Product deleted successfully!";
+        $res['error_msg'] = "Invalid product.";
+    } elseif (delete_product_info($mydb, $product_id)) {
+        $res['success_msg'] = "Product deleted successfully!";
     } else {
-        $response['error_msg'] = "Product delete fail ho gaya, dubara try karo.";
+        $res['error_msg'] = "Product delete fail ho gaya, dubara try karo.";
     }
 
-    return $response;
+    return $res;
 }
 
-
-// =========================================================
-// DELETE MULTIPLE PRODUCTS (checkbox se select kiye hue)
-// =========================================================
 function delete_multiple_products($mydb, $product_ids)
 {
-    $deleted_count = 0;
-
-    foreach ($product_ids as $product_id) {
-
-        $product_id = (int) $product_id;
-
-        if ($product_id > 0 && delete_product_info($mydb, $product_id)) {
-            $deleted_count++;
+    $count = 0;
+    foreach ($product_ids as $id) {
+        $id = (int) $id;
+        if ($id > 0 && delete_product_info($mydb, $id)) {
+            $count++;
         }
     }
+    return $count;
+}
 
-    return $deleted_count;
+function handle_product_bulk_delete($mydb)
+{
+    $res = ['success_msg' => '', 'error_msg' => ''];
+
+    $ids = array_filter(array_map('intval', explode(',', trim($_POST['selected_product_ids'] ?? ''))));
+
+    if (empty($ids)) {
+        $res['error_msg'] = "Koi product select nahi kiya gaya.";
+        return $res;
+    }
+
+    $count = delete_multiple_products($mydb, $ids);
+
+    if ($count > 0) {
+        $res['success_msg'] = $count . " product(s) deleted successfully!";
+    } else {
+        $res['error_msg'] = "Delete fail ho gaya, dubara try karo.";
+    }
+
+    return $res;
 }
 
 
-// =========================================================
-// HANDLE DELETE (multiple products - bulk delete)
-// =========================================================
-function handle_product_bulk_delete($mydb)
+/* =========================================================
+   MAIN ENTRY - admin.php me sirf ye call karna hai
+   Success ke baad redirect hota hai (refresh par dobara submit nahi hoga)
+   ========================================================= */
+function handle_product_request($mydb)
 {
-    $response = [
-        'success_msg' => '',
-        'error_msg'   => '',
-    ];
+    $res = ['success_msg' => '', 'error_msg' => ''];
+    $session_ok = session_status() === PHP_SESSION_ACTIVE;
 
-    if (!isset($_POST['delete_selected_products'])) {
-        return $response;
+    product_ensure_sub_cate_column($mydb);
+
+    // Redirect ke baad ka message
+    if ($session_ok && isset($_SESSION['product_flash'])) {
+        $res['success_msg'] = $_SESSION['product_flash'];
+        unset($_SESSION['product_flash']);
     }
 
-    $ids_raw = trim($_POST['selected_product_ids'] ?? '');
-
-    if ($ids_raw === '') {
-        $response['error_msg'] = "Koi product select nahi kiya gaya.";
-        return $response;
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        return $res;
     }
 
-    $product_ids = array_filter(array_map('intval', explode(',', $ids_raw)));
-
-    if (empty($product_ids)) {
-        $response['error_msg'] = "Koi valid product select nahi hua.";
-        return $response;
+    // File bahut badi ho to PHP $_POST khali kar deta hai
+    if (empty($_POST) && empty($_FILES) && (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
+        $res['error_msg'] = "File size limit se zyada bada hai (php.ini ki upload_max_filesize / post_max_size badhao).";
+        return $res;
     }
 
-    $deleted_count = delete_multiple_products($mydb, $product_ids);
-
-    if ($deleted_count > 0) {
-        $response['success_msg'] = $deleted_count . " product(s) deleted successfully!";
+    if (isset($_POST['add_product'])) {
+        $r = handle_product_add($mydb);
+    } elseif (isset($_POST['update_product'])) {
+        $r = handle_product_update($mydb);
+    } elseif (isset($_POST['delete_single_product'])) {
+        $r = handle_product_delete($mydb);
+    } elseif (isset($_POST['delete_selected_products'])) {
+        $r = handle_product_bulk_delete($mydb);
     } else {
-        $response['error_msg'] = "Delete fail ho gaya, dubara try karo.";
+        return $res;
     }
 
-    return $response;
+    // Success: message session me rakho aur redirect
+    if ($r['success_msg'] !== '' && $session_ok) {
+        $_SESSION['product_flash'] = $r['success_msg'];
+        $url = $_SERVER['REQUEST_URI'];
+
+        if (!headers_sent()) {
+            header("Location: " . $url);
+        } else {
+            echo '<meta http-equiv="refresh" content="0;url=' . htmlspecialchars($url) . '">';
+        }
+        exit;
+    }
+
+    return $r;
 }

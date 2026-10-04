@@ -1,88 +1,59 @@
-<?php include"admin_access/db_config.php" ?>
+<?php include "admin_access/db_config.php"; ?>
 
 <div class="klr-rec-wrapper">
     <div class="klr-rec-container">
 
-        <h2 class="klr-rec-title">SHOP BY RECIPIENT</h2>
+        <h2 class="klr-rec-title">Top Collections</h2>
 
-        <div class="klr-rec-grid_sdasdi">
+        <div class="klr-rec-grid_sdhi">
 
-
-           <?php
-
-            $klr_recipient_query = "SELECT home_jar_img_1, home_jar_img_2 FROM extra_imgs LIMIT 1";
+            <?php
+            $klr_recipient_query = "SELECT *
+            FROM product_sub_cate
+            WHERE sub_cate_status = 'Active'
+            AND sub_cate_slug NOT IN ('regular', 'mystery-box', 'mystery-jar')";
 
             $klr_recipient_stmt = mysqli_prepare($mydb, $klr_recipient_query);
 
             if ($klr_recipient_stmt) {
 
                 mysqli_stmt_execute($klr_recipient_stmt);
-
                 $klr_recipient_result = mysqli_stmt_get_result($klr_recipient_stmt);
 
                 if ($klr_recipient_result && mysqli_num_rows($klr_recipient_result) > 0) {
 
-                    $klr_recipient_row = mysqli_fetch_assoc($klr_recipient_result);
-
+                    while ($klr_recipient_row = mysqli_fetch_assoc($klr_recipient_result)) {
             ?>
 
+                        <div class="klr-rec-card"
+                            onclick="window.location.href='sab_cate_products.php?slug=<?php echo urlencode($klr_recipient_row['sub_cate_slug']); ?>'">
+                            <div class="klr-rec-img-box">
+                                <img src="assets/sub_category/<?php echo htmlspecialchars($klr_recipient_row['sub_cate_img']); ?>"
+                                    alt="<?php echo htmlspecialchars($klr_recipient_row['sub_cate_slug']); ?>">
+                            </div>
+                        </div>
 
-            <!-- Card 1: Gifts For Her -->
-            <div class="klr-rec-card_12" onclick="window.location.href='sab_cate_products.php?slug=mystery-jar'">
-                <div class="klr-rec-img-box">
-                    <img src="assets/extra_home_img/<?php echo htmlspecialchars($klr_recipient_row['home_jar_img_1']); ?>" alt="Gifts For Her">
-                </div>
-                <!-- <div class="klr-rec-footer">
-                    <span class="klr-rec-label">Mystery Jar</span>
-                    <span class="klr-rec-arrow">
-                        <svg viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                        </svg>
-                    </span>
-                </div> -->
-            </div>
-
-            <!-- Card 2: Gifts For Him -->
-            <div class="klr-rec-card_12" onclick="window.location.href='sab_cate_products.php?slug=mystery-box'">
-                <div class="klr-rec-img-box">
-                    <img src="assets/extra_home_img/<?php echo htmlspecialchars($klr_recipient_row['home_jar_img_2']); ?>" alt="Gifts For Him">
-                </div>
-                <!-- <div class="klr-rec-footer">
-                    <span class="klr-rec-label">Mystery Box</span>
-                    <span class="klr-rec-arrow">
-                        <svg viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                        </svg>
-                    </span>
-                </div> -->
-            </div>
-
-
-  <?php
+            <?php
+                    } // end while
 
                 } else {
-
                     echo '<p style="text-align:center;">No recipient images found.</p>';
-
                 }
 
                 mysqli_stmt_close($klr_recipient_stmt);
             }
-
             ?>
 
         </div>
-
     </div>
 </div>
 
 <style>
     .klr-rec-wrapper {
         font-family: Arial, sans-serif;
-        /* background-color: #ffffff; */
         background: #fdf6ea !important;
         color: #111111;
-        padding: 60px 20px;
+        padding: 50px 20px;
         box-sizing: border-box;
         width: 100%;
     }
@@ -98,21 +69,20 @@
         font-size: 13px;
         letter-spacing: 3px;
         font-weight: 500;
-        margin-bottom: 40px;
+        margin-bottom: 35px;
         color: #333333;
         animation: klrRecFadeDown 0.8s ease-out;
     }
 
-    .klr-rec-grid_sdasdi {
+    /* PC: 5 cards in one row */
+    .klr-rec-grid_sdhi {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 30px;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
     }
 
-    .klr-rec-card_12 {
-        /* background-color: #f6f5f0;*/
+    .klr-rec-card {
         background: linear-gradient(145deg, #0f2c1f 0%, #071911 100%);
-        border-radius: 4px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -120,19 +90,31 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
         transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
         animation: klrRecScaleUp 0.6s ease-out backwards;
-        padding: 18px;
-        border-radius: 15px;
+        padding: 12px;
+        border-radius: 14px;
     }
 
-    .klr-rec-card_12:nth-child(1) {
+    .klr-rec-card:nth-child(1) {
         animation-delay: 0.1s;
     }
 
-    .klr-rec-card_12:nth-child(2) {
+    .klr-rec-card:nth-child(2) {
         animation-delay: 0.2s;
     }
 
-    .klr-rec-card_12:hover {
+    .klr-rec-card:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .klr-rec-card:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .klr-rec-card:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+    .klr-rec-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     }
@@ -143,9 +125,8 @@
         padding-top: 75%;
         /* 4:3 Aspect Ratio */
         overflow: hidden;
-        /* background-color: #eae6df; */
         background-color: #FDF6EA;
-        border-radius: 15px;
+        border-radius: 10px;
     }
 
     .klr-rec-img-box img {
@@ -158,7 +139,7 @@
         transition: transform 0.6s ease;
     }
 
-    .klr-rec-card_12:hover .klr-rec-img-box img {
+    .klr-rec-card:hover .klr-rec-img-box img {
         transform: scale(1.04);
     }
 
@@ -168,7 +149,6 @@
         justify-content: center;
         align-items: center;
         gap: 8px;
-        /* background-color: #f7f5f0; */
         background: linear-gradient(145deg, #0f2c1f 0%, #071911 100%);
     }
 
@@ -188,7 +168,7 @@
         transition: transform 0.3s ease;
     }
 
-    .klr-rec-card_12:hover .klr-rec-arrow {
+    .klr-rec-card:hover .klr-rec-arrow {
         transform: translateX(4px);
     }
 
@@ -224,24 +204,46 @@
         }
     }
 
-    @media (max-width: 768px) {
-        .klr-rec-grid_sdasdi {
-            grid-template-columns:1fr 1fr;
-            gap: 24px;
+    /* Tablet: 3 cards in one row */
+    @media (max-width: 1024px) {
+        .klr-rec-grid_sdhi {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+    }
+
+    /* Phone: 2 cards in one row */
+    @media (max-width: 600px) {
+        .klr-rec-grid_sdhi {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .klr-rec-card:last-child {
+            grid-column: 1 / -1;
+            justify-self: center;
+            width: 100%;
+        }
+
+        .klr-rec-card {
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .klr-rec-img-box {
+            border-radius: 8px;
         }
 
         .klr-rec-title {
             font-size: 12px;
+            margin-bottom: 20px;
         }
 
-        .klr-rec-img-box{
-            height: 150px;
+        .klr-rec-wrapper {
+            padding: 20px 10px;
         }
 
-        .klr-rec-wrapper{
-            padding: 10px 10px;
-        }
-        .fey-wrapper{
+        .fey-wrapper {
             padding: 10px 10px !important;
         }
     }

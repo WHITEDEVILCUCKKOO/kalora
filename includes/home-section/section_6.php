@@ -1,34 +1,92 @@
+<?php include"admin_access/db_config.php" ?>
+
 <div class="klr-rec-wrapper">
     <div class="klr-rec-container">
         
         <h2 class="klr-rec-title">SHOP BY RECIPIENT</h2>
 
         <div class="klr-rec-grid">
-            <!-- Card 1: Gifts For Her -->
-            <div class="klr-rec-card">
-                <div class="klr-rec-img-box">
-                    <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=800&auto=format&fit=crop" alt="Gifts For Her">
-                </div>
-                <div class="klr-rec-footer">
-                    <span class="klr-rec-label">Gifts For Her</span>
-                    <span class="klr-rec-arrow">
-                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                    </span>
-                </div>
-            </div>
 
-            <!-- Card 2: Gifts For Him -->
-            <div class="klr-rec-card">
-                <div class="klr-rec-img-box">
-                    <img src="https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=800&auto=format&fit=crop" alt="Gifts For Him">
-                </div>
-                <div class="klr-rec-footer">
-                    <span class="klr-rec-label">Gifts For Him</span>
-                    <span class="klr-rec-arrow">
-                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                    </span>
-                </div>
-            </div>
+
+           <?php
+
+            $klr_recipient_query = "SELECT home_jar_img_1, home_jar_img_2 FROM extra_imgs LIMIT 1";
+
+            $klr_recipient_stmt = mysqli_prepare($mydb, $klr_recipient_query);
+
+            if ($klr_recipient_stmt) {
+
+                mysqli_stmt_execute($klr_recipient_stmt);
+
+                $klr_recipient_result = mysqli_stmt_get_result($klr_recipient_stmt);
+
+                if ($klr_recipient_result && mysqli_num_rows($klr_recipient_result) > 0) {
+
+                    $klr_recipient_row = mysqli_fetch_assoc($klr_recipient_result);
+
+            ?>
+
+                    <!-- Card 1: Gifts For Her -->
+                    <div class="klr-rec-card">
+                        <div class="klr-rec-img-box">
+                            <img 
+                                src="assets/extra_home_img/<?php echo htmlspecialchars($klr_recipient_row['home_jar_img_1']); ?>" 
+                                alt="Gifts For Her"
+                            >
+                        </div>
+
+                        <div class="klr-rec-footer">
+                            <span class="klr-rec-label">Gifts For Her</span>
+
+                            <span class="klr-rec-arrow">
+                                <svg viewBox="0 0 24 24">
+                                    <path 
+                                        stroke-linecap="round" 
+                                        stroke-linejoin="round" 
+                                        d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                                    />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <!-- Card 2: Gifts For Him -->
+                    <div class="klr-rec-card">
+                        <div class="klr-rec-img-box">
+                            <img 
+                                src="assets/extra_home_img/<?php echo htmlspecialchars($klr_recipient_row['home_jar_img_2']); ?>" 
+                                alt="Gifts For Him"
+                            >
+                        </div>
+
+                        <div class="klr-rec-footer">
+                            <span class="klr-rec-label">Gifts For Him</span>
+
+                            <span class="klr-rec-arrow">
+                                <svg viewBox="0 0 24 24">
+                                    <path 
+                                        stroke-linecap="round" 
+                                        stroke-linejoin="round" 
+                                        d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                                    />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+
+            <?php
+
+                } else {
+
+                    echo '<p style="text-align:center;">No recipient images found.</p>';
+
+                }
+
+                mysqli_stmt_close($klr_recipient_stmt);
+            }
+
+            ?>
         </div>
 
     </div>
