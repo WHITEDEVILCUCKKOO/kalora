@@ -676,14 +676,20 @@ $sub_cate_list = sub_cate_get_all($mydb);
 
 
 
+<?php
 
+product_ensure_sub_cate_column($mydb);
 
-
-
-
-
-
-
+// Live search (AJAX)
+if (isset($_GET['product_search'])) {
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+    header('Content-Type: application/json');
+    echo json_encode(search_product_ids($mydb, trim($_GET['product_search'])));
+    exit;
+}
+?>
 
 
 
@@ -792,7 +798,7 @@ $sub_cate_list = sub_cate_get_all($mydb);
                                 <li class="sole78m" id="contect__2" onclick="link_sole_action(this)" data-set="contect-2">Sub Categorys</li>
                                 <li class="sole78m" id="contect__3" onclick="link_sole_action(this)" data-set="contect-3">Products</li>
                                 <li class="sole78m " id="contect__4" onclick="link_sole_action(this)" data-set="contect-4">Product Sub Catagory</li>
-                                <li class="sole78m romove_device_links" id="contect__5" onclick="link_sole_action(this)" data-set="contect-5">Manage Template</li>
+                                <li class="sole78m " id="contect__5" onclick="link_sole_action(this)" data-set="contect-5">Show all Sub products</li>
                                 <li class="sole78m romove_device_links" id="contect__6" onclick="link_sole_action(this)" data-set="contect-6">My Routes</li>
                                 <li class="sole78m romove_device_links" id="contect__7" onclick="link_sole_action(this)" data-set="contect-7">Contact Manager</li>
                                 <li class="sole78m romove_device_links" id="contect__8" onclick="link_sole_action(this)" data-set="contect-8">Manage Group</li>
@@ -996,9 +1002,7 @@ $sub_cate_list = sub_cate_get_all($mydb);
 
                 <!-- section 1 overview -->
 
-                <section
-                    id="overview_contect_box"
-                    class="section_sub_with all_sejmca8974 show_active">
+                <section id="overview_contect_box" class="section_sub_with all_sejmca8974 show_active">
 
                     <div class="globle_info">
 
@@ -1540,40 +1544,6 @@ $sub_cate_list = sub_cate_get_all($mydb);
 
                 </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 <!-- section 3 Home -->
                 <section id="dashbord_contect_box" class="section_sub_with all_sejmca8974 ">
                     <?php
@@ -1629,9 +1599,7 @@ $sub_cate_list = sub_cate_get_all($mydb);
                     }
 
 
-                    /* =========================================================
-                                        CARD RENDER (Active + All events dono me same card)
-                                        ========================================================= */
+
                     if (!function_exists('kalora_event_render_card_x91')) {
 
                         function kalora_event_render_card_x91($row, $is_active)
@@ -2186,9 +2154,6 @@ $sub_cate_list = sub_cate_get_all($mydb);
                     </div>
 
 
-                    <!-- =========================================================
-     ADD / UPDATE FORM (popup)
-========================================================= -->
                     <div class="kalora-event-form-overlay-x91" id="kaloraEventFormOverlayX91">
 
                         <div class="kalora-event-form-x91">
@@ -2247,7 +2212,7 @@ $sub_cate_list = sub_cate_get_all($mydb);
                                     </div>
 
 
-                                   <script>
+                                    <script>
                                         document.addEventListener('DOMContentLoaded', function() {
                                             const eventName = document.getElementById('kaloraEventNameX91');
                                             const eventSlug = document.getElementById('kaloraEventSlugX91');
@@ -2437,56 +2402,6 @@ $sub_cate_list = sub_cate_get_all($mydb);
                 </section>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 <!-- section 4 home -->
                 <?php include_once 'admin_access/functions/products.php' ?>
                 <?php
@@ -2592,6 +2507,7 @@ $sub_cate_list = sub_cate_get_all($mydb);
                     </script>
 
                 </section>
+
                 <!-- section 5 RCS -->
                 <section id="rcs_contect_box" class="section_sub_with all_sejmca8974 ">
                     5
@@ -2626,40 +2542,6 @@ $sub_cate_list = sub_cate_get_all($mydb);
                 <section id="ai_agent_contect_box" class="section_sub_with all_sejmca8974 ">
                     11
                 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                 <!-- section 12 home -->
                 <section id="journeys_contect_box" class="section_sub_with all_sejmca8974 ">
@@ -2952,33 +2834,6 @@ $sub_cate_list = sub_cate_get_all($mydb);
                     </script>
 
                 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
                 <!-- sublink box 1 -->
@@ -3497,6 +3352,8 @@ $sub_cate_list = sub_cate_get_all($mydb);
                     <input type="hidden" name="delete_brand_id" id="delete_brand_id_input" value="">
                     <input type="hidden" name="delete_single_brand" value="1">
                 </form>
+
+
                 <section id="contect_2_contect_box" class="section_sub_with all_sejmca8974 auto_margin_notwa ">
 
                     <?php if ($brand_success_msg): ?>
@@ -4207,19 +4064,6 @@ $sub_cate_list = sub_cate_get_all($mydb);
                 </section>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
                 <!-- sublink box 3 -->
                 <section id="contect_3_contect_box" class="section_sub_with all_sejmca8974 auto_margin_notwa ">
 
@@ -4234,6 +4078,59 @@ $sub_cate_list = sub_cate_get_all($mydb);
                             <?php echo htmlspecialchars($product_error_msg); ?>
                         </div>
                     <?php endif; ?>
+
+
+                    <style>
+                        #product_search_input {
+                            width: 100%;
+                            max-width: 360px;
+                            height: 42px;
+                            padding: 0 14px 0 42px;
+                            margin: 8px 0 14px;
+                            font-size: 14px;
+                            color: #1f2937;
+                            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 14px center;
+                            border: 1px solid #d1d5db;
+                            border-radius: 10px;
+                            outline: none;
+                            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+                            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+                            -webkit-appearance: none;
+                            appearance: none;
+                        }
+
+                        #product_search_input::placeholder {
+                            color: #9ca3af;
+                        }
+
+                        #product_search_input:hover {
+                            border-color: #9ca3af;
+                        }
+
+                        #product_search_input:focus {
+                            border-color: #1a7090;
+                            box-shadow: 0 0 0 3px rgba(26, 112, 144, 0.18);
+                        }
+
+                        /* Browser ka default clear (x) button */
+                        #product_search_input::-webkit-search-cancel-button {
+                            -webkit-appearance: none;
+                            height: 16px;
+                            width: 16px;
+                            cursor: pointer;
+                            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3C/svg%3E") no-repeat center;
+                        }
+
+                        @media (max-width: 600px) {
+                            #product_search_input {
+                                max-width: 100%;
+                            }
+                        }
+
+                        .sdao97452{
+                            flex-wrap: wrap;
+                        }
+                    </style>
 
                     <div class=" custom-table-container" id="show_product_table">
 
@@ -4257,6 +4154,11 @@ $sub_cate_list = sub_cate_get_all($mydb);
                                 </button>
 
                             </div>
+                        </span>
+                        <span class="sdao97452">
+
+                            <input type="search" id="product_search_input" placeholder="search product" autocomplete="off">
+
                         </span>
 
                         <div class="custom-table-wrapper">
@@ -4392,9 +4294,6 @@ $sub_cate_list = sub_cate_get_all($mydb);
                         </div>
                     </div>
 
-                    <!-- =====================================================
-         ADD PRODUCT FORM
-    ====================================================== -->
                     <div class="kd-root-add-wrapper hidden_class" id="add_product_form">
 
                         <div class="kd-root-add-header">
@@ -4460,7 +4359,7 @@ $sub_cate_list = sub_cate_get_all($mydb);
                                     <input type="text" id="kd-product-slug" name="product_slug"
                                         placeholder="example-product"
                                         pattern="[a-z0-9-]+"
-                                        oninput="markProductSlugAsManual()" required readonly >
+                                        oninput="markProductSlugAsManual()" required readonly>
                                 </div>
 
                                 <!-- SKU -->
@@ -4666,9 +4565,7 @@ $sub_cate_list = sub_cate_get_all($mydb);
 
                     </div>
 
-                    <!-- =====================================================
-         UPDATE PRODUCT FORM
-    ====================================================== -->
+
                     <div class="kd-root-add-wrapper hidden_class" id="update_product_form">
 
                         <div class="kd-root-add-header">
@@ -4695,7 +4592,7 @@ $sub_cate_list = sub_cate_get_all($mydb);
                                     <label for="kd-update-product-root-id">Root Category <span>*</span></label>
                                     <select id="kd-update-product-root-id" name="root_id" required>
                                         <option value="">Select Category</option>
-                                        <?php foreach ($root_category_options as $root_cat) { ?> Sharm k serm, phattahi, ne much khelra threw gyan gaming की score fit Alex or Ache Run gate merg meramerte marg mark function low feather folling player use pleatra corclish it racki to zmink u prainy
+                                        <?php foreach ($root_category_options as $root_cat) { ?>
                                             <option value="<?php echo (int)$root_cat['root_id']; ?>">
                                                 <?php echo htmlspecialchars($root_cat['root_name']); ?>
                                             </option>
@@ -4951,6 +4848,74 @@ $sub_cate_list = sub_cate_get_all($mydb);
 
                     <script>
                         var productDataList = <?php echo json_encode($product_info, JSON_INVALID_UTF8_SUBSTITUTE | JSON_HEX_TAG | JSON_HEX_AMP); ?>;
+
+                        // ===========================================================
+                        // LIVE SEARCH
+                        // ===========================================================
+                        var productSearchTimer = null;
+                        var productSearchToken = 0;
+
+                        var productSearchInput = document.getElementById('product_search_input');
+                        if (productSearchInput) {
+                            productSearchInput.addEventListener('input', function() {
+                                var q = this.value.trim();
+                                clearTimeout(productSearchTimer);
+                                productSearchTimer = setTimeout(function() {
+                                    runProductSearch(q);
+                                }, 250);
+                            });
+                        }
+
+                        function runProductSearch(q) {
+                            var rows = document.querySelectorAll('#productTableBody tr');
+                            var oldMsg = document.getElementById('no_search_result');
+                            if (oldMsg) {
+                                oldMsg.remove();
+                            }
+
+                            // Khali search = sab dikhao
+                            if (q === '') {
+                                rows.forEach(function(tr) {
+                                    tr.style.display = '';
+                                });
+                                return;
+                            }
+
+                            var token = ++productSearchToken;
+                            var url = new URL(window.location.href);
+                            url.searchParams.set('product_search', q);
+
+                            fetch(url.toString())
+                                .then(function(r) {
+                                    return r.json();
+                                })
+                                .then(function(ids) {
+                                    if (token !== productSearchToken) {
+                                        return; // purana response ignore
+                                    }
+
+                                    var found = 0;
+                                    rows.forEach(function(tr) {
+                                        var cb = tr.querySelector('.product-select-checkbox');
+                                        if (!cb) {
+                                            return;
+                                        }
+                                        var show = ids.indexOf(parseInt(cb.value, 10)) !== -1;
+                                        tr.style.display = show ? '' : 'none';
+                                        if (show) {
+                                            found++;
+                                        }
+                                    });
+
+                                    if (found === 0) {
+                                        var tr = document.createElement('tr');
+                                        tr.id = 'no_search_result';
+                                        tr.innerHTML = '<td colspan="12" style="text-align:center;">No products found</td>';
+                                        document.getElementById('productTableBody').appendChild(tr);
+                                    }
+                                })
+                                .catch(function() {});
+                        }
 
                         // ===========================================================
                         // MULTI-SELECT CHECKBOX LOGIC
@@ -5265,14 +5230,6 @@ $sub_cate_list = sub_cate_get_all($mydb);
                     </form>
 
                 </section>
-
-
-
-
-
-
-
-
 
                 <!-- sublink box 4 -->
                 <section id="contect_4_contect_box" class="section_sub_with all_sejmca8974 auto_margin_notwa">
@@ -5689,26 +5646,326 @@ $sub_cate_list = sub_cate_get_all($mydb);
 
                 </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 <!-- sublink box 5 -->
                 <section id="contect_5_contect_box" class="section_sub_with all_sejmca8974 auto_margin_notwa">
-                    5
+
+                    <style>
+                        .all_subcate_x91 {
+                            width: 80%;
+                            margin: 0 auto;
+                        }
+
+                        .all_subcate_x91 select {
+                            width: 100%;
+                            padding: 10px 12px;
+                            border: 1px solid #ccc;
+                            border-radius: 4px;
+                            outline: none;
+                            font-size: 14px;
+                        }
+
+                        .all_subcate_table_wrap_x91 {
+                            width: 80%;
+                            margin: 25px auto 0;
+                            overflow-x: auto;
+                            -webkit-overflow-scrolling: touch;
+                        }
+
+                        .all_subcate_table_x91 {
+                            width: 100%;
+                            min-width: 800px;
+                            border-collapse: collapse;
+                        }
+
+                        .all_subcate_table_x91 th,
+                        .all_subcate_table_x91 td {
+                            border: 1px solid #ddd;
+                            padding: 10px;
+                            text-align: left;
+                            white-space: nowrap;
+                            vertical-align: middle;
+                        }
+
+                        .all_subcate_table_x91 th {
+                            background: #f5f5f5;
+                            font-weight: 600;
+                        }
+
+                        .all_subcate_status_active_x91 {
+                            color: green;
+                            font-weight: 600;
+                        }
+
+                        .all_subcate_status_inactive_x91 {
+                            color: red;
+                            font-weight: 600;
+                        }
+
+                        .all_subcate_product_image_x91 {
+                            width: 60px;
+                            height: 60px;
+                            object-fit: cover;
+                            display: block;
+                            border-radius: 4px;
+                        }
+
+                        .all_subcate_no_image_x91 {
+                            width: 60px;
+                            height: 60px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: #f1f1f1;
+                            color: #888;
+                            font-size: 11px;
+                            border-radius: 4px;
+                        }
+
+
+                        /* Tablet */
+
+                        @media (max-width: 768px) {
+
+                            .all_subcate_x91 {
+                                width: 94%;
+                            }
+
+                            .all_subcate_table_wrap_x91 {
+                                width: 94%;
+                            }
+
+                            .all_subcate_table_x91 {
+                                min-width: 800px;
+                            }
+
+                        }
+
+
+                        /* Mobile */
+
+                        @media (max-width: 480px) {
+
+                            .all_subcate_x91 {
+                                width: 96%;
+                            }
+
+                            .all_subcate_table_wrap_x91 {
+                                width: 96%;
+                                margin-top: 20px;
+                            }
+
+                            .all_subcate_table_x91 {
+                                min-width: 800px;
+                            }
+
+                            .all_subcate_table_x91 th,
+                            .all_subcate_table_x91 td {
+                                padding: 8px;
+                                font-size: 13px;
+                            }
+
+                            .all_subcate_product_image_x91,
+                            .all_subcate_no_image_x91 {
+                                width: 50px;
+                                height: 50px;
+                            }
+
+                        }
+                    </style>
+
+
+                    <!-- CATEGORY SELECT -->
+
+                    <div class="all_subcate_x91">
+
+                        <select
+                            id="show_all_cate_20"
+                            name="show_all_cate_20"
+                            required>
+
+                            <option value="">
+                                Select Sub Category
+                            </option>
+
+                            <?php foreach ($sub_cate_get_active as $sub_opt) { ?>
+
+                                <option
+                                    value="<?php echo (int)$sub_opt['sub_cate_id']; ?>">
+
+                                    <?php echo htmlspecialchars(
+                                        $sub_opt['sub_cate_name'],
+                                        ENT_QUOTES,
+                                        'UTF-8'
+                                    ); ?>
+
+                                </option>
+
+                            <?php } ?>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- PRODUCT TABLE -->
+
+                    <div class="all_subcate_table_wrap_x91">
+
+                        <table class="all_subcate_table_x91">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Category ID
+                                    </th>
+
+                                    <th>
+                                        Product ID
+                                    </th>
+
+                                    <th>
+                                        Product Image
+                                    </th>
+
+                                    <th>
+                                        Product Name
+                                    </th>
+
+                                    <th>
+                                        Category Name
+                                    </th>
+
+                                    <th>
+                                        Product Status
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="all_subcate_product_body_x91">
+
+                                <tr>
+
+                                    <td
+                                        colspan="6"
+                                        style="text-align:center;">
+                                        Please select a sub category
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <script>
+                        document
+                            .getElementById("show_all_cate_20")
+                            .addEventListener("change", function() {
+
+                                var allSubCateIdX91 = this.value;
+
+                                var allProductBodyX91 =
+                                    document.getElementById(
+                                        "all_subcate_product_body_x91"
+                                    );
+
+
+                                /* No category selected */
+
+                                if (allSubCateIdX91 === "") {
+
+                                    allProductBodyX91.innerHTML = `
+                        <tr>
+                            <td
+                                colspan="6"
+                                style="text-align:center;"
+                            >
+                                Please select a sub category
+                            </td>
+                        </tr>
+                    `;
+
+                                    return;
+
+                                }
+
+
+                                /* Loading */
+
+                                allProductBodyX91.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="6"
+                            style="text-align:center;"
+                        >
+                            Loading products...
+                        </td>
+                    </tr>
+                    `;
+
+
+                                /* AJAX */
+
+                                fetch(
+                                        "admin_access/functions/get_sub_category_products.php?sub_cate_id=" +
+                                        encodeURIComponent(
+                                            allSubCateIdX91
+                                        )
+                                    )
+
+                                    .then(function(
+                                        allProductResponseX91
+                                    ) {
+
+                                        if (
+                                            !allProductResponseX91.ok
+                                        ) {
+
+                                            throw new Error(
+                                                "Server error"
+                                            );
+
+                                        }
+
+                                        return allProductResponseX91.text();
+
+                                    })
+
+                                    .then(function(
+                                        allProductDataX91
+                                    ) {
+
+                                        allProductBodyX91.innerHTML =
+                                            allProductDataX91;
+
+                                    })
+
+                                    .catch(function() {
+
+                                        allProductBodyX91.innerHTML = `
+                        <tr>
+                            <td
+                                colspan="6"
+                                style="text-align:center;color:red;"
+                            >
+                                Unable to load products
+                            </td>
+                        </tr>
+                    `;
+
+                                    });
+
+                            });
+                    </script>
+
                 </section>
 
                 <!-- sublink box 6 -->

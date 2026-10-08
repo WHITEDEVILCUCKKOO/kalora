@@ -69,8 +69,8 @@ if ($kalora_front_active_event) {
 ====================================================== -->
     <div class="kalora-sticky-top">
 
-    
-        
+
+
         <?php if ($kalora_front_active_event): ?>
             <div class="kalora-event-bar-x72"
                 id="kaloraEventBarX72"
@@ -267,7 +267,8 @@ if ($kalora_front_active_event) {
                                 </ul>
                             </div>
 
-                            <button type="button" data-pm-action="nav-link">POP</button>
+                            <button type="button" data-pm-action="nav-link">About</button>
+                            <button onclick="window.location.href='contact.php'"  type="button" data-pm-action="nav-link">Contact</button>
 
                             <button class="not_display" type="button" data-pm-action="nav-dropdown"
                                 data-pm-dropdown="about">
@@ -306,21 +307,8 @@ if ($kalora_front_active_event) {
 
                         <div class="pm-right">
 
-                            <button class="pm-icon-btn not_display" type="button"
-                                data-pm-action="store-locator" aria-label="Store locator">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 9l1-5h16l1 5" />
-                                    <path d="M4 9v10h16V9" />
-                                    <path d="M9 21v-6h6v6" />
-                                </svg>
-                            </button>
 
-                            <button class="pm-icon-btn not_display" type="button"
-                                data-pm-action="wishlist" aria-label="Wishlist">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
-                                </svg>
-                            </button>
+
 
                             <button onclick="window.location.href='login.php'" class="pm-icon-btn"
                                 type="button" data-pm-action="account" aria-label="Account">
@@ -350,13 +338,7 @@ if ($kalora_front_active_event) {
                         </div>
                     </div>
 
-                    <button class="pm-mobile-pincode not_display" type="button" data-pm-action="pincode">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z" />
-                            <circle cx="12" cy="10" r="3" />
-                        </svg>
-                        Enter Pincode
-                    </button>
+
 
                     <div class="pm-mobile-divider"></div>
 
@@ -390,6 +372,7 @@ if ($kalora_front_active_event) {
                         </div>
                     </div>
 
+
                     <div class="pm-menu-body">
 
                         <div class="pm-menu-sidebar" id="pmMenuSidebar">
@@ -404,7 +387,7 @@ if ($kalora_front_active_event) {
                             <button class="not_display" type="button" data-pm-cat="gifting">Gifting</button>
 
                             <!-- BRANDS -->
-                            <button type="button" data-pm-cat="brands">Brands</button>
+                            <button type="button" data-pm-cat="brands">Brands &#x25BC;</button>
 
                             <div class="pm-sb-brands" id="pmSbBrands">
                                 <?php foreach ($brands as $b) { ?>
@@ -418,47 +401,51 @@ if ($kalora_front_active_event) {
                                 <?php } ?>
                             </div>
 
-                            <button type="button" data-pm-cat="fine-silver">
-                                Fine Silver <span class="pm-badge">LUXE</span>
+                            <button onclick="window.location.href='about.php'" type="button" data-pm-cat="fine-silver">
+                               About 
                             </button>
 
-                            <button type="button" data-pm-cat="fine-silver-collection">Fine Silver Collection</button>
-
-                            <button type="button" data-pm-cat="platinum">
-                                Platinum Plated Silver
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                    <polyline points="15 3 21 3 21 9" />
-                                    <line x1="10" y1="14" x2="21" y2="3" />
-                                </svg>
+                            <button onclick="window.location.href='contact.php'" type="button" data-pm-cat="fine-silver-collection">
+                                Contact
                             </button>
 
-                            <button class="not_display" type="button" data-pm-cat="tanya-ghavri">Tanya Ghavri</button>
-                            <button class="not_display" type="button" data-pm-cat="new-arrivals">New Arrivals</button>
-                            <button class="not_display" type="button" data-pm-cat="best-sellers">Best Sellers</button>
+                            
+
+                            
 
                         </div>
 
                         <div class="pm-menu-grid-wrap">
-                            <div class="pm-menu-grid" id="pmMenuGrid">
-                                <button class="pm-cat-card" type="button" data-pm-action="category-card">
-                                    <span class="pm-cat-img">img</span><span>Rings</span>
-                                </button>
-                                <button class="pm-cat-card" type="button" data-pm-action="category-card">
-                                    <span class="pm-cat-img">img</span><span>Mangalsutras</span>
-                                </button>
-                                <button class="pm-cat-card" type="button" data-pm-action="category-card">
-                                    <span class="pm-cat-img">img</span><span>Bracelets</span>
-                                </button>
-                                <button class="pm-cat-card" type="button" data-pm-action="category-card">
-                                    <span class="pm-cat-img">img</span><span>Earrings</span>
-                                </button>
-                                <button class="pm-cat-card" type="button" data-pm-action="category-card">
-                                    <span class="pm-cat-img">img</span><span>Mens</span>
-                                </button>
-                                <button class="pm-cat-card" type="button" data-pm-action="category-card">
-                                    <span class="pm-cat-img">img</span><span>Necklaces</span>
-                                </button>
+                            <div class="pm-menu-grid" id="pmMenuGrid" style="grid-template-columns: 1fr;">
+                                <?php
+
+                                $all_randomed = "SELECT * FROM products ORDER BY RAND() LIMIT 5";
+
+                                $sadin = mysqli_prepare($mydb, $all_randomed);
+                                mysqli_stmt_execute($sadin);
+
+                                $sadin_result = mysqli_stmt_get_result($sadin);
+
+                                while ($sadin_sadn = mysqli_fetch_assoc($sadin_result)) {
+                                ?>
+
+                                    <button class="pm-cat-card" type="button" data-pm-action="category-card">
+
+                                        <span class="pm-cat-img" style="width:100%;">
+                                            <img style="width: 100%;"
+                                                src="<?php echo htmlspecialchars($sadin_sadn['product_image']); ?>"
+                                                alt="<?php echo htmlspecialchars($sadin_sadn['product_name']); ?>">
+                                        </span>
+
+                                        <span>
+                                            <?php echo htmlspecialchars($sadin_sadn['product_name']); ?>
+                                        </span>
+
+                                    </button>
+
+                                <?php
+                                }
+                                ?>
                             </div>
 
                             <button class="pm-view-all" type="button" data-pm-action="view-all">View all</button>

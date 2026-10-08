@@ -244,5 +244,17 @@
         .fey-wrapper{
             padding: 10px 10px !important;
         }
+
+        .klr-rec-card_12 {
+            padding: 0;
+            background: none;
+            /* gap: 5px; */
+        }
+.klr-rec-grid_sdasdi{
+    gap: 8px;
+
+}
+        
+        
     }
 </style>
