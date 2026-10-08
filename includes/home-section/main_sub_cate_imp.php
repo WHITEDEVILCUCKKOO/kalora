@@ -11,7 +11,7 @@
             $klr_recipient_query = "SELECT *
             FROM product_sub_cate
             WHERE sub_cate_status = 'Active'
-            AND sub_cate_slug NOT IN ('regular', 'mystery-box', 'mystery-jar')";
+            AND sub_cate_slug NOT IN ('regular', 'mystery-box', 'mystery-jar','dreamy-girl','baddies-look')";
 
             $klr_recipient_stmt = mysqli_prepare($mydb, $klr_recipient_query);
 
@@ -77,7 +77,7 @@
     /* PC: 5 cards in one row */
     .klr-rec-grid_sdhi {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 20px;
     }
 

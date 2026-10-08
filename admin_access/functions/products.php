@@ -631,3 +631,39 @@ function handle_product_request($mydb)
 
     return $r;
 }
+
+
+
+// SEARCH - LIKE se matching product IDs (id, name, sku, color, category, sub category, brand)
+function search_product_ids($mydb, $q)
+{
+    $like = '%' . addcslashes($q, '%_\\') . '%';
+
+    $sql = "SELECT p.product_id
+            FROM products p
+            LEFT JOIN root_categories c ON p.root_id = c.root_id
+            LEFT JOIN brands b ON p.brand_id = b.brand_id
+            LEFT JOIN product_sub_cate sc ON p.sub_cate_id = sc.sub_cate_id
+            WHERE p.product_name LIKE ?
+               OR p.product_id LIKE ?
+               OR p.product_sku LIKE ?
+               OR p.product_color LIKE ?
+               OR c.root_name LIKE ?
+               OR b.brand_name LIKE ?
+               OR sc.sub_cate_name LIKE ?";
+
+    $stmt = mysqli_prepare($mydb, $sql);
+    if (!$stmt) {
+        return [];
+    }
+    mysqli_stmt_bind_param($stmt, 'sssssss', $like, $like, $like, $like, $like, $like, $like);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    $ids = [];
+    while ($row = mysqli_fetch_assoc($res)) {
+        $ids[] = (int) $row['product_id'];
+    }
+    mysqli_stmt_close($stmt);
+    return $ids;
+}

@@ -7,7 +7,7 @@ include_once "admin_access/db_config.php";
    FIXED SUB CATEGORY SLUG
 ========================================================= */
 
-$klr_trending_slug = "baddies-look";
+$klr_trending_slug = "regular";
 
 
 /* =========================================================
@@ -16,7 +16,7 @@ $klr_trending_slug = "baddies-look";
 
 $klr_trending_products = [];
 
-$klr_trending_name = "Baddies Look";
+$klr_trending_name = "Regular";
 
 
 /* =========================================================
@@ -555,9 +555,7 @@ if (!function_exists('klr_trending_h')) {
             class="klr-instagram-trending-title-x91"
         >
 
-            <?= klr_trending_h(
-                $klr_trending_name
-            ); ?>
+           Top Saling Products
 
         </h2>
 
