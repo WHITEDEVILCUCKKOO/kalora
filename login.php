@@ -16,8 +16,6 @@ if(isset($_SESSION['user_id'])){
 
 <?php
 
-
-
 // include "admin_access/functions/global_info.php";
 // include "admin_access/functions/event.php";
 
