@@ -267,10 +267,10 @@ if ($kalora_front_active_event) {
                                 </ul>
                             </div>
 
-                            <button type="button" data-pm-action="nav-link">About</button>
+                            <button onclick="window.location.href='about.php'" type="button" data-pm-action="nav-link">About</button>
                             <button onclick="window.location.href='contact.php'"  type="button" data-pm-action="nav-link">Contact</button>
 
-                            <button class="not_display" type="button" data-pm-action="nav-dropdown"
+                            <button  onclick="window.location.href='about.php'" class="not_display" type="button" data-pm-action="nav-dropdown"
                                 data-pm-dropdown="about">
                                 About Us
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -407,11 +407,7 @@ if ($kalora_front_active_event) {
 
                             <button onclick="window.location.href='contact.php'" type="button" data-pm-cat="fine-silver-collection">
                                 Contact
-                            </button>
-
-                            
-
-                            
+                            </button>  
 
                         </div>
 
