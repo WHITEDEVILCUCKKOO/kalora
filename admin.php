@@ -1222,7 +1222,7 @@ if (isset($_GET['product_search'])) {
                                 <div class="global-input-field">
 
                                     <label for="globle_linkedin">
-                                        LinkedIn Link
+                                        Facebook Link
                                     </label>
 
                                     <input
