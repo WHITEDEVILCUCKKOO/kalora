@@ -150,6 +150,7 @@
         }, {
             threshold: .25
         }).observe(sec);
+        
         window.addEventListener('scroll', function() {
             if (t) return;
             t = true;
