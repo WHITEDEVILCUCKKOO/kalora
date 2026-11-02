@@ -18,9 +18,9 @@ if ($isLocal) {
 
     // Live / Hosting
     $host = "localhost";
-    $user = "daurp0duction_kalora_user";
-    $password = "kalora@@1327";
-    $database = "daurp0duction_kalora_db";
+    $user = "qkvpgvpx_kalora_user";
+    $password = "oTTMzOyX+xBbq7QA";
+    $database = "qkvpgvpx_kalora_db";
 }
 
 $mydb = mysqli_connect(
