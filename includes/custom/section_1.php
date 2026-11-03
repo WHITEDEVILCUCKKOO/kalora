@@ -3,24 +3,25 @@
    section_1.php  -  Custom Box Builder
    Rules:
    1. Pehle sirf "Custom Box" brand ke products dikhte hain.
-   2. Brand ka product add hote hi brand wale products hide, baaki products show.
-   3. Total max 6 products (brand wala mila ke).
-   4. Brand wala product remove karo to cart ke baaki products rahenge,
-      par naya product tabhi add hoga jab brand ka product dobara add ho.
+   2. Box ka product add hote hi box wale products hide, baaki products show
+      (upar brand tabs ke saath: All Products / Bracelets / ...).
+   3. Total max 6 products (box wala mila ke).
+   4. Box wala product remove karo to cart ke baaki products rahenge,
+      par naya product tabhi add hoga jab box dobara add ho.
    5. 6 products hone par Checkout -> WhatsApp.
    ===================================================================== */
 
 // ---------- SETTINGS ----------
-// $WHATSAPP_NUMBER = '919999999999';   // <-- apna number (country code ke saath, + ke bina)
 $WHATSAPP_NUMBER = preg_replace('/\D/', '', $global_info['globle_whatsapp'] ?? '');
 $BOX_BRAND_SLUG  = 'custom-box';     // brands table ka brand_slug
-$MAX_ITEMS       = 6;
+$MAX_ITEMS       = 10;                // maximum products (box mila ke)
+$MIN_ITEMS       = 2;                // checkout ke liye minimum products (box mila ke)
 $BASE_URL        = '';               // agar images ka path root se nahi hai to yahan prefix daalein, e.g. '/kalora/'
 
 // ---------- DB CONNECTION ----------
 // header.php me bana hua $mydb (mysqli) use ho raha hai.
 
-// ---------- BRAND ID ----------
+// ---------- BOX BRAND ID ----------
 $boxBrandId = 0;
 $stmt = $mydb->prepare("SELECT brand_id FROM brands WHERE brand_slug = ? AND brand_status = 'Active' LIMIT 1");
 $stmt->bind_param('s', $BOX_BRAND_SLUG);
@@ -41,6 +42,19 @@ while ($row = $res->fetch_assoc()) {
     $row['is_brand'] = ((int)$row['brand_id'] === (int)$boxBrandId) ? 1 : 0;
     $products[] = $row;
 }
+
+// ---------- BRAND TABS ----------
+// Saare Active brands (Custom Box chhod kar), chahe unme abhi product ho ya na ho
+$tabs = [];
+$r = $mydb->query("SELECT brand_id, brand_name FROM brands WHERE brand_status = 'Active' ORDER BY brand_id ASC");
+while ($b = $r->fetch_assoc()) {
+    if ((int)$b['brand_id'] !== (int)$boxBrandId) {
+        $tabs[(int)$b['brand_id']] = $b['brand_name'];
+    }
+}
+
+// ---------- PRICE BUTTONS ----------
+$PRICE_STEPS = [99, 199, 299, 399, 499];
 ?>
 
 <style>
@@ -50,6 +64,18 @@ while ($row = $res->fetch_assoc()) {
     .mb-head h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.15; }
     .mb-hint { margin: 6px 0 0; color: #4a5a52; font-size: 1.05rem; }
     .mb-progress { font-weight: 600; font-size: 1rem; padding: 8px 16px; border: 1.5px solid #0f2d22; border-radius: 999px; white-space: nowrap; }
+
+    /* filters: brand tabs + price buttons */
+    .mb-filters { margin-bottom: 22px; display: flex; flex-direction: column; gap: 10px; }
+    .mb-filters[hidden] { display: none; }
+    .mb-row { display: flex; gap: 10px; align-items: center; overflow-x: auto; padding: 4px 2px; }
+    .mb-row-label { flex: 0 0 auto; font-weight: 600; margin-right: 4px; }
+    .mb-tab, .mb-chip { flex: 0 0 auto; border: 1.5px solid #0f2d22; background: transparent; color: #0f2d22; font-family: inherit; font-size: 1rem;
+              padding: 8px 18px; border-radius: 999px; cursor: pointer; transition: background .2s, color .2s; white-space: nowrap; }
+    .mb-chip { padding: 6px 16px; font-size: .95rem; border-style: dashed; }
+    .mb-tab:hover, .mb-chip:hover { background: rgba(15,45,34,.08); }
+    .mb-tab.active, .mb-chip.active { background: #0f2d22; color: #e6c97a; border-style: solid; }
+    .mb-tab:focus-visible, .mb-chip:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
 
     .mb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px; }
     .mb-card { border-radius: 12px; padding: 19px 19px 20px; background: linear-gradient(180deg, #0f2d22 0%, #0a1f17 100%); display: flex; flex-direction: column; box-shadow: 0 6px 18px rgba(15,45,34,.18); transition: box-shadow .2s; }
@@ -66,7 +92,7 @@ while ($row = $res->fetch_assoc()) {
     .mb-empty { grid-column: 1 / -1; padding: 40px 0; text-align: center; color: #4a5a52; }
 
     /* floating cart button */
-    .mb-fab { position: fixed; right: 18px; top: 40%; transform: translateY(-50%); z-index: 1040; border: 0; cursor: pointer;
+    .mb-fab { position: fixed; top: 40%; transform: translateY(-50%); z-index: 1040; border: 0; cursor: pointer;
               background: #0f2d22; color: #fff; font-family: 'Times New Roman', Times, serif; padding: 14px 16px; border-radius: 12px 0 0 12px; right: 0; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,.25); }
     .mb-fab span { display: inline-block; min-width: 22px; padding: 1px 6px; margin-left: 6px; background: #e6c97a; color: #0f2d22; border-radius: 999px; font-size: .85rem; text-align: center; }
 
@@ -109,6 +135,23 @@ while ($row = $res->fetch_assoc()) {
         <div class="mb-progress" id="mbProgress">0 / <?= (int)$MAX_ITEMS ?> selected</div>
     </div>
 
+    <!-- Filters (box select hone ke baad dikhte hain) -->
+    <div class="mb-filters" id="mbTabs" hidden>
+        <div class="mb-row" role="group" aria-label="Filter by category">
+            <button type="button" class="mb-tab active" data-filter="all" aria-pressed="true">All Products</button>
+            <?php foreach ($tabs as $tid => $tname): ?>
+                <button type="button" class="mb-tab" data-filter="<?= (int)$tid ?>" aria-pressed="false"><?= htmlspecialchars($tname) ?></button>
+            <?php endforeach; ?>
+        </div>
+        <div class="mb-row" role="group" aria-label="Filter by price">
+            <span class="mb-row-label">Budget</span>
+            <button type="button" class="mb-chip active" data-price="all" aria-pressed="true">Any price</button>
+            <?php foreach ($PRICE_STEPS as $step): ?>
+                <button type="button" class="mb-chip" data-price="<?= (int)$step ?>" aria-pressed="false">₹<?= (int)$step ?></button>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
     <div class="mb-grid" id="mbGrid">
         <?php foreach ($products as $p):
             $img = $p['product_image'] ? $BASE_URL . ltrim($p['product_image'], '/') : '';
@@ -116,6 +159,7 @@ while ($row = $res->fetch_assoc()) {
             <article class="mb-card"
                      data-id="<?= (int)$p['product_id'] ?>"
                      data-brand="<?= (int)$p['is_brand'] ?>"
+                     data-brandid="<?= (int)$p['brand_id'] ?>"
                      data-name="<?= htmlspecialchars($p['product_name'], ENT_QUOTES) ?>"
                      data-price="<?= htmlspecialchars((string)$p['price'], ENT_QUOTES) ?>"
                      data-image="<?= htmlspecialchars($img, ENT_QUOTES) ?>">
@@ -155,6 +199,7 @@ while ($row = $res->fetch_assoc()) {
 <script>
 (function () {
     var MAX = <?= (int)$MAX_ITEMS ?>;
+    var MIN = <?= (int)$MIN_ITEMS ?>;
     var WA_NUMBER = <?= json_encode($WHATSAPP_NUMBER) ?>;
     var KEY = 'mb_cart_v1';
 
@@ -172,6 +217,28 @@ while ($row = $res->fetch_assoc()) {
     var elDrawer  = document.getElementById('mbDrawer');
     var elOverlay = document.getElementById('mbOverlay');
 
+    // ---- filters: brand tabs + price buttons ----
+    var PRICE_STEPS = <?= json_encode($PRICE_STEPS) ?>;
+    var elTabs   = document.getElementById('mbTabs');
+    var tabBtns  = Array.prototype.slice.call(document.querySelectorAll('#mbTabs .mb-tab'));
+    var chipBtns = Array.prototype.slice.call(document.querySelectorAll('#mbTabs .mb-chip'));
+    var filter = 'all';        // brand
+    var priceFilter = 'all';   // price band
+    tabBtns.forEach(function (t) {
+        t.addEventListener('click', function () { filter = t.dataset.filter; render(); });
+    });
+    chipBtns.forEach(function (c) {
+        c.addEventListener('click', function () { priceFilter = c.dataset.price; render(); });
+    });
+
+    // price kis band me aati hai: <=99 -> 99, 100-199 -> 199, 200-299 -> 299 ...
+    function bandOf(price) {
+        for (var k = 0; k < PRICE_STEPS.length; k++) {
+            if (price <= PRICE_STEPS[k]) return String(PRICE_STEPS[k]);
+        }
+        return 'above';
+    }
+
     // ---- cart storage (temporary, browser me save) ----
     function load() {
         try {
@@ -179,14 +246,10 @@ while ($row = $res->fetch_assoc()) {
             return Array.isArray(data) ? data : [];
         } catch (e) { return []; }
     }
-    // function save() {
-    //     try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {}
-    // }
-
     function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {}
-    window.dispatchEvent(new Event('mb-cart-change'));
-                }
+        try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {}
+        window.dispatchEvent(new Event('mb-cart-change'));   // footer ke button ka count update
+    }
     var cart = load();
 
     // purane/inactive products cart se hata do
@@ -202,8 +265,8 @@ while ($row = $res->fetch_assoc()) {
         var id = card.dataset.id;
         var isBrand = card.dataset.brand === '1';
         if (cart.length >= MAX || inCart(id)) return;
-        if (!hasBrand() && !isBrand) return;   // pehle brand ka product zaruri
-        if (hasBrand() && isBrand) return;     // brand ka sirf ek product
+        if (!hasBrand() && !isBrand) return;   // pehle box ka product zaruri
+        if (hasBrand() && isBrand) return;     // box ka sirf ek product
         cart.push({
             id: id,
             name: card.dataset.name,
@@ -222,12 +285,17 @@ while ($row = $res->fetch_assoc()) {
     function render() {
         var brandIn = hasBrand();
         var full = cart.length >= MAX;
+        if (!brandIn) { filter = 'all'; priceFilter = 'all'; }   // box hat gaya to filters reset
 
         // product cards visibility
         var visible = 0;
         cards.forEach(function (card) {
             var isBrand = card.dataset.brand === '1';
-            var show = brandIn ? !isBrand : isBrand;
+            var show = brandIn
+                ? (!isBrand
+                    && (filter === 'all' || card.dataset.brandid === filter)
+                    && (priceFilter === 'all' || bandOf(parseFloat(card.dataset.price) || 0) === priceFilter))
+                : isBrand;
             card.hidden = !show;
             var btn = card.querySelector('.mb-add');
             var added = inCart(card.dataset.id);
@@ -236,6 +304,20 @@ while ($row = $res->fetch_assoc()) {
             if (show) visible++;
         });
         elEmpty.hidden = visible > 0;
+        elEmpty.textContent = brandIn ? 'No products found for this selection.' : 'No products available right now.';
+
+        // tabs
+        elTabs.hidden = !brandIn;
+        tabBtns.forEach(function (t) {
+            var on = t.dataset.filter === filter;
+            t.classList.toggle('active', on);
+            t.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        chipBtns.forEach(function (c) {
+            var on = c.dataset.price === priceFilter;
+            c.classList.toggle('active', on);
+            c.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
 
         // texts
         elProg.textContent = cart.length + ' / ' + MAX + ' selected';
@@ -295,14 +377,17 @@ while ($row = $res->fetch_assoc()) {
         elFabCnt.textContent = cart.length;
 
         // note + checkout
+        var canCheckout = brandIn && cart.length >= MIN;
         if (full) {
             elNote.textContent = 'All ' + MAX + ' products selected.';
         } else if (!brandIn && cart.length) {
             elNote.textContent = 'Box removed. Add a box again to select more products.';
+        } else if (canCheckout) {
+            elNote.textContent = 'You can checkout now, or add up to ' + (MAX - cart.length) + ' more.';
         } else {
-            elNote.textContent = 'Select ' + MAX + ' products (including the box) to checkout.';
+            elNote.textContent = 'Add at least ' + MIN + ' products (including the box) to checkout.';
         }
-        elCheck.classList.toggle('show', full);
+        elCheck.classList.toggle('show', canCheckout);
     }
 
     // ---- drawer ----
@@ -325,7 +410,14 @@ while ($row = $res->fetch_assoc()) {
 
     // ---- WhatsApp checkout ----
     elCheck.addEventListener('click', function () {
-        if (cart.length < MAX) return;
+        if (cart.length < MIN || !hasBrand()) return;
+
+        // number set nahi hai to cart clear mat karo
+        if (!WA_NUMBER) {
+            alert('WhatsApp number is not set yet. Please contact the store.');
+            return;
+        }
+
         var total = 0;
         var lines = cart.map(function (i, idx) {
             total += i.price;

@@ -6,7 +6,7 @@
 
 <style>
     @media (max-width:620px) {
-        .klr-ft-col iframe{
+        .klr-ft-col iframe {
             width: 100% !important;
         }
     }
@@ -136,8 +136,79 @@
         </svg>
         <span class="mb-link-count" id="mbLinkCount" hidden>0</span>
     </a>
+    </a>
+
+    <span class="mb-hamper-tip-xk91">
+        Customize Your Hamper
+    </span>
+    <!-- <span class="mb-custom-note-xk91">
+    <span class="mb-note-dot-xk91"></span>
+    Customize Your Hamper
+</span> -->
 
     <style>
+        .mb-hamper-tip-xk91 {
+            position: fixed;
+            left: 105px;
+            bottom: 55px;
+            z-index: 1050;
+
+            background: #0f2d22;
+            color: #e6c97a;
+
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: 1px solid #e6c97a;
+
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+
+            box-shadow: 0 5px 18px rgba(0, 0, 0, .25);
+
+            pointer-events: none;
+
+            opacity: 0;
+            visibility: hidden;
+
+            animation: hamperTipXk91 7s ease-in-out infinite;
+        }
+
+        @keyframes hamperTipXk91 {
+
+            0%,
+            10% {
+                opacity: 0;
+                visibility: hidden;
+                transform: translateX(-12px);
+            }
+
+            18%,
+            55% {
+                opacity: 1;
+                visibility: visible;
+                transform: translateX(0);
+            }
+
+            65%,
+            100% {
+                opacity: 0;
+                visibility: hidden;
+                transform: translateX(-12px);
+            }
+        }
+
+        @media(max-width:480px) {
+            .mb-hamper-tip-xk91 {
+                left: 85px;
+                bottom: 55px;
+                font-size: 11px;
+                padding: 9px 12px;
+            }
+        }
+
+        /*   */
+
         .mb-link-btn {
             position: fixed;
             left: 25px;
