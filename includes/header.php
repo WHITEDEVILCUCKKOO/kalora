@@ -64,6 +64,9 @@ if ($kalora_front_active_event) {
 
 <body>
 
+
+<?php include_once'loader.php' ?>
+
     <!-- =====================================================
      STICKY WRAPPER: Event bar + Header ek saath chipakte hain
 ====================================================== -->
