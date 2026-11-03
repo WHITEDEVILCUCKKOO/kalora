@@ -19,12 +19,21 @@ $viewAllPage = 'index.php';        // View All par jo page kholna hai
 
 /* ================= SAARE BRANDS SE RANDOM 8 PRODUCTS ================= */
 $klProducts = [];
-$kr = mysqli_query($mydb, "SELECT product_name, product_slug, product_image, product_color, product_size,
-                                  original_price, sale_price, discount_visibility
-                           FROM products
-                           WHERE product_status = 'Active'
-                           ORDER BY RAND()
-                           LIMIT 8");
+$kr = mysqli_query($mydb, "SELECT 
+    p.product_name,
+    p.product_slug,
+    p.product_image,
+    p.product_color,
+    p.product_size,
+    p.original_price,
+    p.sale_price,
+    p.discount_visibility
+FROM products p
+INNER JOIN brands b ON p.brand_id = b.brand_id
+WHERE p.product_status = 'Active'
+AND b.brand_slug NOT IN ('custom-box')
+ORDER BY RAND()
+LIMIT 8;");
 if ($kr) {
     while ($row = mysqli_fetch_assoc($kr)) {
         $klProducts[] = $row;

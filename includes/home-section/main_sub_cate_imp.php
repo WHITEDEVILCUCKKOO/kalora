@@ -11,7 +11,7 @@
             $klr_recipient_query = "SELECT *
             FROM product_sub_cate
             WHERE sub_cate_status = 'Active'
-            AND sub_cate_slug NOT IN ('regular', 'mystery-box', 'mystery-jar','dreamy-girl','baddies-look')";
+            AND sub_cate_slug NOT IN ('regular', 'mystery-box', 'mystery-jar','dreamy-girl','baddies-look','custom')";
 
             $klr_recipient_stmt = mysqli_prepare($mydb, $klr_recipient_query);
 
