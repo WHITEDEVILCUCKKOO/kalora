@@ -13,7 +13,6 @@ if (mb_strlen($q) < 1) {
 
 // LIKE ke special characters (% _) ko escape karo
 $like = '%' . addcslashes($q, '%_\\') . '%';
-
 $sql = "SELECT 
             products.product_id,
             products.product_name,
@@ -34,6 +33,9 @@ $sql = "SELECT
         LEFT JOIN product_sub_cate
             ON products.sub_cate_id = product_sub_cate.sub_cate_id
 
+        LEFT JOIN brands
+            ON products.brand_id = brands.brand_id
+
         WHERE products.product_status = 'Active'
 
         AND (
@@ -48,10 +50,14 @@ $sql = "SELECT
             OR product_sub_cate.sub_cate_slug LIKE ?
         )
 
+        AND (
+            brands.brand_slug IS NULL
+            OR brands.brand_slug != 'custom-box'
+        )
+
         ORDER BY products.product_views DESC
 
         LIMIT 20";
-
 $stmt = mysqli_prepare($mydb, $sql);
 
 mysqli_stmt_bind_param(

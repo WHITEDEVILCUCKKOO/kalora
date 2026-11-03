@@ -20,7 +20,7 @@
     <?php require_once __DIR__ . '/includes/home-section/section_2.php' ?>
     <?php require_once __DIR__ . '/includes/home-section/section_2_0.php' ?>
     <!-- section 3 -->
-    <?php require_once __DIR__ . '/includes/home-section/section_3.php' ?>
+   
     <?php require_once __DIR__ . '/includes/home-section/main_sub_cate_imp.php' ?>
     <?php require_once __DIR__ . '/includes/home-section/section_3_0.php' ?>
     <?php require_once __DIR__ . '/includes/home-section/section_3_5.php' ?>

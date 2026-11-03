@@ -387,7 +387,7 @@
 
       <?php
 
-      $sql8748524 = "SELECT brands.*, root_categories.* FROM brands INNER JOIN root_categories ON brands.root_id = root_categories.root_id WHERE brands.brand_status = 'Active' ";
+      $sql8748524 = "SELECT brands.*, root_categories.* FROM brands INNER JOIN root_categories ON brands.root_id = root_categories.root_id WHERE brands.brand_status = 'Active' AND brands.brand_slug NOT IN ('custom-box')";
 
       $result8748524 = mysqli_query($mydb, $sql8748524);
 

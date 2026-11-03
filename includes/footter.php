@@ -3,6 +3,15 @@
                                                         Footer
 =======================================================================================================================
  -->
+
+<style>
+    @media (max-width:620px) {
+        .klr-ft-col iframe{
+            width: 100% !important;
+        }
+    }
+</style>
+
 <div class="klr-ft-wrapper">
     <div class="klr-ft-container">
 
@@ -87,7 +96,7 @@
                         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                     </svg>
                 </a>
-              
+
                 <a href="<?php echo htmlspecialchars($global_info['globle_yt'] ?? ''); ?>" class="klr-ft-social-icon" aria-label="YouTube">
                     <svg viewBox="0 0 24 24">
                         <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
@@ -111,6 +120,217 @@
         </div>
 
     </div>
+
+
+    <!-- custoim hamper line -->
+    <a href="custom_hapers.php" class="mb-link-btn" aria-label="Custom Hampers">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="8" width="18" height="4" rx="1"></rect>
+            <path d="M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"></path>
+            <path d="M12 8v13"></path>
+            <g class="mb-bow">
+                <path d="M12 8C10 8 7.5 7 7.5 5.2 7.5 3.9 8.6 3 9.8 3 11.2 3 12 5 12 8z"></path>
+                <path d="M12 8c2 0 4.5-1 4.5-2.8C16.5 3.9 15.4 3 14.2 3 12.8 3 12 5 12 8z"></path>
+            </g>
+        </svg>
+        <span class="mb-link-count" id="mbLinkCount" hidden>0</span>
+    </a>
+
+    <style>
+        .mb-link-btn {
+            position: fixed;
+            left: 25px;
+            bottom: 40px;
+            z-index: 1040;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0f2d22;
+            color: #fff;
+            text-decoration: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .25);
+            transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), background .2s, color .2s, box-shadow .2s;
+            animation: mbEnter .6s cubic-bezier(.34, 1.56, .64, 1) both, mbFloat 3.2s ease-in-out .8s infinite;
+        }
+
+        /* soft golden ring jo bahar ki taraf failti hai */
+        .mb-link-btn::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid #e6c97a;
+            opacity: 0;
+            animation: mbRing 2.6s ease-out 1.2s infinite;
+            pointer-events: none;
+        }
+
+        .mb-link-btn:hover {
+            background: #0a1f17;
+            color: #e6c97a;
+            transform: translateY(-4px) scale(1.1);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .35);
+            animation-play-state: paused;
+        }
+
+        .mb-link-btn:active {
+            transform: scale(.94);
+        }
+
+        .mb-link-btn:focus-visible {
+            outline: 3px solid #e6c97a;
+            outline-offset: 3px;
+        }
+
+        /* hover par gift ka bow hilta hai */
+        .mb-bow {
+            transform-box: fill-box;
+            transform-origin: 50% 100%;
+        }
+
+        .mb-link-btn:hover .mb-bow {
+            animation: mbBow .6s ease-in-out;
+        }
+
+        .mb-link-count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e6c97a;
+            color: #0f2d22;
+            border-radius: 999px;
+            font: 700 .8rem 'Times New Roman', Times, serif;
+        }
+
+        .mb-link-count.pop {
+            animation: mbPop .45s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        @keyframes mbEnter {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(.4);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @keyframes mbFloat {
+
+            0%,
+            100% {
+                translate: 0 0;
+            }
+
+            50% {
+                translate: 0 -6px;
+            }
+        }
+
+        @keyframes mbRing {
+            0% {
+                transform: scale(1);
+                opacity: .7;
+            }
+
+            70%,
+            100% {
+                transform: scale(1.7);
+                opacity: 0;
+            }
+        }
+
+        @keyframes mbBow {
+
+            0%,
+            100% {
+                transform: rotate(0);
+            }
+
+            25% {
+                transform: rotate(-14deg);
+            }
+
+            50% {
+                transform: rotate(10deg);
+            }
+
+            75% {
+                transform: rotate(-6deg);
+            }
+        }
+
+        @keyframes mbPop {
+            0% {
+                transform: scale(.4);
+            }
+
+            60% {
+                transform: scale(1.4);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .mb-link-btn,
+            .mb-link-btn::before,
+            .mb-link-count.pop,
+            .mb-link-btn:hover .mb-bow {
+                animation: none;
+            }
+
+            .mb-link-btn {
+                transition: none;
+            }
+        }
+    </style>
+
+    <script>
+        (function() {
+            var badge = document.getElementById('mbLinkCount');
+            var last = null;
+
+            function update() {
+                var n = 0;
+                try {
+                    var data = JSON.parse(localStorage.getItem('mb_cart_v1') || '[]');
+                    n = Array.isArray(data) ? data.length : 0;
+                } catch (e) {}
+                badge.textContent = n;
+                badge.hidden = n === 0;
+                if (last !== null && n !== last && n > 0) { // number badle to pop animation
+                    badge.classList.remove('pop');
+                    void badge.offsetWidth; // animation restart
+                    badge.classList.add('pop');
+                }
+                last = n;
+            }
+            update();
+            window.addEventListener('mb-cart-change', update);
+            window.addEventListener('storage', update);
+        })();
+    </script>
+
+
+
+
 </div>
 
 <style>
