@@ -137,7 +137,7 @@
         <div class="ka-story__body">
             <h2>It started with one bracelet</h2>
             <p class="ka-r">We wanted jewellery that goes from office to a party without a second thought, and did not cost a month's salary. So we started designing it ourselves.</p>
-            <p class="ka-r">Today Kalora ships from Pune across India. Every piece is checked by hand for finish, fit and shine before it is packed.</p>
+            <p class="ka-r">Today Kalora ships from Delhi across India. Every piece is checked by hand for finish, fit and shine before it is packed.</p>
             <p class="ka-r">Our Under 99, 199, 299, 399 and 499 collections exist for one reason: good style should be easy to reach.</p>
             <div class="ka-story__quote ka-r">Shine should never feel out of reach.</div>
         </div>

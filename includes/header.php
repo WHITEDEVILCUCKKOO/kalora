@@ -245,7 +245,7 @@ if ($kalora_front_active_event) {
                             <!-- BRANDS -->
                             <div class="pm-dd">
                                 <button type="button" class="pm-dd-btn" data-pm-dropdown="brands">
-                                    Brands
+                                    Categorys
                                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
                                         stroke="currentColor" stroke-width="2">
                                         <polyline points="6 9 12 15 18 9" />
@@ -390,7 +390,7 @@ if ($kalora_front_active_event) {
                             <button class="not_display" type="button" data-pm-cat="gifting">Gifting</button>
 
                             <!-- BRANDS -->
-                            <button type="button" data-pm-cat="brands">Brands &#x25BC;</button>
+                            <button type="button" data-pm-cat="brands">Categorys &#x25BC;</button>
 
                             <div class="pm-sb-brands" id="pmSbBrands">
                                 <?php foreach ($brands as $b) { ?>

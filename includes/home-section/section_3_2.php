@@ -32,30 +32,33 @@
                 <div class="klr-rec-img-box">
                     <img src="assets/extra_home_img/<?php echo htmlspecialchars($klr_recipient_row['home_jar_img_1']); ?>" alt="Gifts For Her">
                 </div>
-                <!-- <div class="klr-rec-footer">
-                    <span class="klr-rec-label">Mystery Jar</span>
-                    <span class="klr-rec-arrow">
-                        <svg viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                        </svg>
-                    </span>
-                </div> -->
             </div>
+            
 
             <!-- Card 2: Gifts For Him -->
             <div class="klr-rec-card_12" onclick="window.location.href='sab_cate_products.php?slug=mystery-box'">
                 <div class="klr-rec-img-box">
                     <img src="assets/extra_home_img/<?php echo htmlspecialchars($klr_recipient_row['home_jar_img_2']); ?>" alt="Gifts For Him">
                 </div>
-                <!-- <div class="klr-rec-footer">
-                    <span class="klr-rec-label">Mystery Box</span>
-                    <span class="klr-rec-arrow">
-                        <svg viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                        </svg>
-                    </span>
-                </div> -->
             </div>
+            <div class="klr-rec-footer">
+                <span class="klr-rec-label">Mystery Jar</span>
+                <!-- <span class="klr-rec-arrow">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </span> -->
+            </div>
+            <div class="klr-rec-footer">
+                <span class="klr-rec-label">Mystery Box</span>
+                <!-- <span class="klr-rec-arrow">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </span> -->
+            </div>
+
+
 
 
   <?php
