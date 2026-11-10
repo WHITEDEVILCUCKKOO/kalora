@@ -555,7 +555,7 @@ if (!function_exists('klr_trending_h')) {
             class="klr-instagram-trending-title-x91"
         >
 
-           Top Saling Products
+           Top Selling Products
 
         </h2>
 

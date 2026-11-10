@@ -1,7 +1,5 @@
-
-
-
 <!-- ============ section 4 : FAQ ============ -->
+
 <style>
     .kc-faq {
         --k-green: #0f2b20;
@@ -9,16 +7,16 @@
         --k-gold: #d4a85a;
         background: var(--k-cream);
         padding: 90px 20px;
-        font-family: 'Poppins', sans-serif
+        font-family: 'Poppins', sans-serif;
     }
 
     .kc-faq * {
-        box-sizing: border-box
+        box-sizing: border-box;
     }
 
     .kc-faq__wrap {
         max-width: 820px;
-        margin: 0 auto
+        margin: 0 auto;
     }
 
     .kc-faq h2 {
@@ -27,7 +25,7 @@
         text-align: center;
         color: var(--k-green);
         margin: 0 0 40px;
-        letter-spacing: .05em
+        letter-spacing: .05em;
     }
 
     .kc-q {
@@ -35,12 +33,12 @@
         opacity: 0;
         transform: translateX(-24px);
         transition: opacity .6s, transform .6s;
-        transition-delay: calc(var(--i)*.1s)
+        transition-delay: calc(var(--i) * .1s);
     }
 
     .kc-faq.is-in .kc-q {
         opacity: 1;
-        transform: none
+        transform: none;
     }
 
     .kc-q button {
@@ -54,12 +52,12 @@
         padding: 22px 4px;
         cursor: pointer;
         font: 500 16px 'Poppins', sans-serif;
-        color: var(--k-green)
+        color: var(--k-green);
     }
 
     .kc-q button:focus-visible {
         outline: 2px solid var(--k-gold);
-        outline-offset: 2px
+        outline-offset: 2px;
     }
 
     .kc-q i {
@@ -69,7 +67,7 @@
         border: 1px solid var(--k-gold);
         border-radius: 50%;
         position: relative;
-        transition: transform .4s, background .3s
+        transition: transform .4s, background .3s;
     }
 
     .kc-q i::before,
@@ -82,34 +80,34 @@
         height: 1.5px;
         background: var(--k-green);
         transform: translate(-50%, -50%);
-        transition: transform .4s
+        transition: transform .4s;
     }
 
     .kc-q i::after {
-        transform: translate(-50%, -50%) rotate(90deg)
+        transform: translate(-50%, -50%) rotate(90deg);
     }
 
     .kc-q.is-open i {
         background: var(--k-gold);
-        transform: rotate(180deg)
+        transform: rotate(180deg);
     }
 
     .kc-q.is-open i::after {
-        transform: translate(-50%, -50%) rotate(0)
+        transform: translate(-50%, -50%) rotate(0);
     }
 
     .kc-q__a {
         display: grid;
         grid-template-rows: 0fr;
-        transition: grid-template-rows .45s ease
+        transition: grid-template-rows .45s ease;
     }
 
     .kc-q.is-open .kc-q__a {
-        grid-template-rows: 1fr
+        grid-template-rows: 1fr;
     }
 
     .kc-q__a div {
-        overflow: hidden
+        overflow: hidden;
     }
 
     .kc-q__a p {
@@ -118,16 +116,16 @@
         font-size: 14px;
         line-height: 1.9;
         font-weight: 300;
-        color: #555
+        color: #555;
     }
 
     @media(max-width:560px) {
         .kc-faq {
-            padding: 64px 16px
+            padding: 64px 16px;
         }
 
         .kc-q button {
-            font-size: 14.5px
+            font-size: 14.5px;
         }
     }
 
@@ -135,66 +133,118 @@
         .kc-q {
             opacity: 1;
             transform: none;
-            transition: none
+            transition: none;
         }
     }
 </style>
+
 <section class="kc-faq" id="kcFaq">
     <div class="kc-faq__wrap">
+
         <h2>Quick answers</h2>
-        <div class="kc-q" style="--i:0"><button aria-expanded="false">How long does delivery take?<i></i></button>
+
+        <!-- FAQ 1 -->
+        <div class="kc-q" style="--i:0">
+            <button type="button" aria-expanded="false">
+                How long does delivery take?
+                <i></i>
+            </button>
+
             <div class="kc-q__a">
                 <div>
-                    <p>Most orders ship within 1 to 2 working days and reach you in 3 to 7 days, depending on your city.</p>
+                    <p>
+                        Most orders ship within 1 to 2 working days and reach you in 3 to 7 days, depending on your city.
+                    </p>
                 </div>
             </div>
         </div>
-        <div class="kc-q" style="--i:1"><button aria-expanded="false">Can I return or exchange a piece?<i></i></button>
+
+        <!-- FAQ 2 -->
+        <div class="kc-q" style="--i:1">
+            <button type="button" aria-expanded="false">
+                How can I care for my jewellery?
+                <i></i>
+            </button>
+
             <div class="kc-q__a">
                 <div>
-                    <p>Yes. Unused items in original packaging can be returned or exchanged within the period in our Return and Exchange Policy.</p>
+                    <p>
+                        Keep your jewellery away from water, perfume and harsh chemicals. Store each piece in a dry, safe place to maintain its shine and finish for longer.
+                    </p>
                 </div>
             </div>
         </div>
-        <div class="kc-q" style="--i:2"><button aria-expanded="false">How do I track my order?<i></i></button>
+
+        <!-- FAQ 3 -->
+        <div class="kc-q" style="--i:2">
+            <button type="button" aria-expanded="false">
+                How do I track my order?
+                <i></i>
+            </button>
+
             <div class="kc-q__a">
                 <div>
-                    <p>Use Track Order from the menu with your order number, or message us on WhatsApp and we will check it for you.</p>
+                    <p>
+                        Use Track Order from the menu with your order number, or message us on WhatsApp and we will check it for you.
+                    </p>
                 </div>
             </div>
         </div>
-        <div class="kc-q" style="--i:3"><button aria-expanded="false">Is the jewellery skin friendly?<i></i></button>
+
+        <!-- FAQ 4 -->
+        <div class="kc-q" style="--i:3">
+            <button type="button" aria-expanded="false">
+                Is the jewellery skin friendly?
+                <i></i>
+            </button>
+
             <div class="kc-q__a">
                 <div>
-                    <p>Our pieces are made for daily wear. Keep them dry and away from perfume to keep the shine longer.</p>
+                    <p>
+                        Our pieces are made for daily wear. Keep them dry and away from perfume to keep the shine longer.
+                    </p>
                 </div>
             </div>
         </div>
+
     </div>
 </section>
+
 <script>
     (function() {
         var sec = document.getElementById('kcFaq');
-        new IntersectionObserver(function(e, o) {
-            if (e[0].isIntersecting) {
-                sec.classList.add('is-in');
-                o.disconnect()
-            }
-        }, {
-            threshold: .15
-        }).observe(sec);
+
+        if (!sec) return;
+
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver(function(e, o) {
+                if (e[0].isIntersecting) {
+                    sec.classList.add('is-in');
+                    o.disconnect();
+                }
+            }, {
+                threshold: .15
+            }).observe(sec);
+        } else {
+            sec.classList.add('is-in');
+        }
+
         var items = sec.querySelectorAll('.kc-q');
+
         items.forEach(function(it) {
             var b = it.querySelector('button');
+
             b.addEventListener('click', function() {
                 var open = it.classList.contains('is-open');
+
                 items.forEach(function(o) {
                     o.classList.remove('is-open');
-                    o.querySelector('button').setAttribute('aria-expanded', 'false')
+                    o.querySelector('button').setAttribute('aria-expanded', 'false');
                 });
+
                 if (!open) {
                     it.classList.add('is-open');
-                    b.setAttribute('aria-expanded', 'true')
+                    b.setAttribute('aria-expanded', 'true');
                 }
             });
         });
