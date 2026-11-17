@@ -156,6 +156,30 @@ function kmdata_export($db) {
         $row++;
     }
     mysqli_free_result($q);
+    // Auto-generate slug in Excel when product_name changes.
+    // Existing rows retain their original slug until their name is edited.
+    // New rows calculate a slug as soon as a product name is entered.
+    $nameLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(array_search('product_name', $cols, true) + 1);
+    $slugLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(array_search('product_slug', $cols, true) + 1);
+    $existingRows = $row - 2;
+    $slugInputEnd = min(2001, max(202, $row + 200));
+    for ($sr = 2; $sr <= $slugInputEnd; $sr++) {
+        $nameRef = $nameLetter . $sr;
+        $normalized = 'LOWER(TRIM(' . $nameRef . '))';
+        foreach (["'", '"', '.', ',', ':', ';', '!', '?', '(', ')', '[', ']', '/', '&', '+', '_'] as $remove) {
+            $normalized = 'SUBSTITUTE(' . $normalized . ',"' . str_replace('"', '""', $remove) . '"," ")';
+        }
+        $normalized = 'SUBSTITUTE(' . $normalized . '," ","-")';
+        $slugFormula = 'IF(' . $nameRef . '= "","",' . $normalized . ')';
+        if ($sr < $row) {
+            $oldName = (string) $sheet->getCell($nameRef)->getValue();
+            $oldSlug = (string) $sheet->getCell($slugLetter . $sr)->getValue();
+            $oldName = str_replace('"', '""', $oldName);
+            $oldSlug = str_replace('"', '""', $oldSlug);
+            $slugFormula = 'IF(' . $nameRef . '= "","",IF(' . $nameRef . '= "' . $oldName . '","' . $oldSlug . '",' . $normalized . '))';
+        }
+        $sheet->setCellValue($slugLetter . $sr, '=' . $slugFormula);
+    }
     // Name dropdowns and formula IDs, including 200 blank rows for new products.
     $nameToId = ['root'=>['root_name','root_id'],'brand'=>['brand_name','brand_id'],'sub'=>['sub_cate_name','sub_cate_id']];
     $indexMap = array_flip($cols);
@@ -275,6 +299,16 @@ function kmdata_parse($path) {
         return $out;
     } finally { $book->disconnectWorksheets(); }
 }
+function kmdata_slug_from_name($name) {
+    $name = trim((string)$name);
+    if (function_exists('iconv')) {
+        $converted = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $name);
+        if ($converted !== false) $name = $converted;
+    }
+    $name = strtolower($name);
+    $name = preg_replace('/[^a-z0-9]+/', '-', $name);
+    return trim((string)$name, '-');
+}
 function kmdata_existing($db,$id){$s=mysqli_prepare($db,'SELECT * FROM products WHERE product_id=? LIMIT 1');mysqli_stmt_bind_param($s,'i',$id);mysqli_stmt_execute($s);$r=mysqli_stmt_result_metadata($s);$fields=[];$values=[];while($f=mysqli_fetch_field($r)){$fields[]=$f->name;$values[$f->name]=null;}$refs=[];foreach($fields as $f)$refs[]=&$values[$f];mysqli_stmt_bind_result($s,...$refs);$found=mysqli_stmt_fetch($s);mysqli_stmt_close($s);return $found?$values:null;}
 function kmdata_ref($db,$table,$field,$id){$s=mysqli_prepare($db,"SELECT $field FROM $table WHERE $field=? LIMIT 1");mysqli_stmt_bind_param($s,'i',$id);mysqli_stmt_execute($s);mysqli_stmt_store_result($s);$ok=mysqli_stmt_num_rows($s)>0;mysqli_stmt_close($s);return $ok;}
 function kmdata_check($db,$d,$old){
@@ -317,7 +351,7 @@ function kmdata_handle($db){
  if(!isset($_POST['kmdata_import']))return $result;
  if(empty($_SESSION['kmdata_csrf'])||!hash_equals($_SESSION['kmdata_csrf'],(string)($_POST['kmdata_csrf']??''))){$result['message']='Invalid security token';return $result;}
  if(!isset($_FILES['kmdata_excel'])||$_FILES['kmdata_excel']['error']!==UPLOAD_ERR_OK||strtolower(pathinfo($_FILES['kmdata_excel']['name'],PATHINFO_EXTENSION))!=='xlsx'||$_FILES['kmdata_excel']['size']>8*1024*1024){$result['message']='Valid XLSX upload required (max 8 MB).';return $result;}
- try{$rows=kmdata_parse($_FILES['kmdata_excel']['tmp_name']);$sets=kmdata_category_sets($db);$seen=[];$slugs=[];$work=[];foreach($rows as $d){$id=$d['product_id'];$old=null;$err='';if($id!==''){if(!ctype_digit($id)||(int)$id<1)$err='Invalid product_id';else {$id=(int)$id;if(isset($seen[$id]))$err='Duplicate product_id in Excel';else{$seen[$id]=true;$old=kmdata_existing($db,$id);if(!$old)$err='product_id not found; leave blank to add new';}}}
+ try{$rows=kmdata_parse($_FILES['kmdata_excel']['tmp_name']);$sets=kmdata_category_sets($db);$seen=[];$slugs=[];$work=[];foreach($rows as $d){if($d['product_slug']==='' && $d['product_name']!=='')$d['product_slug']=kmdata_slug_from_name($d['product_name']);$id=$d['product_id'];$old=null;$err='';if($id!==''){if(!ctype_digit($id)||(int)$id<1)$err='Invalid product_id';else {$id=(int)$id;if(isset($seen[$id]))$err='Duplicate product_id in Excel';else{$seen[$id]=true;$old=kmdata_existing($db,$id);if(!$old)$err='product_id not found; leave blank to add new';}}}
  if(!$err)$err=kmdata_validate_category_row($d,$old,$sets);if(!$err)$err=kmdata_check($db,$d,$old);if(!$err&&isset($slugs[$d['product_slug']]))$err='Duplicate slug in Excel';$slugs[$d['product_slug']]=true;
  if($err)$result['errors'][]='Row '.$d['_row'].': '.$err;else $work[]=[$d,$old];}
  if($result['errors']){$result['message']='Validation failed. No changes saved.';return $result;} if(!$work){$result['message']='Excel mein koi product row nahi mili.';return $result;}
