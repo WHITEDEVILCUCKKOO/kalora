@@ -16,22 +16,39 @@
 
     <!-- section 1 -->
     <?php require_once __DIR__ . '/includes/home-section/section_1.php' ?>
+
     <!-- section 2 -->
     <?php require_once __DIR__ . '/includes/home-section/section_2.php' ?>
+
+    
     <?php require_once __DIR__ . '/includes/home-section/section_2_0.php' ?>
     <!-- section 3 -->
    
     <?php require_once __DIR__ . '/includes/home-section/main_sub_cate_imp.php' ?>
-    <?php require_once __DIR__ . '/includes/home-section/section_3_0.php' ?>
+   
+
+    <!-- insta trending -->
     <?php require_once __DIR__ . '/includes/home-section/section_3_5.php' ?>
-    <!-- section 3 0 -->
+
+
+    <!-- Top Selling Products -->
+
     <?php require_once __DIR__ . '/includes/home-section/sub_cate_1.php' ?>
+
+
     <!-- section 6 -->
     <?php require_once __DIR__ . '/includes/home-section/section_3_2.php' ?>
-    <!-- section 4 -->
+
+
+    <!-- section img slider  -->
     <?php require_once __DIR__ . '/includes/home-section/section_4.php' ?>
-    <!-- section 5 -->
+
+
+    <!-- section all products -->
     <?php require_once __DIR__ . '/includes/home-section/section_5.php' ?>
+
+
+    
     <!-- section video -->
     <?php require_once __DIR__ . '/includes/home-section/section_video.php' ?>
   

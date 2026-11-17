@@ -73,6 +73,7 @@ if ($klr_sub_slug !== '') {
        SUB CATEGORY + PRODUCTS QUERY
 
        Maximum 15 RANDOM products
+       (products.* me product_stock already aata hai)
     ===================================================== */
 
     $klr_sub_sql = "
@@ -510,6 +511,8 @@ if ($klr_sub_category_name === '') {
 
     align-items: center;
 
+    flex-wrap: wrap;
+
     gap: 8px;
 }
 
@@ -531,6 +534,189 @@ if ($klr_sub_category_name === '') {
     font-size: 12px;
 
     text-decoration: line-through;
+}
+
+
+/* =========================================================
+   STOCK MESSAGE
+========================================================= */
+
+.klr-sub-product-stock-x82 {
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.klr-sub-product-stock-low-x82 {
+
+    color: #ff9800;
+}
+
+
+.klr-sub-product-stock-out-x82 {
+
+    color: #ff5252;
+}
+
+
+/* =========================================================
+   DISCOUNT TAG (card ke top-left me)
+========================================================= */
+
+.klr-sub-product-discount-tag-x82 {
+
+    position: absolute;
+
+    top: 12px;
+
+    left: 0;
+
+    z-index: 2;
+
+    padding: 6px 22px 6px 10px;
+
+    background: #d62828;
+
+    color: #ffffff;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+
+    line-height: 1;
+
+    white-space: nowrap;
+
+    clip-path: polygon(0 0, 84% 0, 100% 50%, 84% 100%, 0 100%);
+
+    overflow: hidden;
+
+    transform-origin: left center;
+
+    animation:
+        klrSubTagInX82 0.7s ease-out backwards,
+        klrSubTagPulseX82 2.2s ease-in-out 0.7s infinite;
+
+    transition: background 0.3s ease;
+}
+
+
+/* Chamak (shine) jo tag ke upar se guzarti hai */
+
+.klr-sub-product-discount-tag-x82::before {
+
+    content: '';
+
+    position: absolute;
+
+    top: 0;
+
+    left: -60%;
+
+    width: 40%;
+
+    height: 100%;
+
+    background: linear-gradient(
+        100deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.55) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+
+    transform: skewX(-20deg);
+
+    animation: klrSubTagShineX82 2.8s ease-in-out 1s infinite;
+}
+
+
+/* Card par hover karne par tag thoda bada + dark red */
+
+.klr-sub-product-card-x82:hover
+.klr-sub-product-discount-tag-x82 {
+
+    background: #b71c1c;
+
+    animation:
+        klrSubTagPulseX82 1s ease-in-out infinite;
+}
+
+
+@keyframes klrSubTagInX82 {
+
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+@keyframes klrSubTagPulseX82 {
+
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+
+@keyframes klrSubTagShineX82 {
+
+    0% {
+        left: -60%;
+    }
+
+    60%, 100% {
+        left: 140%;
+    }
+}
+
+
+/* Jinke device me animation band hai unke liye */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .klr-sub-product-discount-tag-x82,
+    .klr-sub-product-discount-tag-x82::before {
+
+        animation: none;
+    }
+}
+
+
+.klr-sub-product-discount-tag-x82::after {
+
+    content: '';
+
+    position: absolute;
+
+    right: 8px;
+
+    top: 50%;
+
+    width: 4px;
+
+    height: 4px;
+
+    background: #ffffff;
+
+    border-radius: 50%;
+
+    transform: translateY(-50%);
 }
 
 
@@ -695,6 +881,16 @@ if ($klr_sub_category_name === '') {
 
         font-size: 11px;
     }
+
+
+    .klr-sub-product-discount-tag-x82 {
+
+        top: 8px;
+
+        font-size: 10px;
+
+        padding: 5px 18px 5px 8px;
+    }
 }
 
 </style>
@@ -834,6 +1030,63 @@ if ($klr_sub_category_name === '') {
 
 
                     /* =================================
+                       DISCOUNT % (sirf jab discount Show ho)
+                    ================================= */
+
+                    $klr_sub_pct = 0;
+
+                    if ($klr_sub_old_price > 0) {
+
+                        $klr_sub_pct = (int) round(
+                            (
+                                ($klr_sub_old_price - $klr_sub_current_price)
+                                /
+                                $klr_sub_old_price
+                            ) * 100
+                        );
+                    }
+
+
+                    /* =================================
+                       STOCK MESSAGE
+                       0      => Out of stock
+                       1 - 9  => Only X left
+                       10+    => kuch nahi
+                    ================================= */
+
+                    $klr_sub_stock =
+                        (int)
+                        ($klr_sub_product[
+                            'product_stock'
+                        ] ?? 0);
+
+
+                    $klr_sub_stock_msg = '';
+
+                    $klr_sub_stock_class = '';
+
+
+                    if ($klr_sub_stock <= 0) {
+
+                        $klr_sub_stock_msg =
+                            'Out of stock';
+
+                        $klr_sub_stock_class =
+                            'klr-sub-product-stock-out-x82';
+
+                    } elseif ($klr_sub_stock < 10) {
+
+                        $klr_sub_stock_msg =
+                            'Only '
+                            . $klr_sub_stock
+                            . ' left';
+
+                        $klr_sub_stock_class =
+                            'klr-sub-product-stock-low-x82';
+                    }
+
+
+                    /* =================================
                        PRODUCT URL
                     ================================= */
 
@@ -866,6 +1119,15 @@ if ($klr_sub_category_name === '') {
                         <div
                             class="klr-sub-product-image-x82"
                         >
+
+
+                            <?php if ($klr_sub_pct > 0) { ?>
+
+                                <span class="klr-sub-product-discount-tag-x82">
+                                    <?= $klr_sub_pct; ?>% OFF
+                                </span>
+
+                            <?php } ?>
 
 
                             <?php if (
@@ -912,6 +1174,8 @@ if ($klr_sub_category_name === '') {
 
                             <?php if (
                                 $klr_sub_current_price > 0
+                                ||
+                                $klr_sub_stock_msg !== ''
                             ) { ?>
 
 
@@ -920,25 +1184,50 @@ if ($klr_sub_category_name === '') {
                                 >
 
 
-                                    <span
-                                        class="klr-sub-product-current-price-x82"
-                                    >
-                                        <?= klr_sub_money(
-                                            $klr_sub_current_price
-                                        ); ?>
-                                    </span>
-
-
                                     <?php if (
-                                        $klr_sub_old_price > 0
+                                        $klr_sub_current_price > 0
                                     ) { ?>
 
 
                                         <span
-                                            class="klr-sub-product-old-price-x82"
+                                            class="klr-sub-product-current-price-x82"
                                         >
                                             <?= klr_sub_money(
-                                                $klr_sub_old_price
+                                                $klr_sub_current_price
+                                            ); ?>
+                                        </span>
+
+
+                                        <?php if (
+                                            $klr_sub_old_price > 0
+                                        ) { ?>
+
+
+                                            <span
+                                                class="klr-sub-product-old-price-x82"
+                                            >
+                                                <?= klr_sub_money(
+                                                    $klr_sub_old_price
+                                                ); ?>
+                                            </span>
+
+
+                                        <?php } ?>
+
+
+                                    <?php } ?>
+
+
+                                    <?php if (
+                                        $klr_sub_stock_msg !== ''
+                                    ) { ?>
+
+
+                                        <span
+                                            class="klr-sub-product-stock-x82 <?= $klr_sub_stock_class; ?>"
+                                        >
+                                            <?= klr_sub_h(
+                                                $klr_sub_stock_msg
                                             ); ?>
                                         </span>
 
@@ -1242,4 +1531,4 @@ if ($klr_sub_category_name === '') {
 
 </main>
 
-<?php include_once 'includes/footter.php' ?>    
+<?php include_once 'includes/footter.php' ?>

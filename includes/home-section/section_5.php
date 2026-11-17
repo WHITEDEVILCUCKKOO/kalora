@@ -27,7 +27,8 @@ $kr = mysqli_query($mydb, "SELECT
     p.product_size,
     p.original_price,
     p.sale_price,
-    p.discount_visibility
+    p.discount_visibility,
+    p.product_stock
 FROM products p
 INNER JOIN brands b ON p.brand_id = b.brand_id
 WHERE p.product_status = 'Active'
@@ -75,9 +76,24 @@ if ($kr) {
                         $color = trim((string)$p['product_color']);
                         $size  = trim((string)$p['product_size']);
                         $link  = $productPage . '?slug=' . urlencode($p['product_slug']);
+
+                        // Stock: 0 => Out of stock, 1-9 => Only X left, 10+ => kuch nahi
+                        $stock = (int)$p['product_stock'];
+                        $stockMsg = '';
+                        $stockClass = '';
+                        if ($stock <= 0) {
+                            $stockMsg = 'Out of stock';
+                            $stockClass = 'klr-stock-out';
+                        } elseif ($stock < 10) {
+                            $stockMsg = 'Only ' . $stock . ' left';
+                            $stockClass = 'klr-stock-low';
+                        }
                     ?>
                         <div class="klr-card" onclick="window.location.href='<?= kl_h($link) ?>'">
                             <div class="klr-img-box">
+                                <?php if ($pct > 0) { ?>
+                                    <span class="klr-discount-tag"><?= $pct ?>% OFF</span>
+                                <?php } ?>
                                 <button type="button" class="klr-wishlist" title="Add to Wishlist" onclick="event.stopPropagation()">
                                     <svg viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
@@ -90,11 +106,17 @@ if ($kr) {
                             <div class="klr-details">
                                 <p class="klr-product-name"><?= kl_h($p['product_name']) ?></p>
 
-                                <?php if ($current > 0) { ?>
+                                <?php if ($current > 0 || $stockMsg !== '') { ?>
                                     <div class="klr-price-box">
-                                        <span class="klr-current-price"><?= kl_money($current) ?></span>
-                                        <?php if ($strike > 0) { ?>
-                                            <span class="klr-original-price"><?= kl_money($strike) ?></span>
+                                        <?php if ($current > 0) { ?>
+                                            <span class="klr-current-price"><?= kl_money($current) ?></span>
+                                            <?php if ($strike > 0) { ?>
+                                                <span class="klr-original-price"><?= kl_money($strike) ?></span>
+                                            <?php } ?>
+                                        <?php } ?>
+
+                                        <?php if ($stockMsg !== '') { ?>
+                                            <span class="klr-stock <?= $stockClass ?>"><?= kl_h($stockMsg) ?></span>
                                         <?php } ?>
                                     </div>
                                 <?php } ?>
@@ -318,6 +340,22 @@ if ($kr) {
         font-size: 12px;
     }
 
+    /* Stock message (price ke right side me) */
+    .klr-stock {
+        margin-left: auto;
+        font-weight: 600;
+        white-space: nowrap;
+        font-size: 16px;
+    }
+
+    .klr-stock-low {
+        color: #ff9800;
+    }
+
+    .klr-stock-out {
+        color: #ff5252;
+    }
+
     .klr-badge-box {
         margin: 2px 0;
     }
@@ -347,6 +385,99 @@ if ($kr) {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    /* ===== Discount tag (image ke top-left me) ===== */
+    .klr-discount-tag {
+        position: absolute;
+        top: 12px;
+        left: 0;
+        z-index: 2;
+        padding: 6px 22px 6px 10px;
+        background: #d62828;
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        line-height: 1;
+        white-space: nowrap;
+        clip-path: polygon(0 0, 84% 0, 100% 50%, 84% 100%, 0 100%);
+        overflow: hidden;
+        transform-origin: left center;
+        animation: klrTagIn 0.7s ease-out backwards, klrTagPulse 2.2s ease-in-out 0.7s infinite;
+        transition: background 0.3s ease;
+    }
+
+    .klr-discount-tag::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -60%;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(100deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0) 100%);
+        transform: skewX(-20deg);
+        animation: klrTagShine 2.8s ease-in-out 1s infinite;
+    }
+
+    .klr-discount-tag::after {
+        content: '';
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        width: 4px;
+        height: 4px;
+        background: #ffffff;
+        border-radius: 50%;
+        transform: translateY(-50%);
+    }
+
+    .klr-card:hover .klr-discount-tag {
+        background: #b71c1c;
+        animation: klrTagPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes klrTagIn {
+        from {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes klrTagPulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.08);
+        }
+    }
+
+    @keyframes klrTagShine {
+        0% {
+            left: -60%;
+        }
+
+        60%,
+        100% {
+            left: 140%;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .klr-discount-tag,
+        .klr-discount-tag::before {
+            animation: none;
+        }
     }
 
     .klr-view-all-box {
@@ -498,6 +629,12 @@ if ($kr) {
         .klr-wishlist svg {
             width: 16px;
             height: 16px;
+        }
+
+        .klr-discount-tag {
+            top: 8px;
+            font-size: 10px;
+            padding: 5px 18px 5px 8px;
         }
     }
 </style>

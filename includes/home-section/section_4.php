@@ -26,7 +26,7 @@ include "admin_access/db_config.php";
 
                     <?php while ($product = mysqli_fetch_assoc($result)): ?>
 
-                        <div class="fey-card" data-index="<?php echo $index; ?>">
+                        <div class="fey-card" data-index="<?php echo $index; ?>" onclick="window.location.href='product_details.php?slug=<?php echo htmlspecialchars($product['product_slug'] ?? 'slug'); ?>'">
 
                             <img
                                 src="<?php echo htmlspecialchars($product['product_image'] ?? ''); ?>"

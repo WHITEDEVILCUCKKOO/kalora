@@ -157,20 +157,38 @@ function product_slug_exists($mydb, $slug, $ignore_id = 0)
 function add_product_info($mydb, $d)
 {
     $text = [
-        'product_name', 'product_slug', 'product_sku', 'product_color', 'product_size', 'product_image',
-        'product_description', 'meta_title', 'meta_description', 'meta_keywords', 'canonical_url',
-        'og_title', 'og_description', 'product_other_info_desc'
+        'product_name',
+        'product_slug',
+        'product_sku',
+        'product_color',
+        'product_size',
+        'product_image',
+        'product_description',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
+        'canonical_url',
+        'og_title',
+        'og_description',
+        'product_other_info_desc'
     ];
 
     $cols = array_merge(['root_id', 'brand_id', 'sub_cate_id'], $text, [
-        'original_price', 'sale_price', 'discount_visibility', 'product_status', 'product_views', 'created_at', 'updated_at'
+        'original_price',
+        'sale_price',
+        'product_stock',
+        'discount_visibility',
+        'product_status',
+        'product_views',
+        'created_at',
+        'updated_at'
     ]);
 
     $vals = [$d['root_id'], $d['brand_id'], $d['sub_cate_id']];
     foreach ($text as $k) {
         $vals[] = $d[$k] ?? '';
     }
-    array_push($vals, $d['original_price'], $d['sale_price'], $d['discount_visibility'], $d['product_status'], 0, time(), '');
+    array_push($vals, $d['original_price'], $d['sale_price'], $d['product_stock'], $d['discount_visibility'], $d['product_status'], 0, time(), '');
 
     $sql = "INSERT INTO products (" . implode(', ', $cols) . ") VALUES (" . implode(', ', array_fill(0, count($cols), '?')) . ")";
 
@@ -179,7 +197,7 @@ function add_product_info($mydb, $d)
         return false;
     }
 
-    mysqli_stmt_bind_param($stmt, 'iii' . str_repeat('s', 14) . 'ddssiss', ...$vals);
+    mysqli_stmt_bind_param($stmt, 'iii' . str_repeat('s', 14) . 'ddississ', ...$vals);
     $ok = mysqli_stmt_execute($stmt);
     $new_id = $ok ? mysqli_insert_id($mydb) : false;
     mysqli_stmt_close($stmt);
@@ -191,9 +209,19 @@ function add_product_info($mydb, $d)
 function update_product_info($mydb, $product_id, $d)
 {
     $text = [
-        'product_name', 'product_slug', 'product_sku', 'product_color', 'product_size',
-        'product_description', 'meta_title', 'meta_description', 'meta_keywords', 'canonical_url',
-        'og_title', 'og_description', 'product_other_info_desc'
+        'product_name',
+        'product_slug',
+        'product_sku',
+        'product_color',
+        'product_size',
+        'product_description',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
+        'canonical_url',
+        'og_title',
+        'og_description',
+        'product_other_info_desc'
     ];
 
     $set  = ['root_id = ?', 'brand_id = ?', 'sub_cate_id = ?'];
@@ -204,15 +232,15 @@ function update_product_info($mydb, $product_id, $d)
         $vals[] = $d[$k] ?? '';
     }
 
-    $set = array_merge($set, ['original_price = ?', 'sale_price = ?', 'discount_visibility = ?', 'product_status = ?', 'updated_at = ?']);
-    array_push($vals, $d['original_price'], $d['sale_price'], $d['discount_visibility'], $d['product_status'], time(), $product_id);
+    $set = array_merge($set, ['original_price = ?', 'sale_price = ?', 'product_stock = ?', 'discount_visibility = ?', 'product_status = ?', 'updated_at = ?']);
+    array_push($vals, $d['original_price'], $d['sale_price'], $d['product_stock'], $d['discount_visibility'], $d['product_status'], time(), $product_id);
 
     $stmt = mysqli_prepare($mydb, "UPDATE products SET " . implode(', ', $set) . " WHERE product_id = ?");
     if (!$stmt) {
         return false;
     }
 
-    mysqli_stmt_bind_param($stmt, 'iii' . str_repeat('s', 13) . 'ddssii', ...$vals);
+    mysqli_stmt_bind_param($stmt, 'iii' . str_repeat('s', 13) . 'ddissii', ...$vals);
     $ok = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
@@ -378,6 +406,7 @@ function product_collect_input()
         'product_other_info_desc' => $t('product_other_info_desc'),
         'original_price'          => (float) ($_POST['original_price'] ?? 0),
         'sale_price'              => (float) ($_POST['sale_price'] ?? 0),
+        'product_stock'           => max(0, (int) ($_POST['product_stock'] ?? 0)),
         'discount_visibility'     => $disc,
         'product_status'          => $status,
         'product_image'           => '',
@@ -474,23 +503,47 @@ function handle_product_update($mydb)
     $img_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
 
     // Main image
-    $main = product_resolve_file('product_image', $folder, $img_ext, 'main',
-        (string) ($old['product_image'] ?? ''), $_POST['existing_main_image'] ?? '');
+    $main = product_resolve_file(
+        'product_image',
+        $folder,
+        $img_ext,
+        'main',
+        (string) ($old['product_image'] ?? ''),
+        $_POST['existing_main_image'] ?? ''
+    );
     update_product_main_image($mydb, $product_id, $main);
 
     // Gallery
     $images = [];
     for ($i = 1; $i <= 10; $i++) {
-        $images['product_img_' . $i] = product_resolve_file('product_img_' . $i, $folder, $img_ext, 'gallery_' . $i,
-            (string) ($old['product_img_' . $i] ?? ''), $_POST['existing_img_' . $i] ?? '');
+        $images['product_img_' . $i] = product_resolve_file(
+            'product_img_' . $i,
+            $folder,
+            $img_ext,
+            'gallery_' . $i,
+            (string) ($old['product_img_' . $i] ?? ''),
+            $_POST['existing_img_' . $i] ?? ''
+        );
         $images['product_img_' . $i . '_alt'] = trim($_POST['product_img_' . $i . '_alt'] ?? '');
     }
 
     // Brochure + Video
-    $images['product_brochure'] = product_resolve_file('product_brochure', $folder, ['pdf'], 'brochure',
-        (string) ($old['product_brochure'] ?? ''), $_POST['existing_brochure'] ?? '');
-    $images['product_video_1'] = product_resolve_file('product_video_1', $folder, ['mp4', 'webm', 'mov', 'ogg'], 'video_1',
-        (string) ($old['product_video_1'] ?? ''), $_POST['existing_video_1'] ?? '');
+    $images['product_brochure'] = product_resolve_file(
+        'product_brochure',
+        $folder,
+        ['pdf'],
+        'brochure',
+        (string) ($old['product_brochure'] ?? ''),
+        $_POST['existing_brochure'] ?? ''
+    );
+    $images['product_video_1'] = product_resolve_file(
+        'product_video_1',
+        $folder,
+        ['mp4', 'webm', 'mov', 'ogg'],
+        'video_1',
+        (string) ($old['product_video_1'] ?? ''),
+        $_POST['existing_video_1'] ?? ''
+    );
 
     if (product_images_row_exists($mydb, $product_id)) {
         update_product_images($mydb, $product_id, $images);
@@ -618,7 +671,10 @@ function handle_product_request($mydb)
 
     // Success: message session me rakho aur redirect
     if ($r['success_msg'] !== '' && $session_ok) {
+
         $_SESSION['product_flash'] = $r['success_msg'];
+        $_SESSION['product_success_ui_x91'] = true;
+
         $url = $_SERVER['REQUEST_URI'];
 
         if (!headers_sent()) {
@@ -626,6 +682,7 @@ function handle_product_request($mydb)
         } else {
             echo '<meta http-equiv="refresh" content="0;url=' . htmlspecialchars($url) . '">';
         }
+
         exit;
     }
 
