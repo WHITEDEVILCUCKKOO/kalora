@@ -41,7 +41,7 @@ $p = null;
 if ($slug !== '') {
     $sql = "SELECT p.product_id, p.product_name, p.product_slug, p.product_color, p.product_size,
                    p.product_image, p.product_description, p.product_other_info_desc,
-                   p.original_price, p.sale_price, p.discount_visibility,
+                   p.original_price, p.sale_price, p.discount_visibility, p.product_stock,
                    b.brand_name, b.brand_slug
             FROM products p
             LEFT JOIN brands b ON b.brand_id = p.brand_id
@@ -74,6 +74,19 @@ if ($p) {
     $strikePrice   = ($sale > 0 && $orig > $sale) ? $orig : 0;
     $discountPct   = ($strikePrice > 0 && $p['discount_visibility'] === 'Show')
                         ? round((($strikePrice - $currentPrice) / $strikePrice) * 100) : 0;
+
+    /* ---- Stock: 0 => Out of stock, 1-9 => Only X left, 10+ => kuch nahi ---- */
+    $stock      = (int)($p['product_stock'] ?? 0);
+    $stockOut   = ($stock <= 0);
+    $stockMsg   = '';
+    $stockClass = '';
+    if ($stockOut) {
+        $stockMsg   = 'Out of stock';
+        $stockClass = 'kalora-prod-stock-out';
+    } elseif ($stock < 10) {
+        $stockMsg   = 'Only ' . $stock . ' left';
+        $stockClass = 'kalora-prod-stock-low';
+    }
 
     $colors   = kp_list($p['product_color']);
     $sizes    = kp_list($p['product_size']);
@@ -201,8 +214,16 @@ if ($p) {
                         <?php if ($discountPct > 0) { ?>
                             <span class="kalora-prod-discount"><?= $discountPct ?>% OFF</span>
                         <?php } ?>
+
+                        <?php if ($stockMsg !== '') { ?>
+                            <span class="kalora-prod-stock <?= $stockClass ?>"><?= kp_h($stockMsg) ?></span>
+                        <?php } ?>
                     </div>
                     <p class="kalora-prod-tax-note">inclusive of all taxes</p>
+                <?php } elseif ($stockMsg !== '') { ?>
+                    <div class="kalora-prod-price-box">
+                        <span class="kalora-prod-stock <?= $stockClass ?>" style="margin-left:0"><?= kp_h($stockMsg) ?></span>
+                    </div>
                 <?php } ?>
 
                
@@ -231,20 +252,53 @@ if ($p) {
 
                 <div class="kalora-prod-divider"></div>
 
-                <div class="kalora-prod-cta-row">
-                    <button class="kalora-prod-btn-bag" type="button" onclick="alert('Added to KALORA shopping bag successfully!')">
-                        <i class="fas fa-shopping-bag"></i> Add to Bag
-                    </button>
-                    <button style="display: none;" class="kalora-prod-btn-wishlist" type="button" onclick="this.classList.toggle('active')">
-                        <i class="fas fa-heart"></i>
-                    </button>
-                </div>
+                <?php if ($stockOut) { ?>
+
+                    <!-- Stock 0: Buy Now / Bag ka option nahi aayega -->
+                    <div class="kalora-prod-outofstock">
+                        <i class="fas fa-ban"></i> Out of stock
+                    </div>
+
+                <?php } else {
+                    // Buy Now => WhatsApp par order message
+                    $waNumber = preg_replace('/\D/', '', $global_info['globle_whatsapp'] ?? '');
+                    $pageUrl  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http')
+                              . '://' . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['REQUEST_URI'] ?? '');
+                    $buyMsg   = "Hello, I want to buy this product:\n\n"
+                              . $p['product_name']
+                              . ($currentPrice > 0 ? "\nPrice: " . kp_money($currentPrice) : '')
+                              . "\nLink: " . $pageUrl;
+                ?>
+
+                    <div class="kalora-prod-cta-row">
+                        <button class="kalora-prod-btn-bag" type="button" onclick="kaloraBuyNow()">
+                            <i class="fas fa-bolt"></i> Buy Now
+                        </button>
+                        <button style="display: none;" class="kalora-prod-btn-wishlist" type="button" onclick="this.classList.toggle('active')">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <script>
+                        var KALORA_WA  = <?= json_encode($waNumber) ?>;
+                        var KALORA_MSG = <?= json_encode($buyMsg) ?>;
+
+                        function kaloraBuyNow() {
+                            if (!KALORA_WA) {
+                                alert('WhatsApp number is not set yet. Please contact the store.');
+                                return;
+                            }
+                            window.open('https://wa.me/' + KALORA_WA + '?text=' + encodeURIComponent(KALORA_MSG), '_blank');
+                        }
+                    </script>
+
+                <?php } ?>
                 <br>
                  <!-- Trust Badges Bar -->
                 <div class="kalora-prod-trust-bar">
                     <div class="kalora-trust-item"><i class="fas fa-shield-alt"><span>100% Anti-Tarnish</span></i></div>
                     <div class="kalora-trust-item"><i class="fas fa-water"><span>Water Resistant</span></i></div>
-                    <div class="kalora-trust-item"><i class="fas fa-gift"><span>Gift Box Included</span></i></div>
+                    <div class="kalora-trust-item"><i class="fas fa-gift"><span>Branded</span></i></div>
                 </div>
 
                 <?php if ($brochure !== '') { ?>
@@ -320,6 +374,14 @@ if ($p) {
     .kalora-prod-discount { font-size: 13px; color: #34d399; font-weight: 700; background: rgba(52,211,153,0.15); padding: 3px 8px; border-radius: 6px; }
     .kalora-prod-tax-note { font-size: 12px; color: #9ca3af; margin: 0 0 4px; }
     .kalora-prod-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0; }
+
+    /* Stock message (price ke right side me) */
+    .kalora-prod-stock { margin-left: auto; font-size: 16px; font-weight: 700; white-space: nowrap; }
+    .kalora-prod-stock-low { color: #ff9800; }
+    .kalora-prod-stock-out { color: #ff5252; }
+
+    /* Out of stock box (Buy Now ki jagah) */
+    .kalora-prod-outofstock { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 15px; border: 1px dashed rgba(255,82,82,0.6); border-radius: 12px; background: rgba(255,82,82,0.08); color: #ff5252; font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
 
     .kalora-prod-option-group { margin-bottom: 18px; }
     .kalora-prod-option-label { display: block; font-size: 13px; font-weight: 600; color: #e5e7eb; margin-bottom: 10px; }
