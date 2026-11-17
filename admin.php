@@ -11,13 +11,20 @@ if (!isset($_SESSION['user_id'])) {
 ?>
 
 
+<?php include "admin_access/db_config.php" ?>
 <!-- 
 
 
 
 
 <?php
+// Existing database connection code iske upar hona chahiye
+
 require_once 'admin_access/functions/mass_product_data.php';
+
+if (!isset($mydb) || !($mydb instanceof mysqli)) {
+    die('Mass Upload Error: Database connection not available.');
+}
 
 $mass_data_result = kmdata_handle($mydb);
 ?>
@@ -27,7 +34,6 @@ $mass_data_result = kmdata_handle($mydb);
 -->
 
 
-<?php include "admin_access/db_config.php" ?>
 
 
 <?php
