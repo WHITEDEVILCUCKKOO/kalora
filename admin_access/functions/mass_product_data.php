@@ -24,40 +24,107 @@ function kmdata_sheet($rows,$cols){
  }$x.='</row>';}
  $last=kmdata_excel_col(count($cols)-1);$x.='</sheetData><autoFilter ref="A1:'.$last.count($rows).'"/></worksheet>';return $x;
 }
-function kmdata_export($db){
- if(!class_exists('ZipArchive'))throw new RuntimeException('PHP ZipArchive extension required.');
- $sql='SELECT products.*, root_categories.root_name, brands.brand_name, product_sub_cate.sub_cate_name, products_images.* FROM products INNER JOIN root_categories ON products.root_id=root_categories.root_id INNER JOIN brands ON products.brand_id=brands.brand_id INNER JOIN product_sub_cate ON products.sub_cate_id=product_sub_cate.sub_cate_id INNER JOIN products_images ON products.product_id=products_images.product_id ORDER BY products.product_id DESC';
- $q=mysqli_query($db,$sql);if(!$q)throw new RuntimeException('Export query failed: '.mysqli_error($db));
- $cols=kmdata_columns();$rows=[array_fill_keys($cols,'')];foreach($cols as $c)$rows[0][$c]=$c;
- while($r=mysqli_fetch_assoc($q))$rows[]=$r;
- // Blank template row, editable for creating a new product.
- $rows[]=array_fill_keys($cols,'');
- $tmp=tempnam(sys_get_temp_dir(),'kmdata_');
- if ($tmp === false) throw new RuntimeException('Temporary file create nahi ho rahi. Hosting temp directory permissions check karo.');$z=new ZipArchive();
- if ($z->open($tmp,ZipArchive::OVERWRITE)!==true) {
-     @unlink($tmp);
-     throw new RuntimeException('Cannot create XLSX. Temporary folder permissions check karo.');
- }
- $z->addFromString('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>');
- $z->addFromString('_rels/.rels','<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>');
- $z->addFromString('xl/workbook.xml','<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Products" sheetId="1" r:id="rId1"/></sheets></workbook>');
- $z->addFromString('xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>');
- $z->addFromString('xl/styles.xml','<?xml version="1.0" encoding="UTF-8"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><color rgb="FFFFFFFF"/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF17365D"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE2F0D9"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF1F5F9"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFill="1" applyFont="1"/><xf numFmtId="0" fontId="0" fillId="4" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="4" borderId="0" xfId="0" applyFill="1"/></cellXfs></styleSheet>');
- $z->addFromString('xl/worksheets/sheet1.xml',kmdata_sheet($rows,$cols));$z->close();
- if(headers_sent($sentFile,$sentLine)) {
-     @unlink($tmp);
-     throw new RuntimeException('Download headers already sent: '.$sentFile.' line '.$sentLine.'. kmdata_handle() ko HTML se pehle call karo.');
- }
- header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');header('Content-Disposition: attachment; filename="kalora_products_'.date('Ymd_His').'.xlsx"');header('Content-Length: '.filesize($tmp));header('Cache-Control: no-store');readfile($tmp);unlink($tmp);exit;
+function kmdata_spreadsheet_boot() {
+    if (class_exists('PhpOffice\PhpSpreadsheet\Spreadsheet')) return;
+    $paths = [
+        dirname(__DIR__, 2) . '/vendor/autoload.php',
+        dirname(__DIR__, 2) . '/admin_access/vendor/autoload.php',
+        __DIR__ . '/vendor/autoload.php'
+    ];
+    foreach ($paths as $path) {
+        if (is_file($path)) { require_once $path; break; }
+    }
+    if (!class_exists('PhpOffice\PhpSpreadsheet\Spreadsheet')) {
+        throw new RuntimeException('PhpSpreadsheet library missing. Project root mein composer require phpoffice/phpspreadsheet run karo aur vendor folder server par upload karo.');
+    }
 }
-function kmdata_parse($path){
- if(!class_exists('ZipArchive')||!function_exists('simplexml_load_string'))throw new RuntimeException('ZipArchive and SimpleXML required.');
- $z=new ZipArchive();if($z->open($path)!==true)throw new RuntimeException('Excel open failed.');
- try{$raw=$z->getFromName('xl/worksheets/sheet1.xml');if($raw===false||strlen($raw)>20*1024*1024)throw new RuntimeException('Worksheet missing or too large.');$shared=[];$ss=$z->getFromName('xl/sharedStrings.xml');if($ss!==false){$sx=@simplexml_load_string($ss);if(!$sx)throw new RuntimeException('Invalid shared strings.');foreach($sx->si as $si){$s='';foreach($si->xpath('.//*[local-name()="t"]') as $t)$s.=(string)$t;$shared[]=$s;}}
- $xml=@simplexml_load_string($raw);if(!$xml)throw new RuntimeException('Invalid worksheet.');$rows=[];foreach($xml->sheetData->row as $row){$vals=[];foreach($row->c as $c){preg_match('/^[A-Z]+/',(string)$c['r'],$m);if(!$m)continue;$idx=0;foreach(str_split($m[0]) as $ch)$idx=$idx*26+ord($ch)-64;$idx--; $type=(string)$c['t'];if($type==='s')$v=$shared[(int)$c->v]??'';elseif($type==='inlineStr'){$v='';foreach($c->xpath('.//*[local-name()="t"]') as $t)$v.=(string)$t;}else $v=(string)$c->v;$vals[$idx]=trim($v);}if($vals)$rows[]=$vals;if(count($rows)>2001)throw new RuntimeException('Maximum 2000 rows per upload.');}
- if(!$rows)throw new RuntimeException('Empty Excel.');$head=array_shift($rows);$map=[];foreach($head as $i=>$h){$h=trim(strtolower($h));if($h!=='')$map[$h]=$i;}foreach(array_merge(['product_id'],kmdata_editable()) as $c)if(!isset($map[$c]))throw new RuntimeException('Missing Excel header: '.$c);
- $out=[];foreach($rows as $i=>$vals){$d=[];foreach(kmdata_columns() as $c)$d[$c]=isset($map[$c])?(string)($vals[$map[$c]]??''):'';if(implode('',array_values($d))==='')continue;$d['_row']=$i+2;$out[]=$d;}return $out;
- }finally{$z->close();}
+function kmdata_export($db) {
+    if (!($db instanceof mysqli)) throw new RuntimeException('Database connection $mydb missing.');
+    kmdata_spreadsheet_boot();
+    $sql = 'SELECT products.*, root_categories.root_name, brands.brand_name, product_sub_cate.sub_cate_name, products_images.* FROM products INNER JOIN root_categories ON products.root_id = root_categories.root_id INNER JOIN brands ON products.brand_id = brands.brand_id INNER JOIN product_sub_cate ON products.sub_cate_id = product_sub_cate.sub_cate_id INNER JOIN products_images ON products.product_id = products_images.product_id ORDER BY products.product_id DESC';
+    $q = mysqli_query($db, $sql);
+    if (!$q) throw new RuntimeException('Export SQL error: '.mysqli_error($db));
+    $cols = kmdata_columns();
+    $book = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $book->getActiveSheet();
+    $sheet->setTitle('Products');
+    $sheet->fromArray($cols, null, 'A1');
+    $editable = kmdata_editable();
+    $row = 2;
+    while ($item = mysqli_fetch_assoc($q)) {
+        foreach ($cols as $i => $col) {
+            $cell = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i + 1) . $row;
+            $sheet->setCellValueExplicit($cell, (string)($item[$col] ?? ''), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        }
+        $row++;
+    }
+    mysqli_free_result($q);
+    // One blank row for adding a new product. More rows can be added in Excel.
+    $lastCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($cols));
+    $lastRow = max(2, $row);
+    $sheet->freezePane('A2');
+    $sheet->setAutoFilter('A1:'.$lastCol.$lastRow);
+    $sheet->getRowDimension(1)->setRowHeight(30);
+    $sheet->getStyle('A1:'.$lastCol.'1')->applyFromArray([
+        'font' => ['bold'=>true,'color'=>['rgb'=>'FFFFFF'],'size'=>11],
+        'fill' => ['fillType'=>\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,'startColor'=>['rgb'=>'17365D']],
+        'alignment' => ['vertical'=>\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER]
+    ]);
+    foreach ($cols as $i => $col) {
+        $letter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i + 1);
+        $sheet->getColumnDimension($letter)->setWidth(in_array($col, ['product_description','product_other_info_desc','meta_description','canonical_url'], true) ? 40 : (in_array($col,['product_name','product_slug','root_name','brand_name','sub_cate_name'],true) ? 28 : 20));
+        $sheet->getStyle($letter.'2:'.$letter.$lastRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB(in_array($col,$editable,true) ? 'E2F0D9' : 'F1F5F9');
+        $sheet->getStyle($letter.'2:'.$letter.$lastRow)->getNumberFormat()->setFormatCode('@');
+    }
+    // CSV formula injection is prevented by writing all DB values explicitly as strings.
+    $temp = tempnam(sys_get_temp_dir(), 'kalora_xlsx_');
+    if ($temp === false) throw new RuntimeException('Cannot create temporary Excel file.');
+    try {
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($book);
+        $writer->save($temp);
+        $book->disconnectWorksheets();
+        if (!is_file($temp) || filesize($temp) < 100) throw new RuntimeException('Generated Excel is empty.');
+        if (headers_sent($file,$line)) throw new RuntimeException('Headers already sent at '.$file.':'.$line.'. Handler HTML se pehle call karo.');
+        // Prevent any previously buffered HTML/warnings from corrupting the XLSX.
+        while (ob_get_level() > 0) { ob_end_clean(); }
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="kalora_products_'.date('Ymd_His').'.xlsx"');
+        header('Content-Length: '.filesize($temp));
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('X-Content-Type-Options: nosniff');
+        readfile($temp);
+    } finally { @unlink($temp); }
+    exit;
+}
+function kmdata_parse($path) {
+    kmdata_spreadsheet_boot();
+    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+    $reader->setReadDataOnly(true);
+    $book = $reader->load($path);
+    try {
+        $sheet = $book->getSheetByName('Products') ?: $book->getActiveSheet();
+        $maxRow = $sheet->getHighestDataRow();
+        if ($maxRow > 2001) throw new RuntimeException('Maximum 2000 product rows per import.');
+        $head = $sheet->rangeToArray('A1:'.$sheet->getHighestDataColumn().'1', '', false, false, false)[0];
+        $map = [];
+        foreach ($head as $i=>$name) {
+            $name = strtolower(trim((string)$name));
+            if ($name !== '') $map[$name] = $i;
+        }
+        foreach (array_merge(['product_id'],kmdata_editable()) as $col) {
+            if (!array_key_exists($col,$map)) throw new RuntimeException('Missing Excel column: '.$col);
+        }
+        $out = [];
+        for ($r=2; $r<=$maxRow; $r++) {
+            $vals = $sheet->rangeToArray('A'.$r.':'.$sheet->getHighestDataColumn().$r, '', false, false, false)[0];
+            $d = [];
+            foreach (kmdata_columns() as $col) $d[$col] = isset($map[$col]) ? trim((string)($vals[$map[$col]] ?? '')) : '';
+            if (implode('', array_values($d)) === '') continue;
+            $d['_row'] = $r;
+            $out[] = $d;
+        }
+        return $out;
+    } finally { $book->disconnectWorksheets(); }
 }
 function kmdata_existing($db,$id){$s=mysqli_prepare($db,'SELECT * FROM products WHERE product_id=? LIMIT 1');mysqli_stmt_bind_param($s,'i',$id);mysqli_stmt_execute($s);$r=mysqli_stmt_result_metadata($s);$fields=[];$values=[];while($f=mysqli_fetch_field($r)){$fields[]=$f->name;$values[$f->name]=null;}$refs=[];foreach($fields as $f)$refs[]=&$values[$f];mysqli_stmt_bind_result($s,...$refs);$found=mysqli_stmt_fetch($s);mysqli_stmt_close($s);return $found?$values:null;}
 function kmdata_ref($db,$table,$field,$id){$s=mysqli_prepare($db,"SELECT $field FROM $table WHERE $field=? LIMIT 1");mysqli_stmt_bind_param($s,'i',$id);mysqli_stmt_execute($s);mysqli_stmt_store_result($s);$ok=mysqli_stmt_num_rows($s)>0;mysqli_stmt_close($s);return $ok;}
