@@ -1128,7 +1128,7 @@ if (!function_exists('kmdata_columns')) {
 
             #contect_6_contect_box .kmd-wrap {
 
-                max-width: 1050px;
+                max-width: 80%;
 
                 margin: auto;
 

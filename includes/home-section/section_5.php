@@ -88,7 +88,20 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
                         $sale = (float)$p['sale_price'];
 
-                        $img  = trim((string)$p['product_image']);
+                        $img = trim((string)($p['product_image'] ?? ''));
+                        // Normalize saved image paths for both localhost/kalora and live domain root.
+                        if ($img !== '') {
+                            $img = str_replace('\\', '/', $img);
+                            $img = preg_replace('#^\./+#', '', $img);
+                            if (!preg_match('#^(?:https?://|data:)#i', $img)) {
+                                $img = ltrim($img, '/');
+                                $img = preg_replace('#^(?:kalora/)+#i', '', $img);
+                                // App lives in /kalora locally, and at / on live hosting.
+                                $appBase = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
+                                if ($appBase === '.' || $appBase === '/') $appBase = '';
+                                $img = $appBase . '/' . $img;
+                            }
+                        }
 
 
 
@@ -176,7 +189,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
                                 <?php if ($img !== '') { ?>
 
-                                    <img src="<?= kl_h($img) ?>" alt="<?= kl_h($p['product_name']) ?>" loading="lazy" draggable="false">
+                                    <img src="<?= kl_h($img) ?>" alt="<?= kl_h($p['product_name']) ?>" loading="lazy" decoding="async" draggable="false" onerror="this.style.display='none'">
 
                                 <?php } ?>
 
@@ -394,7 +407,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-    *.klr-card:nth-child*(1) {
+    .klr-card:nth-child(1) {
 
         animation-delay: 0.05s;
 
@@ -402,7 +415,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-    *.klr-card:nth-child*(2) {
+    .klr-card:nth-child(2) {
 
         animation-delay: 0.1s;
 
@@ -410,7 +423,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-    *.klr-card:nth-child*(3) {
+    .klr-card:nth-child(3) {
 
         animation-delay: 0.15s;
 
@@ -418,7 +431,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-    *.klr-card:nth-child*(4) {
+    .klr-card:nth-child(4) {
 
         animation-delay: 0.2s;
 
@@ -426,7 +439,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-    *.klr-card:nth-child*(5) {
+    .klr-card:nth-child(5) {
 
         animation-delay: 0.25s;
 
@@ -434,7 +447,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-    *.klr-card:nth-child*(6) {
+    .klr-card:nth-child(6) {
 
         animation-delay: 0.3s;
 
@@ -442,7 +455,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-    *.klr-card:nth-child*(7) {
+    .klr-card:nth-child(7) {
 
         animation-delay: 0.35s;
 
@@ -450,7 +463,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-    *.klr-card:nth-child*(8) {
+    .klr-card:nth-child(8) {
 
         animation-delay: 0.4s;
 
@@ -469,44 +482,28 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
     .klr-img-box {
-
         background-color: #f8f8f8;
-
         position: relative;
-
         width: 100%;
-
-        padding-top: 115%;
-
+        aspect-ratio: 1 / 1.15;
+        padding-top: 0;
         overflow: hidden;
-
         border-radius: 10px;
-
     }
-
-
-
-    *.klr-img-box* img {
-
+    .klr-img-box img {
         position: absolute;
-
-        top: 0;
-
-        left: 0;
-
+        inset: 0;
+        display: block;
         width: 100%;
-
         height: 100%;
-
         object-fit: cover;
-
+        object-position: center;
         transition: transform 0.6s ease;
-
     }
 
 
 
-    *.klr-card:hover* *.klr-img-box* img {
+    .klr-card:hover .klr-img-box img {
 
         transform: scale(1.04);
 
@@ -556,7 +553,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-    *.klr-wishlist* svg {
+    .klr-wishlist svg {
 
         width: 18px;
 
@@ -574,7 +571,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-    *.klr-wishlist:hover* svg {
+    .klr-wishlist:hover svg {
 
         fill: #ff3b30;
 
@@ -840,7 +837,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-    .klr-card:hover* *.klr-discount-tag {
+    .klr-card:hover .klr-discount-tag {
 
         background: #b71c1c;
 
@@ -924,7 +921,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-        *.klr-discount-tag*,
+        .klr-discount-tag,
 
         .klr-discount-tag::before {
 
@@ -1100,7 +1097,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-        .klr-grid.klr-slider-on* *.klr-card {
+        .klr-grid.klr-slider-on .klr-card {
 
             flex: 0 0 calc((100% - 12px) / 2);
 
@@ -1228,7 +1225,7 @@ if (!isset($mydb) || !($mydb instanceof mysqli)) {
 
 
 
-        *.klr-wishlist* svg {
+        .klr-wishlist svg {
 
             width: 16px;
 

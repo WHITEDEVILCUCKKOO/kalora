@@ -30,6 +30,11 @@ $mass_data_result = kmdata_handle($mydb);
 ?>
 
 
+<?php
+require_once 'admin_access/functions/kalora_bulk_zip_images.php';
+
+$klzip_result_x91 = klzip_handle_x91($mydb);
+?>
 
 -->
 
@@ -6013,6 +6018,10 @@ if (isset($_GET['product_search'])) {
 
 
                     <?php kmdata_render($mass_data_result); ?>
+
+
+                    <?php klzip_render_x91($klzip_result_x91); ?>
+
 
 
 
