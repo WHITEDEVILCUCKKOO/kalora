@@ -1,4 +1,3 @@
-
 <?php
 include_once "admin_access/db_config.php";
 
@@ -21,6 +20,7 @@ $klr_trending_name = "Regular";
 
 /* =========================================================
    PRODUCTS + SUB CATEGORY NAME
+   (products.* me product_stock aur price already aate hain)
 ========================================================= */
 
 $klr_trending_sql = "
@@ -168,6 +168,17 @@ if (!function_exists('klr_trending_h')) {
             (string)$value,
             ENT_QUOTES,
             'UTF-8'
+        );
+    }
+}
+
+if (!function_exists('klr_trending_money')) {
+
+    function klr_trending_money($value)
+    {
+        return '₹ ' . number_format(
+            (float)$value,
+            2
         );
     }
 }
@@ -371,6 +382,231 @@ if (!function_exists('klr_trending_h')) {
 
 
 /* =========================================================
+   PRICE
+========================================================= */
+
+.klr-instagram-trending-price-x91 {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 8px;
+}
+
+
+.klr-instagram-trending-current-x91 {
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.klr-instagram-trending-old-x91 {
+
+    color: #e9a4a4;
+
+    font-size: 12px;
+
+    text-decoration: line-through;
+}
+
+
+/* =========================================================
+   STOCK MESSAGE
+========================================================= */
+
+.klr-instagram-trending-stock-x91 {
+
+    display: block;
+
+    margin-top: 8px;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.klr-instagram-trending-stock-low-x91 {
+
+    color: #ff9800;
+}
+
+
+.klr-instagram-trending-stock-out-x91 {
+
+    color: #ff5252;
+}
+
+
+/* =========================================================
+   DISCOUNT TAG (image ke top-left me)
+========================================================= */
+
+.klr-instagram-trending-tag-x91 {
+
+    position: absolute;
+
+    top: 12px;
+
+    left: 0;
+
+    z-index: 2;
+
+    padding: 6px 22px 6px 10px;
+
+    background: #d62828;
+
+    color: #ffffff;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+
+    line-height: 1;
+
+    white-space: nowrap;
+
+    clip-path: polygon(0 0, 84% 0, 100% 50%, 84% 100%, 0 100%);
+
+    overflow: hidden;
+
+    transform-origin: left center;
+
+    animation:
+        klrTrendingTagInX91 0.7s ease-out backwards,
+        klrTrendingTagPulseX91 2.2s ease-in-out 0.7s infinite;
+
+    transition: background 0.3s ease;
+}
+
+
+/* Chamak (shine) */
+
+.klr-instagram-trending-tag-x91::before {
+
+    content: '';
+
+    position: absolute;
+
+    top: 0;
+
+    left: -60%;
+
+    width: 40%;
+
+    height: 100%;
+
+    background: linear-gradient(
+        100deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.55) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+
+    transform: skewX(-20deg);
+
+    animation: klrTrendingTagShineX91 2.8s ease-in-out 1s infinite;
+}
+
+
+.klr-instagram-trending-tag-x91::after {
+
+    content: '';
+
+    position: absolute;
+
+    right: 8px;
+
+    top: 50%;
+
+    width: 4px;
+
+    height: 4px;
+
+    background: #ffffff;
+
+    border-radius: 50%;
+
+    transform: translateY(-50%);
+}
+
+
+/* Hover par gehra laal + tez dhadkan */
+
+.klr-instagram-trending-card-x91:hover
+.klr-instagram-trending-tag-x91 {
+
+    background: #b71c1c;
+
+    animation:
+        klrTrendingTagPulseX91 1s ease-in-out infinite;
+}
+
+
+@keyframes klrTrendingTagInX91 {
+
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+@keyframes klrTrendingTagPulseX91 {
+
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+
+@keyframes klrTrendingTagShineX91 {
+
+    0% {
+        left: -60%;
+    }
+
+    60%, 100% {
+        left: 140%;
+    }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .klr-instagram-trending-tag-x91,
+    .klr-instagram-trending-tag-x91::before {
+
+        animation: none;
+    }
+}
+
+
+/* =========================================================
    EMPTY MESSAGE
 ========================================================= */
 
@@ -529,6 +765,28 @@ if (!function_exists('klr_trending_h')) {
 
         font-size: 12px;
     }
+
+
+    .klr-instagram-trending-current-x91 {
+
+        font-size: 13px;
+    }
+
+
+    .klr-instagram-trending-old-x91 {
+
+        font-size: 11px;
+    }
+
+
+    .klr-instagram-trending-tag-x91 {
+
+        top: 8px;
+
+        font-size: 10px;
+
+        padding: 5px 18px 5px 8px;
+    }
 }
 
 </style>
@@ -555,7 +813,7 @@ if (!function_exists('klr_trending_h')) {
             class="klr-instagram-trending-title-x91"
         >
 
-           Top Selling Products
+            Top Selling Products
 
         </h2>
 
@@ -599,6 +857,132 @@ if (!function_exists('klr_trending_h')) {
 
 
                     /* =========================================
+                       DISCOUNT % (sirf jab discount Show ho)
+                    ========================================== */
+
+                    $klr_trending_orig =
+                        (float)
+                        ($klr_trending_product[
+                            'original_price'
+                        ] ?? 0);
+
+
+                    $klr_trending_sale =
+                        (float)
+                        ($klr_trending_product[
+                            'sale_price'
+                        ] ?? 0);
+
+
+                    $klr_trending_pct = 0;
+
+
+                    if (
+
+                        ($klr_trending_product[
+                            'discount_visibility'
+                        ] ?? '') === 'Show'
+
+                        &&
+
+                        $klr_trending_sale > 0
+
+                        &&
+
+                        $klr_trending_orig > $klr_trending_sale
+
+                    ) {
+
+                        $klr_trending_pct =
+                            (int) round(
+                                (
+                                    ($klr_trending_orig - $klr_trending_sale)
+                                    /
+                                    $klr_trending_orig
+                                ) * 100
+                            );
+                    }
+
+
+                    /* =========================================
+                       PRICE
+                       Show + sale price => sale price (original kata hua)
+                       Hide              => sirf original price
+                    ========================================== */
+
+                    $klr_trending_current = 0;
+
+                    $klr_trending_old = 0;
+
+
+                    if (
+
+                        ($klr_trending_product[
+                            'discount_visibility'
+                        ] ?? '') === 'Show'
+
+                        &&
+
+                        $klr_trending_sale > 0
+
+                    ) {
+
+                        $klr_trending_current =
+                            $klr_trending_sale;
+
+                        if ($klr_trending_orig > $klr_trending_sale) {
+
+                            $klr_trending_old =
+                                $klr_trending_orig;
+                        }
+
+                    } else {
+
+                        $klr_trending_current =
+                            $klr_trending_orig;
+                    }
+
+
+                    /* =========================================
+                       STOCK MESSAGE
+                       0      => Out of stock
+                       1 - 9  => Only X left
+                       10+    => kuch nahi
+                    ========================================== */
+
+                    $klr_trending_stock =
+                        (int)
+                        ($klr_trending_product[
+                            'product_stock'
+                        ] ?? 0);
+
+
+                    $klr_trending_stock_msg = '';
+
+                    $klr_trending_stock_class = '';
+
+
+                    if ($klr_trending_stock <= 0) {
+
+                        $klr_trending_stock_msg =
+                            'Out of stock';
+
+                        $klr_trending_stock_class =
+                            'klr-instagram-trending-stock-out-x91';
+
+                    } elseif ($klr_trending_stock < 10) {
+
+                        $klr_trending_stock_msg =
+                            'Only '
+                            . $klr_trending_stock
+                            . ' left';
+
+                        $klr_trending_stock_class =
+                            'klr-instagram-trending-stock-low-x91';
+                    }
+
+
+                    /* =========================================
                        PRODUCT URL
                     ========================================== */
 
@@ -633,6 +1017,15 @@ if (!function_exists('klr_trending_h')) {
                             class="klr-instagram-trending-image-x91"
                         >
 
+                            <?php if ($klr_trending_pct > 0) { ?>
+
+                                <span class="klr-instagram-trending-tag-x91">
+                                    <?= $klr_trending_pct; ?>% OFF
+                                </span>
+
+                            <?php } ?>
+
+
                             <?php if (
                                 $klr_trending_image !== ''
                             ) { ?>
@@ -656,7 +1049,7 @@ if (!function_exists('klr_trending_h')) {
                         </div>
 
 
-                        <!-- PRODUCT NAME -->
+                        <!-- PRODUCT NAME + STOCK -->
 
                         <div
                             class="klr-instagram-trending-details-x91"
@@ -673,6 +1066,48 @@ if (!function_exists('klr_trending_h')) {
                                 ); ?>
 
                             </p>
+
+
+                            <?php if ($klr_trending_current > 0) { ?>
+
+                                <div class="klr-instagram-trending-price-x91">
+
+                                    <span class="klr-instagram-trending-current-x91">
+                                        <?= klr_trending_money(
+                                            $klr_trending_current
+                                        ); ?>
+                                    </span>
+
+                                    <?php if ($klr_trending_old > 0) { ?>
+
+                                        <span class="klr-instagram-trending-old-x91">
+                                            <?= klr_trending_money(
+                                                $klr_trending_old
+                                            ); ?>
+                                        </span>
+
+                                    <?php } ?>
+
+                                    <?php if (
+                                $klr_trending_stock_msg !== ''
+                            ) { ?>
+
+                                <span style="margin: 0;"
+                                    class="klr-instagram-trending-stock-x91 <?= $klr_trending_stock_class; ?>"
+                                >
+                                    <?= klr_trending_h(
+                                        $klr_trending_stock_msg
+                                    ); ?>
+                                </span>
+
+                            <?php } ?>
+
+                                </div>
+
+                            <?php } ?>
+
+
+                            
 
                         </div>
 

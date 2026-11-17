@@ -16,6 +16,14 @@ if (!isset($_SESSION['user_id'])) {
 
 
 
+<?php
+require_once 'admin_access/functions/mass_product_data.php';
+
+$mass_data_result = kmdata_handle($mydb);
+?>
+
+
+
 -->
 
 
@@ -799,7 +807,7 @@ if (isset($_GET['product_search'])) {
                                 <li class="sole78m" id="contect__3" onclick="link_sole_action(this)" data-set="contect-3">Products</li>
                                 <li class="sole78m " id="contect__4" onclick="link_sole_action(this)" data-set="contect-4">Product Sub Catagory</li>
                                 <li class="sole78m " id="contect__5" onclick="link_sole_action(this)" data-set="contect-5">Show all Sub products</li>
-                                <li class="sole78m romove_device_links" id="contect__6" onclick="link_sole_action(this)" data-set="contect-6">My Routes</li>
+                                <li class="sole78m " id="contect__6" onclick="link_sole_action(this)" data-set="contect-6">Mass Upload Products</li>
                                 <li class="sole78m romove_device_links" id="contect__7" onclick="link_sole_action(this)" data-set="contect-7">Contact Manager</li>
                                 <li class="sole78m romove_device_links" id="contect__8" onclick="link_sole_action(this)" data-set="contect-8">Manage Group</li>
                                 <li class="sole78m romove_device_links" id="contect__9" onclick="link_sole_action(this)" data-set="contect-9">Blacklist Numbers</li>
@@ -4064,7 +4072,7 @@ if (isset($_GET['product_search'])) {
                 </section>
 
 
-                <!-- sublink box 3 -->
+                <!-- sublink box 3 products management -->
                 <section id="contect_3_contect_box" class="section_sub_with all_sejmca8974 auto_margin_notwa ">
 
                     <?php if ($product_success_msg): ?>
@@ -4177,6 +4185,7 @@ if (isset($_GET['product_search'])) {
                                         <th>Sub Category</th>
                                         <th>Brand</th>
                                         <th>Price</th>
+                                        <th>Stock</th>
                                         <th>Status</th>
                                         <th>Add Product</th>
                                         <th>Last Update</th>
@@ -4231,12 +4240,20 @@ if (isset($_GET['product_search'])) {
                                                 </td>
 
                                                 <td>
-                                                    <?php if (!empty($product['sale_price']) && $product['sale_price'] != $product['original_price']) { ?>
+                                                    <?php
+                                                    $show_discount = ($product['discount_visibility'] ?? 'Hide') === 'Show'
+                                                        && !empty($product['sale_price'])
+                                                        && $product['sale_price'] != $product['original_price'];
+                                                    ?>
+                                                    <?php if ($show_discount) { ?>
                                                         <span style="text-decoration:line-through; color:#999;">₹<?php echo htmlspecialchars($product['original_price']); ?></span>
                                                         <span style="color:#111827; font-weight:600;"> ₹<?php echo htmlspecialchars($product['sale_price']); ?></span>
                                                     <?php } else { ?>
                                                         ₹<?php echo htmlspecialchars($product['original_price']); ?>
                                                     <?php } ?>
+                                                </td>
+                                                <td>
+                                                    <?php echo (int)($product['product_stock'] ?? 0); ?>
                                                 </td>
 
                                                 <td>
@@ -4404,6 +4421,13 @@ if (isset($_GET['product_search'])) {
                                     <label for="kd-product-sale-price">Sale Price</label>
                                     <input type="number" step="0.01" id="kd-product-sale-price"
                                         name="sale_price" placeholder="0.00">
+                                </div>
+
+                                <!-- Product Stock -->
+                                <div class="kd-root-field">
+                                    <label for="kd-product-stock">Product Stock <span>*</span></label>
+                                    <input type="number" min="0" step="1" id="kd-product-stock"
+                                        name="product_stock" placeholder="0" value="0" required>
                                 </div>
 
                                 <!-- Discount Visibility -->
@@ -4685,6 +4709,13 @@ if (isset($_GET['product_search'])) {
                                     <label for="kd-update-product-sale-price">Sale Price</label>
                                     <input type="number" step="0.01" id="kd-update-product-sale-price"
                                         name="sale_price" placeholder="0.00">
+                                </div>
+
+                                <!-- Product Stock -->
+                                <div class="kd-root-field">
+                                    <label for="kd-update-product-stock">Product Stock <span>*</span></label>
+                                    <input type="number" min="0" step="1" id="kd-update-product-stock"
+                                        name="product_stock" placeholder="0" required>
                                 </div>
 
                                 <!-- Discount Visibility -->
@@ -4998,6 +5029,8 @@ if (isset($_GET['product_search'])) {
                             document.getElementById('kd-update-product-status').value = product.product_status || 'Active';
                             document.getElementById('kd-update-product-original-price').value = product.original_price || '';
                             document.getElementById('kd-update-product-sale-price').value = product.sale_price || '';
+                            document.getElementById('kd-update-product-stock').value =
+                                (product.product_stock !== undefined && product.product_stock !== null) ? product.product_stock : 0;
                             document.getElementById('kd-update-product-discount-visibility').value = product.discount_visibility || 'Hide';
                             document.getElementById('kd-update-product-description').value = product.product_description || '';
                             document.getElementById('kd-update-product-other-info-desc').value = product.product_other_info_desc || '';
@@ -5968,9 +6001,15 @@ if (isset($_GET['product_search'])) {
 
                 </section>
 
-                <!-- sublink box 6 -->
+                <!-- sublink box 6 Mass Upload Products -->
                 <section id="contect_6_contect_box" class="section_sub_with all_sejmca8974 auto_margin_notwa">
-                    6
+
+
+
+                    <?php kmdata_render($mass_data_result); ?>
+
+
+
                 </section>
 
                 <!-- sublink box 7 -->
@@ -6554,8 +6593,38 @@ if (isset($_GET['product_search'])) {
         });
     </script>
 
+    <?php if (!empty($_SESSION['product_success_ui_x91'])): ?>
+        <?php unset($_SESSION['product_success_ui_x91']); ?>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+                event.preventDefault;
+
+                const contact5X91 = document.getElementById('contect__3');
+                const smsBtn124X91 = document.getElementById('sms_btn_124');
+                const smsSubBoxX91 = document.getElementById('sms_sub_box');
+
+                if (contact5X91) {
+                    contact5X91.click();
+                }
+
+                if (smsBtn124X91) {
+                    smsBtn124X91.classList.add('active');
+                }
+
+                if (smsSubBoxX91) {
+                    smsSubBoxX91.classList.add('sub_links_of_show_box');
+                }
+
+            });
+        </script>
+    <?php endif; ?>
+
     <script src="admin_access/admin.js"></script>
     <script src="admin_access/js/category.js"></script>
+
+
 </body>
 
 </html>
