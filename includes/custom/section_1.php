@@ -515,7 +515,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
                     data-price="<?= htmlspecialchars((string)$p['price'], ENT_QUOTES) ?>"
                     data-image="<?= htmlspecialchars($img, ENT_QUOTES) ?>">
                     <?php if ($img): ?>
-                        <img src="<?= htmlspecialchars($img, ENT_QUOTES) ?>" alt="<?= htmlspecialchars($p['product_name'], ENT_QUOTES) ?>" loading="lazy">
+                        <img onclick="window.location.href='product_details.php?slug=<?= htmlspecialchars($p['product_slug'], ENT_QUOTES) ?>'" src="<?= htmlspecialchars($img, ENT_QUOTES) ?>" alt="<?= htmlspecialchars($p['product_name'], ENT_QUOTES) ?>" loading="lazy">
                     <?php endif; ?>
                     <div class="mb-card-body">
                         <h3 class="mb-name"><?= htmlspecialchars($p['product_name']) ?></h3>
@@ -531,6 +531,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
         </div>
     </section>
 </div>
+
 
 <!-- Floating cart button -->
 <button type="button" class="mb-fab" id="mbFab" aria-label="Open cart">Cart <span id="mbFabCount">0</span></button>
