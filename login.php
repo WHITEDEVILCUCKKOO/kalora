@@ -9,8 +9,15 @@ if(isset($_SESSION['user_id'])){
 
 }
 
+
+
 // Agar login nahi hai to niche login page ka HTML chalega
 
+?>
+
+
+<?php
+header('X-Robots-Tag: noindex, nofollow, noarchive', true);
 ?>
 <?php include"admin_access/db_config.php" ?>
 
