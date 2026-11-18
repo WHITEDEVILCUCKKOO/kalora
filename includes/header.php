@@ -55,6 +55,9 @@ if ($kalora_front_active_event) {
     <link rel="icon" type="image/x-icon"
         href="assets/logos/<?php echo htmlspecialchars($global_info['facion_icon'] ?? ''); ?>">
 
+    <meta name="google-site-verification" content="kd2YDq6gUiQiT6g-EtAaS1O22OckHe0mUcA8FvDKugk" />
+
+    
     <title>Kalora</title>
 
     <link rel="stylesheet" href="assets/css/globle.css">
@@ -65,7 +68,7 @@ if ($kalora_front_active_event) {
 <body>
 
 
-<?php include_once'loader.php' ?>
+    <?php include_once 'loader.php' ?>
 
     <!-- =====================================================
      STICKY WRAPPER: Event bar + Header ek saath chipakte hain
@@ -271,9 +274,9 @@ if ($kalora_front_active_event) {
                             </div>
 
                             <button onclick="window.location.href='about.php'" type="button" data-pm-action="nav-link">About</button>
-                            <button onclick="window.location.href='contact.php'"  type="button" data-pm-action="nav-link">Contact</button>
+                            <button onclick="window.location.href='contact.php'" type="button" data-pm-action="nav-link">Contact</button>
 
-                            <button  onclick="window.location.href='about.php'" class="not_display" type="button" data-pm-action="nav-dropdown"
+                            <button onclick="window.location.href='about.php'" class="not_display" type="button" data-pm-action="nav-dropdown"
                                 data-pm-dropdown="about">
                                 About Us
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -405,12 +408,12 @@ if ($kalora_front_active_event) {
                             </div>
 
                             <button onclick="window.location.href='about.php'" type="button" data-pm-cat="fine-silver">
-                               About 
+                                About
                             </button>
 
                             <button onclick="window.location.href='contact.php'" type="button" data-pm-cat="fine-silver-collection">
                                 Contact
-                            </button>  
+                            </button>
 
                         </div>
 
