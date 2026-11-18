@@ -52,7 +52,7 @@ function klzip_gallery_update_x91($db, $id, $paths) {
     if (!$st) { throw new RuntimeException('Gallery update prepare failed'); }
     $values[] = $id;
     mysqli_stmt_bind_param($st, str_repeat('s', 10) . 'i', ...$values);
-    if (!mysqli_stmt_execute($st)) { throw new RuntimeException('Gallery update failed'); }
+    if (!mysqli_stmt_execute($st)) { throw new RuntimeException('Gallery update failed: ' . mysqli_stmt_error($st)); }
     mysqli_stmt_close($st);
 }
 
@@ -61,6 +61,11 @@ function klzip_import_one_x91($db, $id, $items, $replaceGallery) {
     $folder = $root . '/assets/products/product_' . $id;
     if (!is_dir($folder) && !mkdir($folder, 0755, true) && !is_dir($folder)) {
         throw new RuntimeException('Cannot create product folder');
+    }
+    // ZIP uploads can inherit restrictive permissions (0600) on shared hosting.
+    // Ensure the product directory is traversable by the web server.
+    if (!chmod($folder, 0755)) {
+        throw new RuntimeException('Cannot set product folder permission to 0755');
     }
     $staged = []; $backups = []; $written = [];
     $galleryPaths = [];
@@ -82,7 +87,13 @@ function klzip_import_one_x91($db, $id, $items, $replaceGallery) {
                 $backups[] = ['backup' => $backup, 'dest' => $item['dest']];
             }
             if (!rename($item['temp'], $item['dest'])) { throw new RuntimeException('Could not save image'); }
-            $written[] = $item['dest'];
+            $written[] = $item['dest']; // Track immediately so rollback can remove it on failure.
+            // tempnam() creates 0600 files; rename() preserves that mode.
+            // Set public-readable permissions on the final image after rename.
+            if (!chmod($item['dest'], 0644)) {
+                throw new RuntimeException('Cannot set image permission to 0644: ' . basename($item['dest']));
+            }
+            clearstatcache(true, $item['dest']);
             if ($item['main']) { $mainPath = $item['relative']; }
             else { $galleryPaths[] = $item['relative']; }
         }
@@ -90,13 +101,46 @@ function klzip_import_one_x91($db, $id, $items, $replaceGallery) {
             $st = mysqli_prepare($db, 'UPDATE products SET product_image = ? WHERE product_id = ?');
             if (!$st) { throw new RuntimeException('Main image update prepare failed'); }
             mysqli_stmt_bind_param($st, 'si', $mainPath, $id);
-            if (!mysqli_stmt_execute($st)) { throw new RuntimeException('Main image update failed'); }
+            if (!mysqli_stmt_execute($st)) { throw new RuntimeException('Main image update failed: ' . mysqli_stmt_error($st)); }
             mysqli_stmt_close($st);
         }
         if ($replaceGallery && count($galleryPaths) > 0) {
             klzip_gallery_update_x91($db, $id, $galleryPaths);
         }
-        mysqli_commit($db);
+        // Verify that the image paths really reached the database before committing.
+        if ($mainPath !== null) {
+            $verify = mysqli_prepare($db, 'SELECT product_image FROM products WHERE product_id = ? LIMIT 1');
+            if (!$verify) { throw new RuntimeException('Main image verification query failed: ' . mysqli_error($db)); }
+            mysqli_stmt_bind_param($verify, 'i', $id);
+            if (!mysqli_stmt_execute($verify)) { $err = mysqli_stmt_error($verify); mysqli_stmt_close($verify); throw new RuntimeException('Main image verification failed: ' . $err); }
+            mysqli_stmt_bind_result($verify, $savedMainPath);
+            $found = mysqli_stmt_fetch($verify);
+            mysqli_stmt_close($verify);
+            if (!$found || (string)$savedMainPath !== $mainPath) {
+                throw new RuntimeException('Main image DB mismatch. Expected: ' . $mainPath . '; stored: ' . (string)$savedMainPath . '. Check products.product_image column length and database triggers.');
+            }
+        }
+        if ($replaceGallery && count($galleryPaths) > 0) {
+            $cols = implode(', ', array_map(static function ($n) { return 'product_img_' . $n; }, range(1, 10)));
+            $verify = mysqli_prepare($db, 'SELECT ' . $cols . ' FROM products_images WHERE product_id = ? LIMIT 1');
+            if (!$verify) { throw new RuntimeException('Gallery verification query failed: ' . mysqli_error($db)); }
+            mysqli_stmt_bind_param($verify, 'i', $id);
+            if (!mysqli_stmt_execute($verify)) { $err = mysqli_stmt_error($verify); mysqli_stmt_close($verify); throw new RuntimeException('Gallery verification failed: ' . $err); }
+            $savedGallery = array_fill(0, 10, null);
+            $bind = [];
+            foreach ($savedGallery as $key => &$value) { $bind[$key] = &$value; }
+            unset($value);
+            mysqli_stmt_bind_result($verify, ...$bind);
+            $found = mysqli_stmt_fetch($verify);
+            mysqli_stmt_close($verify);
+            if (!$found) { throw new RuntimeException('Gallery DB row missing after update.'); }
+            foreach ($galleryPaths as $index => $expectedPath) {
+                if ((string)$savedGallery[$index] !== $expectedPath) {
+                    throw new RuntimeException('Gallery DB mismatch in product_img_' . ($index + 1) . '. Expected: ' . $expectedPath . '; stored: ' . (string)$savedGallery[$index]);
+                }
+            }
+        }
+        if (!mysqli_commit($db)) { throw new RuntimeException('Database commit failed: ' . mysqli_error($db)); }
         foreach ($backups as $backup) { @unlink($backup['backup']); }
         return ['main' => $mainPath !== null, 'gallery' => count($galleryPaths)];
     } catch (Throwable $e) {
