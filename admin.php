@@ -11,6 +11,10 @@ if (!isset($_SESSION['user_id'])) {
 ?>
 
 
+<?php
+header('X-Robots-Tag: noindex, nofollow, noarchive', true);
+?>
+
 <?php include "admin_access/db_config.php" ?>
 <!-- 
 
