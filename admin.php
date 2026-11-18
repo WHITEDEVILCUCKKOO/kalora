@@ -11,9 +11,6 @@ if (!isset($_SESSION['user_id'])) {
 ?>
 
 
-<?php
-header('X-Robots-Tag: noindex, nofollow, noarchive', true);
-?>
 
 <?php include "admin_access/db_config.php" ?>
 <!-- 
@@ -722,6 +719,9 @@ if (isset($_GET['product_search'])) {
 <head>
 
     <meta charset="UTF-8">
+
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="googlebot" content="noindex, nofollow, noarchive">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="assets/logos/<?php echo htmlspecialchars($global_info['facion_icon'] ?? ''); ?>">
     <title>Kalora Admin</title>
