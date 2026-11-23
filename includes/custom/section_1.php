@@ -115,7 +115,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 <style>
 
-    *.mb-section* {
+    .mb-section {
 
         background: #fdf6ea;
 
@@ -127,7 +127,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-wrap* {
+    .mb-wrap {
 
         max-width: 1200px;
 
@@ -139,7 +139,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-head* {
+    .mb-head {
 
         display: flex;
 
@@ -157,7 +157,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-head* h2 {
+    .mb-head h2 {
 
         margin: 0;
 
@@ -169,7 +169,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-hint* {
+    .mb-hint {
 
         margin: 6px 0 0;
 
@@ -181,7 +181,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-progress* {
+    .mb-progress {
 
         font-weight: 600;
 
@@ -201,7 +201,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
     /* filters: brand tabs + price buttons */
 
-    *.mb-filters* {
+    .mb-filters {
 
         margin-bottom: 22px;
 
@@ -215,7 +215,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-filters*[hidden] {
+    .mb-filters[hidden] {
 
         display: none;
 
@@ -223,7 +223,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-row* {
+    .mb-row {
 
         display: flex;
 
@@ -239,7 +239,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-row-label* {
+    .mb-row-label {
 
         flex: 0 0 auto;
 
@@ -251,9 +251,9 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-tab*,
+    .mb-tab,
 
-    *.mb-chip* {
+    .mb-chip {
 
         flex: 0 0 auto;
 
@@ -281,7 +281,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-chip* {
+    .mb-chip {
 
         padding: 6px 16px;
 
@@ -293,9 +293,9 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-tab:hover*,
+    .mb-tab:hover,
 
-    *.mb-chip:hover* {
+    .mb-chip:hover {
 
         background: rgba(15, 45, 34, .08);
 
@@ -303,9 +303,9 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-tab.active*,
+    .mb-tab.active,
 
-    *.mb-chip.active* {
+    .mb-chip.active {
 
         background: #0f2d22;
 
@@ -317,9 +317,9 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-tab:focus-visible*,
+    .mb-tab:focus-visible,
 
-    *.mb-chip:focus-visible* {
+    .mb-chip:focus-visible {
 
         outline: 3px solid #2563eb;
 
@@ -329,7 +329,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-grid* {
+    .mb-grid {
 
         display: grid;
 
@@ -341,7 +341,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-card* {
+    .mb-card {
 
         border-radius: 12px;
 
@@ -361,7 +361,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-card:hover* {
+    .mb-card:hover {
 
         box-shadow: 0 10px 26px rgba(15, 45, 34, .3);
 
@@ -369,7 +369,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-card*[hidden] {
+    .mb-card[hidden] {
 
         display: none;
 
@@ -377,7 +377,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-card* img {
+    .mb-card img {
 
         width: 100%;
 
@@ -395,7 +395,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-card-body* {
+    .mb-card-body {
 
         padding: 16px 4px 0;
 
@@ -413,7 +413,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-name* {
+    .mb-name {
 
         margin: 0;
 
@@ -429,7 +429,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-price* {
+    .mb-price {
 
         margin: 0;
 
@@ -439,7 +439,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-btn* {
+    .mb-btn {
 
         margin-top: auto;
 
@@ -465,7 +465,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-btn:hover:not*(*:disabled*) {
+    .mb-btn:hover:not(:disabled) {
 
         background: #f1d98f;
 
@@ -473,7 +473,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-btn:disabled* {
+    .mb-btn:disabled {
 
         background: rgba(255, 255, 255, .18);
 
@@ -485,13 +485,13 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-btn:focus-visible*,
+    .mb-btn:focus-visible,
 
-    *.mb-fab:focus-visible*,
+    .mb-fab:focus-visible,
 
-    *.mb-remove:focus-visible*,
+    .mb-remove:focus-visible,
 
-    *.mb-close:focus-visible* {
+    .mb-close:focus-visible {
 
         outline: 3px solid #2563eb;
 
@@ -501,7 +501,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-empty* {
+    .mb-empty {
 
         grid-column: 1 / -1;
 
@@ -517,7 +517,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
     /* out of stock */
 
-    *.mb-stock-out* {
+    .mb-stock-out {
 
         margin: 0;
 
@@ -531,7 +531,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-card.mb-out* img {
+    .mb-card.mb-out img {
 
         filter: grayscale(0.85);
 
@@ -543,7 +543,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
     /* floating cart button */
 
-    *.mb-fab* {
+    .mb-fab {
 
         position: fixed;
 
@@ -577,7 +577,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-fab* span {
+    .mb-fab span {
 
         display: inline-block;
 
@@ -603,7 +603,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
     /* side cart */
 
-    *.mb-overlay* {
+    .mb-overlay {
 
         position: fixed;
 
@@ -623,7 +623,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-overlay.open* {
+    .mb-overlay.open {
 
         opacity: 1;
 
@@ -633,7 +633,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-drawer* {
+    .mb-drawer {
 
         position: fixed;
 
@@ -667,7 +667,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-drawer.open* {
+    .mb-drawer.open {
 
         transform: translateX(0);
 
@@ -675,7 +675,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-drawer-head* {
+    .mb-drawer-head {
 
         display: flex;
 
@@ -691,7 +691,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-drawer-head* h3 {
+    .mb-drawer-head h3 {
 
         margin: 0;
 
@@ -701,7 +701,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-close* {
+    .mb-close {
 
         background: none;
 
@@ -717,7 +717,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-items* {
+    .mb-items {
 
         flex: 1;
 
@@ -733,7 +733,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-item* {
+    .mb-item {
 
         display: flex;
 
@@ -749,7 +749,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-item* img {
+    .mb-item img {
 
         width: 56px;
 
@@ -765,7 +765,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-item-info* {
+    .mb-item-info {
 
         flex: 1;
 
@@ -775,7 +775,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-item-info* strong {
+    .mb-item-info strong {
 
         display: block;
 
@@ -785,7 +785,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-item-info* small {
+    .mb-item-info small {
 
         color: #666;
 
@@ -793,7 +793,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-tag* {
+    .mb-tag {
 
         display: inline-block;
 
@@ -813,7 +813,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-remove* {
+    .mb-remove {
 
         background: none;
 
@@ -833,7 +833,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-remove:hover* {
+    .mb-remove:hover {
 
         background: #d33;
 
@@ -843,7 +843,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-drawer-foot* {
+    .mb-drawer-foot {
 
         padding: 16px 18px;
 
@@ -859,7 +859,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-total* {
+    .mb-total {
 
         display: flex;
 
@@ -873,7 +873,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-note* {
+    .mb-note {
 
         margin: 0;
 
@@ -885,7 +885,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-checkout* {
+    .mb-checkout {
 
         display: none;
 
@@ -897,7 +897,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-checkout:hover:not*(*:disabled*) {
+    .mb-checkout:hover:not(:disabled) {
 
         background: #0a1f17;
 
@@ -905,7 +905,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-checkout.show* {
+    .mb-checkout.show {
 
         display: block;
 
@@ -913,7 +913,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-    *.mb-none* {
+    .mb-none {
 
         padding: 30px 0;
 
@@ -929,9 +929,9 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
 
 
-        *.mb-drawer*,
+        .mb-drawer,
 
-        *.mb-overlay* {
+        .mb-overlay {
 
             transition: none;
 
@@ -1241,7 +1241,7 @@ $PRICE_STEPS = [99, 199, 299, 399, 499];
 
             } catch (e) {}
 
-            window.dispatchEvent(*new* Event('mb-cart-change')); // footer ke button ka count update
+            window.dispatchEvent(new Event('mb-cart-change')); // footer ke button ka count update
 
         }
 
