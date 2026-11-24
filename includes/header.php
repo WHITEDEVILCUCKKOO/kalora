@@ -57,7 +57,7 @@ if ($kalora_front_active_event) {
 
     <meta name="google-site-verification" content="kd2YDq6gUiQiT6g-EtAaS1O22OckHe0mUcA8FvDKugk" />
 
-    
+
     <title>Kalora</title>
 
     <link rel="stylesheet" href="assets/css/globle.css">
@@ -258,11 +258,16 @@ if ($kalora_front_active_event) {
                                 <ul class="pm-dd-menu">
                                     <?php foreach ($brands as $b) { ?>
                                         <li>
+
                                             <a href="categorys_products.php?slug=<?= urlencode($b['brand_slug']) ?>">
                                                 <?php if (!empty($b['brand_logo'])) { ?>
                                                     <img src="<?= htmlspecialchars($b['brand_logo']) ?>" alt="">
                                                 <?php } ?>
-                                                <?= htmlspecialchars($b['brand_name']) ?>
+                                                <?php if ($b['brand_slug'] == "custom-box") { ?>
+                                                    Jewellery Organizer
+                                                <?php } else { ?>
+                                                    <?= htmlspecialchars($b['brand_name']) ?>
+                                                <?php } ?>
                                             </a>
                                         </li>
                                     <?php } ?>
@@ -398,7 +403,11 @@ if ($kalora_front_active_event) {
                             <div class="pm-sb-brands" id="pmSbBrands">
                                 <?php foreach ($brands as $b) { ?>
                                     <a href="categorys_products.php?slug=<?= urlencode($b['brand_slug']) ?>">
-                                        <?= htmlspecialchars($b['brand_name']) ?>
+                                        <?php if ($b['brand_slug'] == "custom-box") { ?>
+                                            Jewellery Organizer
+                                        <?php } else { ?>
+                                            <?= htmlspecialchars($b['brand_name']) ?>
+                                        <?php } ?>
                                     </a>
                                 <?php } ?>
 
