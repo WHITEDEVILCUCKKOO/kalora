@@ -22,7 +22,7 @@ $brand = null;
 $klProducts = [];
 
 if ($slug !== '') {
-    $bs = mysqli_prepare($mydb, "SELECT brand_id, brand_name, brand_description
+    $bs = mysqli_prepare($mydb, "SELECT brand_id, brand_name,brand_slug,, brand_description
                                  FROM brands
                                  WHERE brand_slug = ? AND brand_status = 'Active'
                                  LIMIT 1");
@@ -73,14 +73,11 @@ if (!$brand) {
 
             <?php } else { ?>
 
-                <?php if ($brand['brand_slug'] == "custom-box") { ?>
-
-                    <h2 class="klr-title" style="text-transform: uppercase;">Jewellery Organizer</h2>
-
-                <?php } else { ?>
-
-                    <h2 class="klr-title"><?= kl_h(strtoupper($brand['brand_name'])) ?></h2>
-                <?php } ?>
+                <h2 class="klr-title">
+                    <?= $brand['brand_slug'] === 'custom-box'
+                        ? 'JEWELLERY ORGANIZER'
+                        : kl_h(strtoupper($brand['brand_name'])) ?>
+                </h2>
 
 
                 <div class="klr-grid">
