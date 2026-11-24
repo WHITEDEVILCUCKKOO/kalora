@@ -73,7 +73,11 @@ if (!$brand) {
 
             <?php } else { ?>
 
-                <h2 class="klr-title"><?= kl_h(strtoupper($brand['brand_name'])) ?></h2>
+                <h2 class="klr-title">
+                    <?= $brand['brand_slug'] === 'custom-box'
+                        ? 'Jewellery Organizer'
+                        : kl_h(strtoupper($brand['brand_name'])) ?>
+                </h2>
 
                 <div class="klr-grid">
 
