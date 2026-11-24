@@ -22,7 +22,7 @@ $brand = null;
 $klProducts = [];
 
 if ($slug !== '') {
-    $bs = mysqli_prepare($mydb, "SELECT brand_id, brand_name,brand_slug,, brand_description
+    $bs = mysqli_prepare($mydb, "SELECT brand_id, brand_name,brand_slug, brand_description
                                  FROM brands
                                  WHERE brand_slug = ? AND brand_status = 'Active'
                                  LIMIT 1");
