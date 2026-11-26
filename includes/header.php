@@ -11,10 +11,12 @@ $brands = [];
 
 $res = mysqli_query(
     $mydb,
-    "SELECT brand_id, brand_name, brand_slug, brand_logo
-     FROM brands
-     WHERE brand_status = 'Active'
-     ORDER BY brand_name ASC"
+    
+     "SELECT brand_id, brand_name, brand_slug, brand_logo
+FROM brands
+WHERE brand_status = 'Active'
+AND brand_slug NOT IN ('custom-box')
+ORDER BY brand_name ASC;"
 );
 
 if ($res) {
